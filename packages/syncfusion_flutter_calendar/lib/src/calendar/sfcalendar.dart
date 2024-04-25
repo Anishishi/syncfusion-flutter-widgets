@@ -221,6 +221,7 @@ class SfCalendar extends StatefulWidget {
     this.onDragUpdate,
     this.onDragEnd,
     this.monthCellHeaderBuilder,
+    this.holidays,
   })  : assert(firstDayOfWeek >= 1 && firstDayOfWeek <= 7),
         assert(headerHeight >= 0),
         assert(viewHeaderHeight >= -1),
@@ -233,6 +234,8 @@ class SfCalendar extends StatefulWidget {
         minDate = minDate ?? DateTime(01),
         maxDate = maxDate ?? DateTime(9999, 12, 31),
         super(key: key);
+    
+  Map<DateTime, ({String id, dynamic name})>? holidays;
 
   /// A builder that sets the widget to display on the calendar widget when
   /// the appointments are being loaded.

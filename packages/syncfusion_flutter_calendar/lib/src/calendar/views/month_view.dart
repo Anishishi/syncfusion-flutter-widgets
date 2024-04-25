@@ -240,6 +240,7 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
       widget.calendar.weekNumberStyle,
       weekNumberPanelWidth,
       widget.isMobilePlatform,
+      widget.calendar.holidays,
       children: children,
     );
   }
@@ -275,6 +276,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
       this.weekNumberStyle,
       this.weekNumberPanelWidth,
       this.isMobilePlatform,
+      this.holidays,
       {List<Widget> children = const <Widget>[]})
       : super(children: children);
 
@@ -300,6 +302,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
   final WeekNumberStyle weekNumberStyle;
   final double weekNumberPanelWidth;
   final bool isMobilePlatform;
+  final Map<DateTime, ({String id, dynamic name})>? holidays;
 
   @override
   _MonthViewRenderObject createRenderObject(BuildContext context) {
@@ -325,7 +328,8 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
         height,
         weekNumberStyle,
         weekNumberPanelWidth,
-        isMobilePlatform);
+        isMobilePlatform,
+        holidays);
   }
 
   @override
@@ -353,7 +357,8 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
       ..height = height
       ..weekNumberPanelWidth = weekNumberPanelWidth
       ..weekNumberStyle = weekNumberStyle
-      ..isMobilePlatform = isMobilePlatform;
+      ..isMobilePlatform = isMobilePlatform
+      ..holidays = holidays;
   }
 }
 
@@ -380,7 +385,8 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
       this._height,
       this._weekNumberStyle,
       this._weekNumberPanelWidth,
-      this._isMobilePlatform);
+      this._isMobilePlatform,
+      this._holidays);
 
   bool _isMobilePlatform;
 
@@ -494,6 +500,19 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
       return;
     }
 
+    markNeedsPaint();
+  }
+
+  Map<DateTime, ({String id, dynamic name})>? _holidays;
+
+  Map<DateTime, ({String id, dynamic name})>? get holidays => _holidays;
+
+  set holidays(Map<DateTime, ({String id, dynamic name})>? value) {
+    if (_holidays == value) {
+      return;
+    }
+
+    _holidays = value;
     markNeedsPaint();
   }
 
@@ -1062,14 +1081,11 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
       }
 
       // for saturday and sunday
-      final List<CalendarAppointment> appointments =
-          AppointmentHelper.getSpecificDateVisibleAppointment(
-              currentVisibleDate, visibleAppointments);
       if (currentVisibleDate.weekday == DateTime.saturday) {
         textStyle = textStyle.copyWith(color: Colors.blue[800]);
       } else if (currentVisibleDate.weekday == DateTime.sunday) {
         textStyle = textStyle.copyWith(color: Colors.red);
-      } else if (appointments.any((e) => e.isHoliday)) {
+      } else if (holidays?[currentVisibleDate] != null) {
         textStyle = textStyle.copyWith(color: Colors.red);
       }
 
