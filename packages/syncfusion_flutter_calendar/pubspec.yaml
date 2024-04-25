@@ -26,7 +26,7 @@ screenshots:
     path: screenshots/flutter-calendar-quick-navigation.png
 
 environment:
-  sdk: '>=2.17.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
