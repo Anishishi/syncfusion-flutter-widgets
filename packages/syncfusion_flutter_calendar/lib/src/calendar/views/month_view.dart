@@ -1081,11 +1081,11 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
       }
 
       // for saturday and sunday
-      if (currentVisibleDate.weekday == DateTime.saturday) {
+      if (holidays?[currentVisibleDate] != null) {
+        textStyle = textStyle.copyWith(color: Colors.red);
+      } else if (currentVisibleDate.weekday == DateTime.saturday) {
         textStyle = textStyle.copyWith(color: Colors.blue[800]);
       } else if (currentVisibleDate.weekday == DateTime.sunday) {
-        textStyle = textStyle.copyWith(color: Colors.red);
-      } else if (holidays?[currentVisibleDate] != null) {
         textStyle = textStyle.copyWith(color: Colors.red);
       }
 
