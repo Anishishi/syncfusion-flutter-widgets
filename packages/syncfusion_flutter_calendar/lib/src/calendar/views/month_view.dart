@@ -34,7 +34,7 @@ class MonthViewWidget extends StatefulWidget {
       this.blackoutDates,
       this.blackoutDatesTextStyle,
       this.textScaleFactor,
-      this.builder,
+      this.monthCellBuilder,
       this.width,
       this.height,
       this.weekNumberStyle,
@@ -106,7 +106,7 @@ class MonthViewWidget extends StatefulWidget {
   final bool isMobilePlatform;
 
   /// Used to build the widget that replaces the month cell.
-  final MonthCellBuilder? builder;
+  final MonthCellBuilder? monthCellBuilder;
 
   final  Widget Function(
     BuildContext context, DateTime dateTime)? monthCellHeaderBuilder;
@@ -152,7 +152,12 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
             widget.calendar.showWeekNumber,
             widget.width,
             widget.isMobilePlatform);
-    if (widget.builder != null || widget.monthCellHeaderBuilder != null) {
+
+    // どちらも定義されている場合はexceptionを発生させる
+    assert(widget.monthCellBuilder == null || widget.monthCellHeaderBuilder == null);
+    final bool isCustomMonthCell = widget.monthCellBuilder != null;
+
+    if (widget.monthCellBuilder != null || widget.monthCellHeaderBuilder != null) {
       final int visibleDatesCount = widget.visibleDates.length;
       final double cellWidth =
           (widget.width - weekNumberPanelWidth) / DateTime.daysPerWeek;
@@ -187,7 +192,7 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
               appointments, widget.calendar.dataSource);
         }
 
-        final Widget? monthCellChild = widget.builder?.call(
+        final Widget? monthCellChild = widget.monthCellBuilder?.call(
             context,
             MonthCellDetails(
                 currentVisibleDate,
@@ -241,6 +246,7 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
       weekNumberPanelWidth,
       widget.isMobilePlatform,
       widget.calendar.holidays,
+      isCustomMonthCell,
       children: children,
     );
   }
@@ -277,6 +283,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
       this.weekNumberPanelWidth,
       this.isMobilePlatform,
       this.holidays,
+      this.isCustomMonthCell,
       {List<Widget> children = const <Widget>[]})
       : super(children: children);
 
@@ -303,6 +310,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
   final double weekNumberPanelWidth;
   final bool isMobilePlatform;
   final Map<DateTime, ({String id, dynamic name})>? holidays;
+  final bool isCustomMonthCell;
 
   @override
   _MonthViewRenderObject createRenderObject(BuildContext context) {
@@ -329,7 +337,8 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
         weekNumberStyle,
         weekNumberPanelWidth,
         isMobilePlatform,
-        holidays);
+        holidays,
+        isCustomMonthCell);
   }
 
   @override
@@ -358,7 +367,8 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
       ..weekNumberPanelWidth = weekNumberPanelWidth
       ..weekNumberStyle = weekNumberStyle
       ..isMobilePlatform = isMobilePlatform
-      ..holidays = holidays;
+      ..holidays = holidays
+      ..isCustomMonthCell = isCustomMonthCell;
   }
 }
 
@@ -386,7 +396,8 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
       this._weekNumberStyle,
       this._weekNumberPanelWidth,
       this._isMobilePlatform,
-      this._holidays);
+      this._holidays,
+      this._isCustomMonthCell);
 
   bool _isMobilePlatform;
 
@@ -736,6 +747,19 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
     }
   }
 
+  bool _isCustomMonthCell;
+
+  bool get isCustomMonthCell => _isCustomMonthCell;
+
+  set isCustomMonthCell(bool value) {
+    if (_isCustomMonthCell == value) {
+      return;
+    }
+
+    _isCustomMonthCell = value;
+    markNeedsLayout();
+  }
+
   /// attach will called when the render object rendered in view.
   @override
   void attach(PipelineOwner owner) {
@@ -778,7 +802,9 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
       _drawMonthCells(context.canvas, size);
     } else {
       // added to draw customHeader and monthCell
-      _drawMonthCells(context.canvas, size);
+      if (!isCustomMonthCell) {
+        _drawMonthCells(context.canvas, size);
+      }
 
       final double cellWidth =
           (size.width - weekNumberPanelWidth) / DateTime.daysPerWeek;
