@@ -108,8 +108,9 @@ class MonthViewWidget extends StatefulWidget {
   /// Used to build the widget that replaces the month cell.
   final MonthCellBuilder? monthCellBuilder;
 
-  final  Widget Function(
-    BuildContext context, DateTime dateTime)? monthCellHeaderBuilder;
+  /// monthCellHeaderBuilder
+  final Widget Function(BuildContext context, DateTime dateTime)?
+      monthCellHeaderBuilder;
 
   /// Holds the visible appointment collection used to trigger the builder
   /// when its value changed.
@@ -154,10 +155,12 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
             widget.isMobilePlatform);
 
     // どちらも定義されている場合はexceptionを発生させる
-    assert(widget.monthCellBuilder == null || widget.monthCellHeaderBuilder == null);
+    assert(widget.monthCellBuilder == null ||
+        widget.monthCellHeaderBuilder == null);
     final bool isCustomMonthCell = widget.monthCellBuilder != null;
 
-    if (widget.monthCellBuilder != null || widget.monthCellHeaderBuilder != null) {
+    if (widget.monthCellBuilder != null ||
+        widget.monthCellHeaderBuilder != null) {
       final int visibleDatesCount = widget.visibleDates.length;
       final double cellWidth =
           (widget.width - weekNumberPanelWidth) / DateTime.daysPerWeek;
@@ -208,8 +211,8 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
         if (monthCellChild != null) {
           children.add(RepaintBoundary(child: monthCellChild));
         }
-        final Widget? monthCellHeader = widget.monthCellHeaderBuilder?.call(
-            context, currentVisibleDate);
+        final Widget? monthCellHeader =
+            widget.monthCellHeaderBuilder?.call(context, currentVisibleDate);
         if (monthCellHeader != null) {
           children.add(RepaintBoundary(child: monthCellHeader));
         }
@@ -1141,7 +1144,8 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
       }
 
       if (isCurrentDate) {
-        Paint backgroundPaint = Paint()..color = Colors.grey.withOpacity(0.2);
+        final Paint backgroundPaint = Paint()
+          ..color = Colors.grey.withOpacity(0.2);
         canvas.drawRect(
             Rect.fromLTWH(
                 xPosition, yPosition - viewPadding, cellWidth, cellHeight),

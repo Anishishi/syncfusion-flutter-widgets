@@ -286,8 +286,8 @@ class AppointmentHelper {
       return themeData.textTheme.bodyMedium!.merge(appointmentTextStyle);
     }
 
-    return themeData.textTheme.bodyMedium!
-        .merge(appointmentTextStyle.copyWith(fontSize: 12,fontWeight: FontWeight.bold));
+    return themeData.textTheme.bodyMedium!.merge(appointmentTextStyle.copyWith(
+        fontSize: 12, fontWeight: FontWeight.bold));
   }
 
   static CalendarAppointment _copy(CalendarAppointment appointment) {
@@ -1334,21 +1334,22 @@ class AppointmentHelper {
     CalendarAppointment app;
     if (appointmentObject is Appointment) {
       app = CalendarAppointment(
-          startTime: appointmentObject.startTime,
-          endTime: appointmentObject.endTime,
-          subject: appointmentObject.subject,
-          isAllDay: appointmentObject.isAllDay,
-          color: appointmentObject.color,
-          notes: appointmentObject.notes,
-          location: appointmentObject.location,
-          startTimeZone: appointmentObject.startTimeZone,
-          endTimeZone: appointmentObject.endTimeZone,
-          recurrenceRule: appointmentObject.recurrenceRule,
-          recurrenceExceptionDates: appointmentObject.recurrenceExceptionDates,
-          resourceIds: appointmentObject.resourceIds,
-          recurrenceId: appointmentObject.recurrenceId,
-          id: appointmentObject.id,
-          isHoliday: appointmentObject.isHoliday,);
+        startTime: appointmentObject.startTime,
+        endTime: appointmentObject.endTime,
+        subject: appointmentObject.subject,
+        isAllDay: appointmentObject.isAllDay,
+        color: appointmentObject.color,
+        notes: appointmentObject.notes,
+        location: appointmentObject.location,
+        startTimeZone: appointmentObject.startTimeZone,
+        endTimeZone: appointmentObject.endTimeZone,
+        recurrenceRule: appointmentObject.recurrenceRule,
+        recurrenceExceptionDates: appointmentObject.recurrenceExceptionDates,
+        resourceIds: appointmentObject.resourceIds,
+        recurrenceId: appointmentObject.recurrenceId,
+        id: appointmentObject.id,
+        isHoliday: appointmentObject.isHoliday,
+      );
     } else {
       final int index = calendarData.appointments!.indexOf(appointmentObject);
       app = CalendarAppointment(
@@ -1367,8 +1368,7 @@ class AppointmentHelper {
           resourceIds: calendarData.getResourceIds(index),
           recurrenceId: calendarData.getRecurrenceId(index),
           id: calendarData.getId(index),
-          isHoliday: calendarData.isHoliday(index)
-          );
+          isHoliday: calendarData.isHoliday(index));
     }
 
     app.data = appointmentObject;

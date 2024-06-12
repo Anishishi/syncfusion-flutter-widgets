@@ -266,6 +266,7 @@ class Appointment with Diagnosticable {
   ///  ```
   bool isAllDay;
 
+  /// this appointment is holiday or not
   bool isHoliday;
 
   /// The subject for the [Appointment] in [SfCalendar].

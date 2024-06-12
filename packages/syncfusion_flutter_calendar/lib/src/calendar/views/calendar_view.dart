@@ -137,8 +137,9 @@ class CustomCalendarScrollView extends StatefulWidget {
   /// Holds the localization data of the calendar widget.
   final SfLocalizations localizations;
 
-  final  Widget Function(
-    BuildContext context, DateTime dateTime)? monthCellHeaderBuilder;
+  /// monthCellHeaderBuilder
+  final Widget Function(BuildContext context, DateTime dateTime)?
+      monthCellHeaderBuilder;
 
   /// Updates the focus to the custom scroll view element.
   void updateFocus() {
@@ -3291,6 +3292,7 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView>
         (UpdateCalendarStateDetails details) {
           _getCalendarViewStateDetails(details);
         },
+        widget.monthCellHeaderBuilder,
         key: viewKey,
       );
 
@@ -5614,8 +5616,8 @@ class _CalendarView extends StatefulWidget {
   final DateTime maxDate;
   final SfLocalizations localizations;
   final ValueNotifier<_DragPaintDetails> dragDetails;
-  final  Widget Function(
-    BuildContext context, DateTime dateTime)? monthCellHeaderBuilder;
+  final Widget Function(BuildContext context, DateTime dateTime)?
+      monthCellHeaderBuilder;
 
   @override
   _CalendarViewState createState() => _CalendarViewState();
