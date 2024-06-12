@@ -966,7 +966,8 @@ class CalendarAppointment {
     required this.isHoliday,
   })  : actualStartTime = startTime,
         actualEndTime = endTime;
-  
+
+  ///
   final bool isHoliday;
 
   /// The start time for an [CalendarAppointment] in [SfCalendar].

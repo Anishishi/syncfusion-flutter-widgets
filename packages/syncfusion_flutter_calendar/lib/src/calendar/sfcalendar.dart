@@ -150,6 +150,7 @@ typedef _CalendarHeaderCallback = void Function(double width);
 ///  }
 ///  ```
 @immutable
+// ignore: must_be_immutable
 class SfCalendar extends StatefulWidget {
   /// Creates a [SfCalendar] widget, which used to scheduling and managing
   /// events.
@@ -234,7 +235,8 @@ class SfCalendar extends StatefulWidget {
         minDate = minDate ?? DateTime(01),
         maxDate = maxDate ?? DateTime(9999, 12, 31),
         super(key: key);
-    
+
+  /// holidays
   Map<DateTime, ({String id, dynamic name})>? holidays;
 
   /// A builder that sets the widget to display on the calendar widget when
@@ -2392,8 +2394,9 @@ class SfCalendar extends StatefulWidget {
   /// ```
   final AppointmentResizeEndCallback? onAppointmentResizeEnd;
 
-  final  Widget Function(
-    BuildContext context, DateTime dateTime)? monthCellHeaderBuilder;
+  /// monthCellHeaderBuilder
+  final Widget Function(BuildContext context, DateTime dateTime)?
+      monthCellHeaderBuilder;
 
   /// Returns the date time collection at which the recurrence appointment will
   /// recur
