@@ -525,7 +525,7 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
     /// Today circle radius as circle radius added after the text height.
     const double todayCircleRadius = 5;
     final double startPosition =
-      _textPainter.preferredLineHeight + todayCircleRadius;
+        _textPainter.preferredLineHeight + todayCircleRadius;
     final int maximumDisplayCount =
         widget.calendar.monthViewSettings.appointmentDisplayCount;
     final double appointmentHeight =
@@ -1752,7 +1752,6 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
 
   void _drawMonthAppointmentView(Canvas canvas, Size size, double cellWidth,
       double cellHeight, Paint paint) {
-
     final int maximumDisplayCount =
         calendar.monthViewSettings.appointmentDisplayCount;
     double textSize = -1;
@@ -1876,8 +1875,7 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
       bool isRecurrenceAppointment,
       double recurrenceIconSize,
       Paint paint) {
-    final double totalIconsWidth =
-        recurrenceIconSize;
+    final double totalIconsWidth = recurrenceIconSize;
     final double textWidth = appointmentRect.width - totalIconsWidth;
     _textPainter.layout(
         maxWidth: textWidth - (2 * textPadding) > 0
@@ -1886,11 +1884,8 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
     final double yPosition = appointmentRect.top +
         ((appointmentRect.height - _textPainter.height) / 2);
     final double xPosition = isRTL
-        ? appointmentRect.right -
-            _textPainter.width -
-            
-            textPadding
-        : appointmentRect.left  + textPadding;
+        ? appointmentRect.right - _textPainter.width - textPadding
+        : appointmentRect.left + textPadding;
 
     _textPainter.paint(canvas, Offset(xPosition, yPosition));
 
@@ -1922,9 +1917,8 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
     _textPainter.layout(maxWidth: rect.width > 0 ? rect.width : 0);
     final double yPosition =
         rect.top + ((rect.height - _textPainter.height) / 2);
-    final double recurrenceStartPosition = isRTL
-        ? rect.left
-        : rect.right - iconSize;
+    final double recurrenceStartPosition =
+        isRTL ? rect.left : rect.right - iconSize;
     canvas.drawRRect(
         RRect.fromRectAndRadius(
             Rect.fromLTRB(recurrenceStartPosition, yPosition,
@@ -2561,5 +2555,7 @@ TextPainter _updateTextPainter(TextSpan span, TextPainter textPainter,
   textPainter.textAlign = isRTL ? TextAlign.right : TextAlign.left;
   textPainter.textWidthBasis = TextWidthBasis.longestLine;
   textPainter.textScaler = TextScaler.linear(textScaleFactor);
+  // should not be empty string.
+  textPainter.ellipsis = " ";
   return textPainter;
 }
