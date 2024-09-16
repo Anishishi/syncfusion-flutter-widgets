@@ -249,6 +249,7 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
       weekNumberPanelWidth,
       widget.isMobilePlatform,
       widget.calendar.holidays,
+      widget.calendar.holidayColor,
       isCustomMonthCell,
       children: children,
     );
@@ -286,6 +287,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
       this.weekNumberPanelWidth,
       this.isMobilePlatform,
       this.holidays,
+      this.holidayColor,
       this.isCustomMonthCell,
       {List<Widget> children = const <Widget>[]})
       : super(children: children);
@@ -313,6 +315,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
   final double weekNumberPanelWidth;
   final bool isMobilePlatform;
   final Map<DateTime, ({String id, dynamic name})>? holidays;
+  final Color? holidayColor;
   final bool isCustomMonthCell;
 
   @override
@@ -341,6 +344,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
         weekNumberPanelWidth,
         isMobilePlatform,
         holidays,
+        holidayColor,
         isCustomMonthCell);
   }
 
@@ -371,6 +375,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
       ..weekNumberStyle = weekNumberStyle
       ..isMobilePlatform = isMobilePlatform
       ..holidays = holidays
+      ..holidayColor = holidayColor
       ..isCustomMonthCell = isCustomMonthCell;
   }
 }
@@ -400,6 +405,7 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
       this._weekNumberPanelWidth,
       this._isMobilePlatform,
       this._holidays,
+      this._holidayColor,
       this._isCustomMonthCell);
 
   bool _isMobilePlatform;
@@ -527,6 +533,19 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
     }
 
     _holidays = value;
+    markNeedsPaint();
+  }
+
+  Color? _holidayColor;
+
+  Color? get holidayColor => _holidayColor;
+
+  set holidayColor(Color? value) {
+    if (_holidayColor?.value == value?.value) {
+      return;
+    }
+
+    _holidayColor = value;
     markNeedsPaint();
   }
 
@@ -1111,11 +1130,11 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
 
       // for saturday and sunday
       if (holidays?[currentVisibleDate] != null) {
-        textStyle = textStyle.copyWith(color: Colors.red);
+        textStyle = textStyle.copyWith(color: _holidayColor);
       } else if (currentVisibleDate.weekday == DateTime.saturday) {
         textStyle = textStyle.copyWith(color: Colors.blue[800]);
       } else if (currentVisibleDate.weekday == DateTime.sunday) {
-        textStyle = textStyle.copyWith(color: Colors.red);
+        textStyle = textStyle.copyWith(color: _holidayColor);
       }
 
       final TextSpan span = TextSpan(
