@@ -3,6 +3,7 @@ import 'package:syncfusion_flutter_core/core.dart';
 import '../common/calendar_view_helper.dart';
 import '../common/date_time_engine.dart';
 import 'appointment_helper.dart';
+import 'package:collection/collection.dart';
 
 // ignore: avoid_classes_with_only_static_members
 /// Holds the static helper methods used for appointment rendering in calendar
@@ -260,7 +261,7 @@ class MonthAppointmentHelper {
   static void _updateAppointmentPosition(
       List<AppointmentView> appointmentCollection,
       Map<int, List<AppointmentView>> indexAppointments) {
-    appointmentCollection.sort(_orderAppointmentViewBySpanned);
+    mergeSort(appointmentCollection, compare: _orderAppointmentViewBySpanned);
 
     for (int j = 0; j < appointmentCollection.length; j++) {
       final AppointmentView appointmentView = appointmentCollection[j];
