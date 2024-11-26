@@ -40,7 +40,8 @@ class MonthViewWidget extends StatefulWidget {
       this.weekNumberStyle,
       this.isMobilePlatform,
       this.visibleAppointmentNotifier,
-      this.monthCellHeaderBuilder);
+      this.monthCellHeaderBuilder,
+      super.key);
 
   /// Defines the row count for the month view.
   final int rowCount;
