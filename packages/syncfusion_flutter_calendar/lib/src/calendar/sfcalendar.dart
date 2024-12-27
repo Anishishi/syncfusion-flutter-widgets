@@ -11200,7 +11200,7 @@ class _CustomSplash extends InteractiveInkFeature {
 
     if (_clipCallback != null) {
       /// Clip and draw the rect with fade animation value on canvas.
-      final Rect rect = _clipCallback!();
+      final Rect rect = _clipCallback();
       if (_borderRadius != BorderRadius.zero) {
         final RRect roundedRect = RRect.fromRectAndCorners(
           rect,
