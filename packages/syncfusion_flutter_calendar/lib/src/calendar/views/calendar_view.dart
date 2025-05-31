@@ -5649,8 +5649,8 @@ class _CalendarViewState extends State<_CalendarView>
   late double _timeIntervalHeight;
   final UpdateCalendarStateDetails _updateCalendarStateDetails =
       UpdateCalendarStateDetails();
-  ValueNotifier<SfSelectionDetails?> _allDaySelectionNotifier =
-      ValueNotifier<SfSelectionDetails?>(null);
+  ValueNotifier<AllDayPanelSelectionDetails?> _allDaySelectionNotifier =
+      ValueNotifier<AllDayPanelSelectionDetails?>(null);
   late ValueNotifier<Offset?> _viewHeaderNotifier;
   final ValueNotifier<Offset?> _calendarCellNotifier =
           ValueNotifier<Offset?>(null),
@@ -5818,7 +5818,8 @@ class _CalendarViewState extends State<_CalendarView>
     /// select the same month cell and move to day view then the view show
     /// calendar cell selection and all day panel selection.
     if (oldWidget.view != widget.view) {
-      _allDaySelectionNotifier = ValueNotifier<SfSelectionDetails?>(null);
+      _allDaySelectionNotifier =
+          ValueNotifier<AllDayPanelSelectionDetails?>(null);
       final DateTime today = DateTime.now();
       _currentTimeNotifier = ValueNotifier<int>(
           (today.day * 24 * 60) + (today.hour * 60) + today.minute);
@@ -6494,7 +6495,7 @@ class _CalendarViewState extends State<_CalendarView>
     final Widget shadowView = Divider(
       height: 1,
       thickness: 1,
-      color: borderColor.withOpacity(borderColor.opacity * 0.5),
+      color: borderColor.withValues(alpha: borderColor.a * 0.5),
     );
 
     final double timeLabelWidth = CalendarViewHelper.getTimeLabelWidth(
@@ -9417,7 +9418,7 @@ class _CalendarViewState extends State<_CalendarView>
       return;
     }
 
-    _allDaySelectionNotifier.value = SfSelectionDetails(view, date);
+    _allDaySelectionNotifier.value = AllDayPanelSelectionDetails(view, date);
   }
 
   //// Handles the onTap callback for day view cells, all day panel, and view
@@ -11657,13 +11658,13 @@ class _ViewHeaderViewPainter extends CustomPainter {
       if (!isDateWithInDateRange(minDate, maxDate, currentDate)) {
         dayTextStyle = dayTextStyle.copyWith(
             color: dayTextStyle.color != null
-                ? dayTextStyle.color!.withOpacity(0.38)
+                ? dayTextStyle.color!.withValues(alpha: 0.38)
                 : themeData.brightness == Brightness.light
                     ? Colors.black26
                     : Colors.white38);
         dateTextStyle = dateTextStyle.copyWith(
             color: dateTextStyle.color != null
-                ? dateTextStyle.color!.withOpacity(0.38)
+                ? dateTextStyle.color!.withValues(alpha: 0.38)
                 : themeData.brightness == Brightness.light
                     ? Colors.black26
                     : Colors.white38);
@@ -11805,7 +11806,7 @@ class _ViewHeaderViewPainter extends CustomPainter {
           hoveringColor: (themeData.brightness == Brightness.dark
                   ? Colors.white
                   : Colors.black87)
-              .withOpacity(0.04));
+              .withValues(alpha: 0.04));
     }
   }
 
@@ -11822,11 +11823,11 @@ class _ViewHeaderViewPainter extends CustomPainter {
         xPosition + dateXPosition + _dateTextPainter.width >=
             viewHeaderNotifier.value!.dx) {
       final Color hoveringColor = isToday
-          ? Colors.black.withOpacity(0.12)
+          ? Colors.black.withValues(alpha: 0.12)
           : (themeData.brightness == Brightness.dark
                   ? Colors.white
                   : Colors.black87)
-              .withOpacity(0.04);
+              .withValues(alpha: 0.04);
       _drawTodayCircle(
           canvas,
           xPosition + dateXPosition,
@@ -12621,7 +12622,7 @@ class _TimeRulerView extends CustomPainter {
 
 class _CalendarMultiChildContainer extends Stack {
   const _CalendarMultiChildContainer(
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       {this.painter,
       List<Widget> children = const <Widget>[],
       required this.width,
@@ -12728,6 +12729,28 @@ class _MultiChildContainerRenderObject extends RenderStack {
         newPainter.shouldRebuildSemantics(oldPainter)) {
       markNeedsSemanticsUpdate();
     }
+  }
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    RenderBox? child = firstChild;
+
+    while (child != null) {
+      final StackParentData childParentData =
+          child.parentData! as StackParentData;
+      final bool isHit = result.addWithPaintOffset(
+        offset: childParentData.offset,
+        position: position,
+        hitTest: (BoxHitTestResult result, Offset transformed) {
+          return child!.hitTest(result, position: transformed);
+        },
+      );
+      if (isHit) {
+        return true;
+      }
+      child = childParentData.nextSibling;
+    }
+    return false;
   }
 
   @override
@@ -13023,20 +13046,20 @@ double _getSingleViewWidthForTimeLineView(_CalendarViewState viewState) {
 
 class _ResizingPaintDetails {
   _ResizingPaintDetails(
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       {this.appointmentView,
       required this.position,
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       this.isAllDayPanel = false,
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       this.scrollPosition,
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       this.monthRowCount = 0,
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       this.monthCellHeight,
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       this.appointmentColor = Colors.transparent,
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       this.resizingTime});
 
   AppointmentView? appointmentView;
@@ -13577,12 +13600,12 @@ dynamic _getCalendarAppointmentToObject(
 
 class _DragPaintDetails {
   _DragPaintDetails(
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       {this.appointmentView,
       required this.position,
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       this.draggingTime,
-      // ignore: unused_element
+      // ignore: unused_element_parameter
       this.timeIntervalHeight});
 
   AppointmentView? appointmentView;
@@ -14120,7 +14143,7 @@ class _DraggingAppointmentRenderObject extends RenderBox
     xPosition = dragDetails.position.value!.dx;
     yPosition = dragDetails.position.value!.dy;
     _shadowPainter.color =
-        dragDetails.appointmentView!.appointment!.color.withOpacity(0.5);
+        dragDetails.appointmentView!.appointment!.color.withValues(alpha: 0.5);
 
     final RRect rect = RRect.fromRectAndRadius(
         Rect.fromLTWH(

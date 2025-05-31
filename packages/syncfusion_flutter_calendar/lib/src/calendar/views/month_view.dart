@@ -253,6 +253,7 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
       widget.calendar.holidayColor,
       isCustomMonthCell,
       children: children,
+      widget.builder,
     );
   }
 
@@ -290,6 +291,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
       this.holidays,
       this.holidayColor,
       this.isCustomMonthCell,
+      this.builder,
       {List<Widget> children = const <Widget>[]})
       : super(children: children);
 
@@ -318,6 +320,7 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
   final Map<DateTime, ({String id, dynamic name})>? holidays;
   final Color? holidayColor;
   final bool isCustomMonthCell;
+  final MonthCellBuilder? builder;
 
   @override
   _MonthViewRenderObject createRenderObject(BuildContext context) {
@@ -346,7 +349,8 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
         isMobilePlatform,
         holidays,
         holidayColor,
-        isCustomMonthCell);
+        isCustomMonthCell,
+        builder);
   }
 
   @override
@@ -377,7 +381,8 @@ class _MonthViewRenderObjectWidget extends MultiChildRenderObjectWidget {
       ..isMobilePlatform = isMobilePlatform
       ..holidays = holidays
       ..holidayColor = holidayColor
-      ..isCustomMonthCell = isCustomMonthCell;
+      ..isCustomMonthCell = isCustomMonthCell
+      ..builder = builder;
   }
 }
 
@@ -407,7 +412,8 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
       this._isMobilePlatform,
       this._holidays,
       this._holidayColor,
-      this._isCustomMonthCell);
+      this._isCustomMonthCell,
+      this.builder);
 
   bool _isMobilePlatform;
 
@@ -783,6 +789,39 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
     markNeedsLayout();
   }
 
+  MonthCellBuilder? builder;
+
+  @override
+  bool hitTestSelf(Offset position) {
+    return builder != null;
+  }
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    if (builder == null) {
+      return false;
+    }
+
+    RenderBox? child = firstChild;
+
+    while (child != null) {
+      final CalendarParentData childParentData =
+          child.parentData! as CalendarParentData;
+      final bool isHit = result.addWithPaintOffset(
+        offset: childParentData.offset,
+        position: position,
+        hitTest: (BoxHitTestResult result, Offset transformed) {
+          return child!.hitTest(result, position: transformed);
+        },
+      );
+      if (isHit) {
+        return true;
+      }
+      child = childParentData.nextSibling;
+    }
+    return false;
+  }
+
   /// attach will called when the render object rendered in view.
   @override
   void attach(PipelineOwner owner) {
@@ -1006,7 +1045,7 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
     final TextStyle? blackoutDatesStyle = calendarTheme.blackoutDatesTextStyle;
     final TextStyle disabledTextStyle = currentMonthTextStyle.copyWith(
         color: currentMonthTextStyle.color != null
-            ? currentMonthTextStyle.color!.withOpacity(0.38)
+            ? currentMonthTextStyle.color!.withValues(alpha: 0.38)
             : themeData.brightness == Brightness.light
                 ? Colors.black26
                 : Colors.white38);
@@ -1203,7 +1242,8 @@ class _MonthViewRenderObject extends CustomCalendarRenderObject {
         yPosition + cellHeight >= calendarCellNotifier.value!.dy) {
       _linePainter.style = PaintingStyle.stroke;
       _linePainter.strokeWidth = 2;
-      _linePainter.color = calendarTheme.selectionBorderColor!.withOpacity(0.4);
+      _linePainter.color =
+          calendarTheme.selectionBorderColor!.withValues(alpha: 0.4);
       canvas.drawRect(
           Rect.fromLTWH(
               xPosition == 0 ? xPosition + linePadding : xPosition,

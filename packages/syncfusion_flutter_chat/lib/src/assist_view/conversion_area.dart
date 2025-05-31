@@ -51,7 +51,7 @@ class AssistConversationArea extends ConversationArea<AssistMessage> {
 
   final AssistWidgetBuilder? responseLoadingBuilder;
   final AssistSuggestionItemSelectedCallback? onSuggestionItemSelected;
-  final AssistBubbleToolbarItemSelectedCallback? onBubbleToolbarItemSelected;
+  final AssistToolbarItemSelectedCallback? onBubbleToolbarItemSelected;
   final AssistMessageToolbarSettings responseToolbarSettings;
   final Color? responseToolbarBackgroundColor;
   final ShapeBorder? responseToolbarBackgroundShape;
@@ -131,8 +131,8 @@ class _AssistConversationAreaState
         data: '',
         author: AssistMessageAuthor(id: 'AI', name: 'AI'),
       ),
-      showUserAvatar: widget.incomingBubbleSettings.showUserAvatar,
-      padding: widget.incomingBubbleSettings.padding ?? EdgeInsets.zero,
+      showUserAvatar: widget.incomingBubbleSettings.showAuthorAvatar,
+      padding: widget.incomingBubbleSettings.margin ?? EdgeInsets.zero,
       avatarPadding: effectiveAvatarPadding(
         false,
         widget.incomingBubbleSettings.avatarPadding,
@@ -189,8 +189,8 @@ class _AssistConversationAreaState
       contentBuilder: widget.bubbleContentBuilder,
       footerBuilder: widget.bubbleFooterBuilder,
       responseLoadingBuilder: widget.responseLoadingBuilder,
-      showUserAvatar: settings.showUserAvatar,
-      showUserName: settings.showUserName,
+      showUserAvatar: settings.showAuthorAvatar,
+      showUserName: settings.showAuthorName,
       showTimestamp: settings.showTimestamp,
       timestampFormat: settings.timestampFormat,
       alignment: effectiveBubbleAlignment(isFromCurrentUser),
@@ -201,8 +201,8 @@ class _AssistConversationAreaState
       primaryHeaderTextStyle: primaryHeaderTextStyle,
       secondaryHeaderTextStyle: secondaryHeaderTextStyle,
       suggestionItemTextStyle: widget.suggestionItemTextStyle,
-      padding: settings.padding ?? EdgeInsets.zero,
-      contentPadding: settings.contentPadding ?? EdgeInsets.zero,
+      padding: settings.margin ?? EdgeInsets.zero,
+      contentPadding: settings.padding ?? EdgeInsets.zero,
       avatarPadding:
           effectiveAvatarPadding(isFromCurrentUser, settings.avatarPadding),
       headerPadding: settings.headerPadding,
@@ -330,7 +330,7 @@ class _AssistMessageBubble extends MessageBubble<AssistMessage> {
   final bool showLoadingIndicator;
   final AssistWidgetBuilder? responseLoadingBuilder;
   final AssistSuggestionItemSelectedCallback? onSuggestionItemSelected;
-  final AssistBubbleToolbarItemSelectedCallback? onToolbarItemSelected;
+  final AssistToolbarItemSelectedCallback? onToolbarItemSelected;
   final AssistMessageToolbarSettings responseToolbarSettings;
   final Color? responseToolbarBackgroundColor;
   final ShapeBorder? responseToolbarBackgroundShape;
@@ -490,7 +490,7 @@ class _AssistMessageBubbleState extends MessageBubbleState<AssistMessage> {
       midColor = Colors.white;
     } else {
       edgeColor = colorScheme.surfaceContainer;
-      midColor = colorScheme.surfaceContainer.withOpacity(0.12);
+      midColor = colorScheme.surfaceContainer.withValues(alpha: 0.12);
     }
     return _Shimmer(
       bubbleWidth: availableContentWidth() * widget.widthFactor,
@@ -538,6 +538,7 @@ class _AssistMessageBubbleState extends MessageBubbleState<AssistMessage> {
     if (widget.message.author!.avatar != null) {
       result = CircleAvatar(
         backgroundImage: widget.message.author!.avatar,
+        backgroundColor: widget.avatarBackgroundColor,
       );
     } else {
       if (widget.message.author!.name.isNotEmpty) {
@@ -589,7 +590,7 @@ class _AssistMessageBubbleState extends MessageBubbleState<AssistMessage> {
           settings.backgroundColor ?? widget.suggestionBackgroundColor,
       itemBackgroundColor:
           settings.itemBackgroundColor ?? widget.suggestionItemBackgroundColor,
-      padding: settings.padding.resolve(widget.alignmentDirection),
+      padding: settings.margin.resolve(widget.alignmentDirection),
       itemPadding: settings.itemPadding.resolve(widget.alignmentDirection),
       onSuggestionItemSelected: widget.onSuggestionItemSelected,
     );
@@ -1019,7 +1020,7 @@ class _ToolbarArea extends StatelessWidget {
   final int messageIndex;
   final AssistMessage message;
   final List<AssistMessageToolbarItem> toolbarItems;
-  final AssistBubbleToolbarItemSelectedCallback? onToolbarItemSelected;
+  final AssistToolbarItemSelectedCallback? onToolbarItemSelected;
   final AssistMessageToolbarSettings toolbarSettings;
   final Color? backgroundColor;
   final ShapeBorder? backgroundShape;
@@ -1057,8 +1058,8 @@ class _ToolbarArea extends StatelessWidget {
       }),
     );
 
-    if (toolbarSettings.padding != EdgeInsets.zero) {
-      result = Padding(padding: toolbarSettings.padding, child: result);
+    if (toolbarSettings.margin != EdgeInsets.zero) {
+      result = Padding(padding: toolbarSettings.margin, child: result);
     }
 
     final Color? effectiveBackgroundColor =
@@ -1098,7 +1099,7 @@ class _ToolbarItem extends StatefulWidget {
   final WidgetStateProperty<ShapeBorder?>? shape;
   final EdgeInsetsGeometry? padding;
   final WidgetStateProperty<Color?>? backgroundColor;
-  final AssistBubbleToolbarItemSelectedCallback? onItemSelected;
+  final AssistToolbarItemSelectedCallback? onItemSelected;
 
   @override
   State<_ToolbarItem> createState() => _ToolbarItemState();
