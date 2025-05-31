@@ -34,7 +34,7 @@ class MonthViewWidget extends StatefulWidget {
       this.blackoutDates,
       this.blackoutDatesTextStyle,
       this.textScaleFactor,
-      this.monthCellBuilder,
+      this.builder,
       this.width,
       this.height,
       this.weekNumberStyle,
@@ -107,7 +107,7 @@ class MonthViewWidget extends StatefulWidget {
   final bool isMobilePlatform;
 
   /// Used to build the widget that replaces the month cell.
-  final MonthCellBuilder? monthCellBuilder;
+  final MonthCellBuilder? builder;
 
   /// monthCellHeaderBuilder
   final Widget Function(BuildContext context, DateTime dateTime)?
@@ -156,12 +156,10 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
             widget.isMobilePlatform);
 
     // どちらも定義されている場合はexceptionを発生させる
-    assert(widget.monthCellBuilder == null ||
-        widget.monthCellHeaderBuilder == null);
-    final bool isCustomMonthCell = widget.monthCellBuilder != null;
+    assert(widget.builder == null || widget.monthCellHeaderBuilder == null);
+    final bool isCustomMonthCell = widget.builder != null;
 
-    if (widget.monthCellBuilder != null ||
-        widget.monthCellHeaderBuilder != null) {
+    if (widget.builder != null || widget.monthCellHeaderBuilder != null) {
       final int visibleDatesCount = widget.visibleDates.length;
       final double cellWidth =
           (widget.width - weekNumberPanelWidth) / DateTime.daysPerWeek;
@@ -196,7 +194,7 @@ class _MonthViewWidgetState extends State<MonthViewWidget> {
               appointments, widget.calendar.dataSource);
         }
 
-        final Widget? monthCellChild = widget.monthCellBuilder?.call(
+        final Widget? monthCellChild = widget.builder?.call(
             context,
             MonthCellDetails(
                 currentVisibleDate,
