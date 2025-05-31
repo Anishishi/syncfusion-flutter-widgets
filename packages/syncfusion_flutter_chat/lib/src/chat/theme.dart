@@ -4,10 +4,10 @@ import 'package:syncfusion_flutter_core/theme.dart';
 class ChatM2ThemeData extends SfChatThemeData {
   ChatM2ThemeData(this.context)
       : super(
-          outgoingBubbleContentShape: const RoundedRectangleBorder(
+          outgoingMessageShape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(4.0)),
           ),
-          incomingBubbleContentShape: const RoundedRectangleBorder(
+          incomingMessageShape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(4.0)),
           ),
         );
@@ -25,21 +25,24 @@ class ChatM2ThemeData extends SfChatThemeData {
   Color? get actionButtonBackgroundColor => _colorScheme.primary;
 
   @override
-  Color? get actionButtonFocusColor => _colorScheme.primary.withOpacity(0.86);
+  Color? get actionButtonFocusColor =>
+      _colorScheme.primary.withValues(alpha: 0.86);
 
   @override
-  Color? get actionButtonHoverColor => _colorScheme.primary.withOpacity(0.91);
+  Color? get actionButtonHoverColor =>
+      _colorScheme.primary.withValues(alpha: 0.91);
 
   @override
-  Color? get actionButtonSplashColor => _colorScheme.primary.withOpacity(0.86);
+  Color? get actionButtonSplashColor =>
+      _colorScheme.primary.withValues(alpha: 0.86);
 
   @override
   Color? get actionButtonDisabledForegroundColor =>
-      _colorScheme.onSurface.withOpacity(0.38);
+      _colorScheme.onSurface.withValues(alpha: 0.38);
 
   @override
   Color? get actionButtonDisabledBackgroundColor =>
-      _colorScheme.surface.withOpacity(0.12);
+      _colorScheme.surface.withValues(alpha: 0.12);
 
   @override
   ShapeBorder? get actionButtonShape => const RoundedRectangleBorder(
@@ -47,12 +50,10 @@ class ChatM2ThemeData extends SfChatThemeData {
       );
 
   @override
-  Color? get outgoingBubbleContentBackgroundColor =>
-      _colorScheme.primaryContainer;
+  Color? get outgoingMessageBackgroundColor => _colorScheme.primaryContainer;
 
   @override
-  Color? get incomingBubbleContentBackgroundColor =>
-      _colorScheme.surfaceContainer;
+  Color? get incomingMessageBackgroundColor => _colorScheme.surfaceContainer;
 
   @override
   Color? get outgoingAvatarBackgroundColor => _colorScheme.primaryContainer;
@@ -66,11 +67,11 @@ class ChatM2ThemeData extends SfChatThemeData {
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.hovered) ||
               states.contains(WidgetState.focused)) {
-            return _colorScheme.surfaceContainer.withOpacity(0.8);
+            return _colorScheme.surfaceContainer.withValues(alpha: 0.8);
           }
           if (states.contains(WidgetState.pressed) ||
               states.contains(WidgetState.disabled)) {
-            return _colorScheme.surfaceContainer.withOpacity(0.12);
+            return _colorScheme.surfaceContainer.withValues(alpha: 0.12);
           }
           return _colorScheme.surfaceContainer;
         },
@@ -92,7 +93,7 @@ class ChatM2ThemeData extends SfChatThemeData {
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
             return TextStyle(
-              color: _colorScheme.onSurface.withOpacity(0.38),
+              color: _colorScheme.onSurface.withValues(alpha: 0.38),
             );
           }
           return TextStyle(color: _colorScheme.onSurface);
@@ -103,10 +104,10 @@ class ChatM2ThemeData extends SfChatThemeData {
 class ChatM3ThemeData extends SfChatThemeData {
   ChatM3ThemeData(this.context)
       : super(
-          outgoingBubbleContentShape: const RoundedRectangleBorder(
+          outgoingMessageShape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(4.0)),
           ),
-          incomingBubbleContentShape: const RoundedRectangleBorder(
+          incomingMessageShape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(4.0)),
           ),
         );
@@ -124,21 +125,24 @@ class ChatM3ThemeData extends SfChatThemeData {
   Color? get actionButtonBackgroundColor => _colorScheme.primary;
 
   @override
-  Color? get actionButtonFocusColor => _colorScheme.primary.withOpacity(0.86);
+  Color? get actionButtonFocusColor =>
+      _colorScheme.primary.withValues(alpha: 0.86);
 
   @override
-  Color? get actionButtonHoverColor => _colorScheme.primary.withOpacity(0.91);
+  Color? get actionButtonHoverColor =>
+      _colorScheme.primary.withValues(alpha: 0.91);
 
   @override
-  Color? get actionButtonSplashColor => _colorScheme.primary.withOpacity(0.86);
+  Color? get actionButtonSplashColor =>
+      _colorScheme.primary.withValues(alpha: 0.86);
 
   @override
   Color? get actionButtonDisabledForegroundColor =>
-      _colorScheme.onSurface.withOpacity(0.38);
+      _colorScheme.onSurface.withValues(alpha: 0.38);
 
   @override
   Color? get actionButtonDisabledBackgroundColor =>
-      _colorScheme.surface.withOpacity(0.12);
+      _colorScheme.surface.withValues(alpha: 0.12);
 
   @override
   ShapeBorder? get actionButtonShape => const RoundedRectangleBorder(
@@ -146,12 +150,10 @@ class ChatM3ThemeData extends SfChatThemeData {
       );
 
   @override
-  Color? get outgoingBubbleContentBackgroundColor =>
-      _colorScheme.primaryContainer;
+  Color? get outgoingMessageBackgroundColor => _colorScheme.primaryContainer;
 
   @override
-  Color? get incomingBubbleContentBackgroundColor =>
-      _colorScheme.surfaceContainer;
+  Color? get incomingMessageBackgroundColor => _colorScheme.surfaceContainer;
 
   @override
   Color? get outgoingAvatarBackgroundColor => _colorScheme.primaryContainer;
@@ -165,11 +167,11 @@ class ChatM3ThemeData extends SfChatThemeData {
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.hovered) ||
               states.contains(WidgetState.focused)) {
-            return _colorScheme.surfaceContainer.withOpacity(0.8);
+            return _colorScheme.surfaceContainer.withValues(alpha: 0.8);
           }
           if (states.contains(WidgetState.pressed) ||
               states.contains(WidgetState.disabled)) {
-            return _colorScheme.surfaceContainer.withOpacity(0.12);
+            return _colorScheme.surfaceContainer.withValues(alpha: 0.12);
           }
           return _colorScheme.surfaceContainer;
         },
@@ -191,7 +193,7 @@ class ChatM3ThemeData extends SfChatThemeData {
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
             return TextStyle(
-              color: _colorScheme.onSurface.withOpacity(0.38),
+              color: _colorScheme.onSurface.withValues(alpha: 0.38),
             );
           }
           return TextStyle(color: _colorScheme.onSurface);
