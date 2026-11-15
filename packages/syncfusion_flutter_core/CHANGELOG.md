@@ -1,4 +1,50 @@
-## Unreleased
+﻿## [35.1.46] - 11/11/2026
+
+**General**
+
+* Migrated all our Flutter widgets Material imports from the Flutter SDK to the standalone material_ui package.
+
+## [35.1.37] - 09/29/2026
+
+**General**
+
+*  The compatible version of all our Flutter widgets has been updated to Flutter SDK 3.47.
+
+## [31.2.15] - 11/25/2025
+
+**General**
+
+*  The compatible version of all our Flutter widgets has been updated to Flutter SDK 3.38.
+
+## [31.1.20] - 09/17/2025
+
+**General**
+
+*  The compatible version of all our Flutter widgets has been updated to Flutter SDK 3.35.
+
+## [30.1.38] - 02/07/2025
+
+### Breaking Changes
+
+Following breaking changes will occur.
+
+## SfThemeData:
+
+*  The `assistThemeData` property has been renamed to `aiAssistViewThemeData`.
+
+## [30.1.37] - 25/06/2025
+
+**General**
+
+*  The compatible version of all our Flutter widgets has been updated to Flutter SDK 3.32.0.
+
+## [29.1.39] - 22/04/2025
+
+**General**
+
+* The minimum Dart version has been updated to 3.7.
+
+## [29.1.33] - 25/03/2025
 
 **General**
 
@@ -36,13 +82,13 @@ Following breaking changes will occur in core.
 
 * The compatible version of all our Flutter widgets has been updated to Flutter SDK 3.27.0.
 
-## Unreleased
+## [35.1.46] - 11/11/2026
 
 **General**
 
 * The compatible version of all our Flutter widgets has been updated to Flutter SDK 3.24.0.
-  
-## Unreleased
+
+## [35.1.46] - 11/11/2026
 
 **General**
 * Provided th​e Material 3 themes support.
@@ -116,7 +162,7 @@ No changes.
 
 No changes.
 
-## [18.1.59] - 06/23/2020 
+## [18.1.59] - 06/23/2020
 
 No changes.
 
@@ -152,17 +198,17 @@ No changes.
 
 No changes.
 
-## [18.1.44] - 04/14/2020 
+## [18.1.44] - 04/14/2020
 
 **Bug fixes**
 
 * Diagnosticable class related issue is fixed and themes are working properly.
 
-## [18.1.43] - 04/07/2020 
+## [18.1.43] - 04/07/2020
 
 No changes.
 
-## [18.1.42] - 04/01/2020 
+## [18.1.42] - 04/01/2020
 
 No changes.
 

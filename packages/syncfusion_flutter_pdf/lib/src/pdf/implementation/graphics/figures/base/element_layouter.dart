@@ -50,7 +50,11 @@ abstract class ElementLayouter {
     return param.format!._boundsSet
         ? PdfRectangle.fromRect(param.format!.paginateBounds)
         : PdfRectangle(
-            param.bounds!.x, 0, param.bounds!.width, param.bounds!.height);
+          param.bounds!.x,
+          0,
+          param.bounds!.width,
+          param.bounds!.height,
+        );
   }
 }
 
@@ -58,10 +62,11 @@ abstract class ElementLayouter {
 class PdfLayoutFormat {
   //Constructor
   /// Initializes a new instance of the [PdfLayoutFormat] class.
-  PdfLayoutFormat(
-      {PdfLayoutType? layoutType,
-      PdfLayoutBreakType? breakType,
-      Rect? paginateBounds}) {
+  PdfLayoutFormat({
+    PdfLayoutType? layoutType,
+    PdfLayoutBreakType? breakType,
+    Rect? paginateBounds,
+  }) {
     this.breakType = breakType ?? PdfLayoutBreakType.fitPage;
     this.layoutType = layoutType ?? PdfLayoutType.paginate;
     if (paginateBounds != null) {
@@ -105,8 +110,8 @@ class PdfLayoutFormat {
   late PdfRectangle _paginateBounds;
 }
 
-// ignore: avoid_classes_with_only_static_members
 /// [PdfLayoutFormat] helper
+// ignore: avoid_classes_with_only_static_members
 class PdfLayoutFormatHelper {
   /// internal method
   static bool isBoundsSet(PdfLayoutFormat format, [bool? value]) {

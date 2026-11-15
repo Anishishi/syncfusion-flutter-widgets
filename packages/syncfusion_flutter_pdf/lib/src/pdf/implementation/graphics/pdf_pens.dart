@@ -3208,8 +3208,9 @@ class PdfPens {
 
   static PdfPen _getPen(KnownColor kColor) {
     final ColorHelper color = ColorHelper(kColor);
-    final PdfPen pen =
-        PdfPenHelper.immutable(PdfColor(color.r, color.g, color.b, color.a));
+    final PdfPen pen = PdfPenHelper.immutable(
+      PdfColor(color.r, color.g, color.b, color.a),
+    );
     _pens[kColor] = pen;
     return pen;
   }
@@ -3219,8 +3220,8 @@ class PdfPens {
   }
 }
 
-// ignore: avoid_classes_with_only_static_members
 /// [PdfPens] helper
+// ignore: avoid_classes_with_only_static_members
 class PdfPensHelper {
   /// internal method
   static void dispose() {

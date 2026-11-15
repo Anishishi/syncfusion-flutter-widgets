@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+
 import '../../pdfviewer.dart';
 import 'pdf_form_field.dart';
 
@@ -112,7 +113,9 @@ class PdfComboBoxFormFieldHelper extends PdfFormFieldHelper {
         textAlign: pdfComboBoxField.textAlignment.textAlign,
         alignment: pdfComboBoxField.textAlignment.alignmentGeometry,
         fillColor: pdfComboBoxField.backColor.isEmpty
-            ? const Color.fromARGB(255, 221, 228, 255)
+            ? pdfComboBoxField.readOnly
+                  ? Colors.transparent
+                  : const Color.fromARGB(255, 221, 228, 255)
             : Color.fromRGBO(
                 pdfComboBoxField.backColor.r,
                 pdfComboBoxField.backColor.g,

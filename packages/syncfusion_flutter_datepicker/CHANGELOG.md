@@ -1,4 +1,58 @@
-## Unreleased
+﻿## [35.1.46] - 11/11/2026
+
+**General**
+
+* Migrated the Flutter datepicker Material imports from the Flutter SDK to the standalone material_ui package.
+
+## [35.1.37] - 09/29/2026
+
+**General**
+
+*  The compatible version of our Flutter datepicker widget has been updated to Flutter SDK 3.47.
+
+## [34.1.30] - 09/07/2026
+
+**Bugs**
+
+* Improved [cellBuilder](https://pub.dev/documentation/syncfusion_flutter_datepicker/latest/datepicker/SfDateRangePicker/cellBuilder.html) rendering to correctly reflect theme changes across both month and year views in vertical scroll navigation.
+
+## [32.2.13+1] - 06/18/2026
+
+## Date Picker
+
+**Bugs**
+
+* Fixed tap and drag issues in the Date Range Picker that occurred when it was shifted from its normal position using an offset. Date selection and gestures now work accurately.
+
+## [32.1.25] - 01/27/2026
+
+* No changes.
+
+## [31.2.15] - 11/25/2025
+
+**General**
+
+*  The compatible version of our Flutter datepicker widget has been updated to Flutter SDK 3.38.
+
+## [31.1.20] - 09/17/2025
+
+**General**
+
+*  The compatible version of our Flutter datepicker widget has been updated to Flutter SDK 3.35.
+
+## [30.1.37] - 06/25/2025
+
+**General**
+
+*  The compatible version of our Flutter datepicker widget has been updated to Flutter SDK 3.32.0.
+
+## [29.1.39] - 22/04/2025
+
+**General**
+
+*  The minimum Dart version has been updated to 3.7.
+
+## [29.1.33] - 25/03/2025
 
 **General**
 
@@ -105,32 +159,32 @@
 **Bug fixes**
 * Now, the `endDate` of `PickerDateRange` in `DateRangePickerSelectionChangedArgs` will not be set before the `startDate`.
 
-## [18.2.59-beta] - 09/23/2020 
+## [18.2.59-beta] - 09/23/2020
 No changes.
 
-## [18.2.57-beta] - 09/08/2020 
+## [18.2.57-beta] - 09/08/2020
 **Bug fixes**
 * Now, the Locale translation was working fine for the month view header of the `SfDateRangePicker`.
 
-## [18.2.56-beta] - 09/01/2020 
+## [18.2.56-beta] - 09/01/2020
 No changes.
 
-## [18.2.55-beta] - 08/25/2020 
+## [18.2.55-beta] - 08/25/2020
 No changes.
 
-## [18.2.54-beta] - 08/18/2020 
+## [18.2.54-beta] - 08/18/2020
 No changes.
 
-## [18.2.48-beta] - 08/04/2020 
+## [18.2.48-beta] - 08/04/2020
 No changes.
 
-## [18.2.47-beta] - 07/28/2020 
+## [18.2.47-beta] - 07/28/2020
 No changes.
 
-## [18.2.46-beta] - 07/21/2020 
+## [18.2.46-beta] - 07/21/2020
 No changes.
 
-## [18.2.45-beta] - 07/14/2020 
+## [18.2.45-beta] - 07/14/2020
 No changes.
 
 ## [18.2.44-beta]
@@ -154,15 +208,15 @@ No changes.
 
 No changes.
 
-## [18.1.44-beta] - 04/14/2020 
+## [18.1.44-beta] - 04/14/2020
 
 No changes.
 
-## [18.1.43-beta] - 04/07/2020 
+## [18.1.43-beta] - 04/07/2020
 
 No changes.
 
-## [18.1.42-beta] - 04/01/2020 
+## [18.1.42-beta] - 04/01/2020
 
 No changes.
 
@@ -170,15 +224,15 @@ No changes.
 
 Initial release.
 
-**Features** 
-* Supports four types of built-in views such as month, year, decade, and century views. 
-* Navigate back and forth the date-range views and between different view modes. 
-* Select single, multiple, and range of dates in month view. 
-* First day of week support. 
-* Supports minimum and maximum date range. 
-* Disable dates support and weekend, special and blackout dates in month view. 
-* Localization support. 
-* Theme support. 
-* Right to left support. 
-* Accessibility support. 
+**Features**
+* Supports four types of built-in views such as month, year, decade, and century views.
+* Navigate back and forth the date-range views and between different view modes.
+* Select single, multiple, and range of dates in month view.
+* First day of week support.
+* Supports minimum and maximum date range.
+* Disable dates support and weekend, special and blackout dates in month view.
+* Localization support.
+* Theme support.
+* Right to left support.
+* Accessibility support.
 * Selection style customization.

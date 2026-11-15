@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:web/web.dart';
 
 // Function to save and launch a file for download in a web environment
@@ -10,11 +11,11 @@ Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {
         ..style.display = 'none'
         ..download = fileName;
 
-// Insert the new element into the DOM
+  // Insert the new element into the DOM
   document.body!.appendChild(anchor);
 
-// Initiate the download
+  // Initiate the download
   anchor.click();
-// Clean up the DOM by removing the anchor element
+  // Clean up the DOM by removing the anchor element
   document.body!.removeChild(anchor);
 }

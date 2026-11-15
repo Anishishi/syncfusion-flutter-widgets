@@ -1,7 +1,7 @@
 ﻿# Syncfusion<sup>&reg;</sup> Localizations
 
-Syncfusion<sup>&reg;</sup> Localizations package contains localized text for 77 cultures for all the applicable Syncfusion<sup>&reg;</sup> Flutter Widgets. The supported languages are listed below: 
-     
+Syncfusion<sup>&reg;</sup> Localizations package contains localized text for 77 cultures for all the applicable Syncfusion<sup>&reg;</sup> Flutter Widgets. The supported languages are listed below:
+
 *	af - Afrikaans
 *	am - Amharic
 *	ar - Arabic
@@ -13,10 +13,10 @@ Syncfusion<sup>&reg;</sup> Localizations package contains localized text for 77 
 *	ca - Catalan Valencian
 *	cs - Czech
 *	da - Danish
-*	de - German 
+*	de - German
 *	el - Modern Greek
-*	en - English 
-*	es - Spanish Castilian 
+*	en - English
+*	es - Spanish Castilian
 *	et - Estonian
 *	eu - Basque
 *	fa - Persian
@@ -62,7 +62,7 @@ Syncfusion<sup>&reg;</sup> Localizations package contains localized text for 77 
 *	sk - Slovak
 *	sl - Slovenian
 *	sq - Albanian
-*	sr - Serbian 
+*	sr - Serbian
 *	sv - Swedish
 *	sw - Swahili
 *	ta - Tamil
@@ -92,10 +92,9 @@ Explore the full capabilities of our Flutter widgets on your device by installin
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.syncfusion.flutter.examples"><img src="https://cdn.syncfusion.com/content/images/FTControl/google-play-store.png"/></a>
   <a href="https://flutter.syncfusion.com"><img src="https://cdn.syncfusion.com/content/images/FTControl/web-sample-browser.png"/></a>
-  <a href="https://www.microsoft.com/en-us/p/syncfusion-flutter-gallery/9nhnbwcsf85d?activetab=pivot:overviewtab"><img src="https://cdn.syncfusion.com/content/images/FTControl/windows-store.png"/></a> 
+  <a href="https://www.microsoft.com/en-us/p/syncfusion-flutter-gallery/9nhnbwcsf85d?activetab=pivot:overviewtab"><img src="https://cdn.syncfusion.com/content/images/FTControl/windows-store.png"/></a>
 </p>
 <p align="center">
-  <a href="https://install.appcenter.ms/orgs/syncfusion-demos/apps/syncfusion-flutter-gallery/distribution_groups/release"><img src="https://cdn.syncfusion.com/content/images/FTControl/macos-app-center.png"/></a>
   <a href="https://snapcraft.io/syncfusion-flutter-gallery"><img src="https://cdn.syncfusion.com/content/images/FTControl/snap-store.png"/></a>
   <a href="https://github.com/syncfusion/flutter-examples"><img src="https://cdn.syncfusion.com/content/images/FTControl/github-samples.png"/></a>
 </p>

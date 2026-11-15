@@ -2,6 +2,46 @@
 
 **General**
 
+*  The compatible version of our Flutter maps widget has been updated to Flutter SDK 3.47.
+
+## [32.2.8] - 03/03/2026
+
+**Bugs**
+
+* Fixed interaction and tooltip positioning issues that occurred when the map was shifted from its normal position using an offset. Tooltips and zoom gestures now align correctly.
+
+## [32.1.25] - 01/27/2026
+
+* No changes.
+
+## [31.2.15] - 11/25/2025
+
+**General**
+
+*  The compatible version of our Flutter maps widget has been updated to Flutter SDK 3.38.
+
+## [31.1.20] - 09/17/2025
+
+**General**
+
+*  The compatible version of our Flutter maps widget has been updated to Flutter SDK 3.35.
+
+## [30.1.37] - 06/25/2025
+
+**General**
+
+*  The compatible version of our Flutter maps widget has been updated to Flutter SDK 3.32.0.
+
+## [29.1.39] - 22/04/2025
+
+**General**
+
+*  The minimum Dart version has been updated to 3.7.
+
+## [29.1.33] - 25/03/2025
+
+**General**
+
 *  The compatible version of our Flutter maps widget has been updated to Flutter SDK 3.29.0.
 *  The Syncfusion<sup>&reg;</sup> Flutter maps example sample have been updated to support [kotlin build scripts](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply) in Android platform.
 *  The Syncfusion<sup>&reg;</sup> Flutter maps example sample have been updated to support [Swift package manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers) in macOS and iOS platforms.

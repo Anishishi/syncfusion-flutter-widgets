@@ -77,11 +77,12 @@ class PdfCompositeField extends PdfMultipleValueField {
   /// //Dispose the document.
   /// document.dispose();
   /// ```
-  PdfCompositeField(
-      {super.font,
-      super.brush,
-      String? text,
-      List<PdfAutomaticField>? fields}) {
+  PdfCompositeField({
+    super.font,
+    super.brush,
+    String? text,
+    List<PdfAutomaticField>? fields,
+  }) {
     this.text = (text == null) ? '' : text;
     if (fields != null) {
       this.fields = fields;
@@ -189,16 +190,18 @@ class PdfCompositeField extends PdfMultipleValueField {
     if (fields.isNotEmpty) {
       copyText = text;
       for (int i = 0; i < fields.length; i++) {
-        copyText = copyText!.replaceAll('{$i}',
-            PdfAutomaticFieldHelper.getHelper(fields[i]).getValue(graphics)!);
+        copyText = copyText!.replaceAll(
+          '{$i}',
+          PdfAutomaticFieldHelper.getHelper(fields[i]).getValue(graphics)!,
+        );
       }
     }
     return (copyText == null) ? text : copyText;
   }
 }
 
-// ignore: avoid_classes_with_only_static_members
 /// [PdfCompositeField] helper
+// ignore: avoid_classes_with_only_static_members
 class PdfCompositeFieldHelper {
   /// internal method
   static String getValue(PdfCompositeField field, PdfGraphics graphics) {
