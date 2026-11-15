@@ -26,6 +26,35 @@ import '../views/timeline_view.dart';
 /// All day appointment views default height
 const double _kAllDayLayoutHeight = 60;
 
+// Horizontal month pages are visible before navigation is committed. Prepare
+// their appointments from the supplied data, without changing the active month.
+List<CalendarAppointment>? _appointmentsForView(
+    SfCalendar calendar,
+    CalendarView view,
+    List<DateTime> visibleDates,
+    UpdateCalendarStateDetails details) {
+  if (visibleDates == details.currentViewVisibleDates) {
+    return details.visibleAppointments;
+  }
+  if (view != CalendarView.month ||
+      calendar.monthViewSettings.navigationDirection !=
+          MonthNavigationDirection.horizontal) {
+    return null;
+  }
+
+  DateTime start = visibleDates.first;
+  DateTime end = visibleDates.last;
+  if (!CalendarViewHelper.isLeadingAndTrailingDatesVisible(
+      calendar.monthViewSettings.numberOfWeeksInView,
+      calendar.monthViewSettings.showTrailingAndLeadingDates)) {
+    final DateTime month = visibleDates[visibleDates.length ~/ 2];
+    start = AppointmentHelper.getMonthStartDate(month);
+    end = AppointmentHelper.getMonthEndDate(month);
+  }
+  return AppointmentHelper.getVisibleAppointments(
+      start, end, details.appointments, calendar.timeZone, true);
+}
+
 /// Holds the looping widget for calendar view(time slot, month, timeline and
 /// appointment views) widgets of calendar widget.
 @immutable
@@ -302,8 +331,22 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView>
     super.initState();
   }
 
+  final Map<List<DateTime>, List<CalendarAppointment>?> _monthPageAppointments =
+      <List<DateTime>, List<CalendarAppointment>?>{};
+
+  List<CalendarAppointment>? _getViewAppointments(List<DateTime> dates) {
+    if (dates == _currentViewVisibleDates) {
+      return _updateCalendarStateDetails.visibleAppointments;
+    }
+    return _monthPageAppointments.putIfAbsent(
+        dates,
+        () => _appointmentsForView(
+            widget.calendar, widget.view, dates, _updateCalendarStateDetails));
+  }
+
   @override
   void didUpdateWidget(CustomCalendarScrollView oldWidget) {
+    _monthPageAppointments.clear();
     if (oldWidget.controller != widget.controller) {
       widget.controller.forward = widget.isRTL
           ? _moveToPreviousViewWithAnimation
@@ -3073,6 +3116,12 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView>
   _CalendarView _updateViews(_CalendarView view,
       GlobalKey<_CalendarViewState> viewKey, List<DateTime> visibleDates) {
     final int index = _children.indexOf(view);
+    final bool prepareMonthPages = widget.view == CalendarView.month &&
+        widget.calendar.monthViewSettings.navigationDirection ==
+            MonthNavigationDirection.horizontal;
+    final List<CalendarAppointment>? viewAppointments = prepareMonthPages
+        ? _getViewAppointments(visibleDates)
+        : _updateCalendarStateDetails.visibleAppointments;
 
     final AppointmentLayout appointmentLayout =
         viewKey.currentState!._appointmentLayout;
@@ -3117,8 +3166,7 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView>
     }
     // check and update the visible appointments in the view
     else if (!CalendarViewHelper.isCollectionEqual(
-        appointmentLayout.visibleAppointments.value,
-        _updateCalendarStateDetails.visibleAppointments)) {
+        appointmentLayout.visibleAppointments.value, viewAppointments)) {
       if (widget.view != CalendarView.month &&
           !CalendarViewHelper.isTimelineView(widget.view)) {
         view = _CalendarView(
@@ -3195,26 +3243,23 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView>
         );
 
         _children[index] = view;
-      } else if (view.visibleDates == _currentViewVisibleDates) {
+      } else if (view.visibleDates == _currentViewVisibleDates ||
+          prepareMonthPages) {
         /// Remove the appointment selection when the selected
         /// appointment removed.
         if (viewKey.currentState!._selectionPainter != null &&
             viewKey.currentState!._selectionPainter!.appointmentView != null &&
-            (!_updateCalendarStateDetails.visibleAppointments.contains(viewKey
-                .currentState!
-                ._selectionPainter!
-                .appointmentView!
-                .appointment))) {
+            (!viewAppointments!.contains(viewKey.currentState!
+                ._selectionPainter!.appointmentView!.appointment))) {
           viewKey.currentState!._selectionPainter!.appointmentView = null;
           viewKey.currentState!._selectionPainter!.repaintNotifier.value =
               !viewKey.currentState!._selectionPainter!.repaintNotifier.value;
         }
 
-        appointmentLayout.visibleAppointments.value =
-            _updateCalendarStateDetails.visibleAppointments;
+        appointmentLayout.visibleAppointments.value = viewAppointments;
         if (widget.view == CalendarView.month) {
           viewKey.currentState!._monthView.visibleAppointmentNotifier.value =
-              _updateCalendarStateDetails.visibleAppointments;
+              viewAppointments;
         }
       }
     }
@@ -5511,8 +5556,29 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView>
     viewKey.currentState!._isExpanded = false;
   }
 
-  /// Method to clear the appointments in the previous/next view
+  /// Updates appointment painters after navigation.
   void _updateAppointmentPainter() {
+    if (widget.view == CalendarView.month &&
+        widget.calendar.monthViewSettings.navigationDirection ==
+            MonthNavigationDirection.horizontal) {
+      _monthPageAppointments.clear();
+      widget.getCalendarState(_updateCalendarStateDetails);
+      for (final _CalendarView view in _children) {
+        final GlobalKey<_CalendarViewState> viewKey =
+            view.key! as GlobalKey<_CalendarViewState>;
+        final List<CalendarAppointment>? appointments =
+            _getViewAppointments(view.visibleDates);
+        if (widget.calendar.monthCellBuilder != null) {
+          viewKey.currentState!._monthView.visibleAppointmentNotifier.value =
+              appointments;
+        } else {
+          viewKey.currentState!._appointmentLayout.visibleAppointments.value =
+              appointments;
+        }
+      }
+      return;
+    }
+
     for (int i = 0; i < _children.length; i++) {
       final _CalendarView view = _children[i];
       final GlobalKey<_CalendarViewState> viewKey =
@@ -6623,11 +6689,11 @@ class _CalendarViewState extends State<_CalendarView>
 
   Widget _addAppointmentPainter(double width, double height,
       [double? resourceItemHeight]) {
-    final List<CalendarAppointment>? visibleAppointments =
-        widget.visibleDates ==
-                _updateCalendarStateDetails.currentViewVisibleDates
-            ? _updateCalendarStateDetails.visibleAppointments
-            : null;
+    final List<CalendarAppointment>? visibleAppointments = _appointmentsForView(
+        widget.calendar,
+        widget.view,
+        widget.visibleDates,
+        _updateCalendarStateDetails);
     _appointmentLayout = AppointmentLayout(
       widget.calendar,
       widget.view,
@@ -8410,11 +8476,11 @@ class _CalendarViewState extends State<_CalendarView>
   }
 
   Widget _getMonthWidget(bool isRTL, double height) {
-    final List<CalendarAppointment>? visibleAppointments =
-        widget.visibleDates ==
-                _updateCalendarStateDetails.currentViewVisibleDates
-            ? _updateCalendarStateDetails.visibleAppointments
-            : null;
+    final List<CalendarAppointment>? visibleAppointments = _appointmentsForView(
+        widget.calendar,
+        widget.view,
+        widget.visibleDates,
+        _updateCalendarStateDetails);
     _monthView = MonthViewWidget(
         widget.visibleDates,
         widget.calendar.monthViewSettings.numberOfWeeksInView,

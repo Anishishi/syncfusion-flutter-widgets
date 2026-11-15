@@ -434,8 +434,12 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
     widget.updateCalendarState(_updateCalendarStateDetails);
     AppointmentHelper.resetAppointmentView(_appointmentCollection);
     _children.clear();
-    if (widget.visibleDates !=
-        _updateCalendarStateDetails.currentViewVisibleDates) {
+    if (widget.visibleAppointments.value == null ||
+        (widget.visibleDates !=
+                _updateCalendarStateDetails.currentViewVisibleDates &&
+            !(widget.view == CalendarView.month &&
+                widget.calendar.monthViewSettings.navigationDirection ==
+                    MonthNavigationDirection.horizontal))) {
       return;
     }
 
