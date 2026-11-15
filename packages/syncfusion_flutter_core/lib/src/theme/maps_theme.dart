@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../theme.dart';
 
@@ -65,8 +65,8 @@ class SfMapsTheme extends InheritedTheme {
   /// Defaults to [SfThemeData.mapsThemeData] if there is no
   /// [SfMapsTheme] in the given build context.
   static SfMapsThemeData? of(BuildContext context) {
-    final SfMapsTheme? mapsTheme =
-        context.dependOnInheritedWidgetOfExactType<SfMapsTheme>();
+    final SfMapsTheme? mapsTheme = context
+        .dependOnInheritedWidgetOfExactType<SfMapsTheme>();
     return mapsTheme?.data ?? SfTheme.of(context).mapsThemeData;
   }
 
@@ -75,8 +75,8 @@ class SfMapsTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfMapsTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfMapsTheme>();
+    final SfMapsTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfMapsTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfMapsTheme(data: data, child: child);
@@ -931,8 +931,11 @@ class SfMapsThemeData with Diagnosticable {
         b.markerIconStrokeColor,
         t,
       ),
-      markerIconStrokeWidth:
-          lerpDouble(a.markerIconStrokeWidth, b.markerIconStrokeWidth, t)!,
+      markerIconStrokeWidth: lerpDouble(
+        a.markerIconStrokeWidth,
+        b.markerIconStrokeWidth,
+        t,
+      )!,
       dataLabelTextStyle: TextStyle.lerp(
         a.dataLabelTextStyle,
         b.dataLabelTextStyle,
@@ -944,8 +947,11 @@ class SfMapsThemeData with Diagnosticable {
         b.bubbleStrokeColor,
         t,
       ),
-      bubbleStrokeWidth:
-          lerpDouble(a.bubbleStrokeWidth, b.bubbleStrokeWidth, t)!,
+      bubbleStrokeWidth: lerpDouble(
+        a.bubbleStrokeWidth,
+        b.bubbleStrokeWidth,
+        t,
+      )!,
       bubbleHoverColor: Color.lerp(a.bubbleHoverColor, b.bubbleHoverColor, t),
       bubbleHoverStrokeColor: Color.lerp(
         a.bubbleHoverStrokeColor,
@@ -963,22 +969,27 @@ class SfMapsThemeData with Diagnosticable {
         b.selectionStrokeColor,
         t,
       ),
-      selectionStrokeWidth:
-          lerpDouble(a.selectionStrokeWidth, b.selectionStrokeWidth, t)!,
+      selectionStrokeWidth: lerpDouble(
+        a.selectionStrokeWidth,
+        b.selectionStrokeWidth,
+        t,
+      )!,
       tooltipColor: Color.lerp(a.tooltipColor, b.tooltipColor, t),
       tooltipStrokeColor: Color.lerp(
         a.tooltipStrokeColor,
         b.tooltipStrokeColor,
         t,
       ),
-      tooltipStrokeWidth:
-          lerpDouble(a.tooltipStrokeWidth, b.tooltipStrokeWidth, t)!,
-      tooltipBorderRadius:
-          BorderRadiusGeometry.lerp(
-            a.tooltipBorderRadius,
-            b.tooltipBorderRadius,
-            t,
-          )!,
+      tooltipStrokeWidth: lerpDouble(
+        a.tooltipStrokeWidth,
+        b.tooltipStrokeWidth,
+        t,
+      )!,
+      tooltipBorderRadius: BorderRadiusGeometry.lerp(
+        a.tooltipBorderRadius,
+        b.tooltipBorderRadius,
+        t,
+      )!,
       toggledItemColor: Color.lerp(a.toggledItemColor, b.toggledItemColor, t),
       toggledItemStrokeColor: Color.lerp(
         a.toggledItemStrokeColor,

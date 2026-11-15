@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'assistview_theme.dart';
 import 'barcodes_theme.dart';
@@ -97,8 +97,8 @@ class SfTheme extends StatelessWidget {
   /// Defaults to [SfThemeData.fallback] if there is no [SfTheme] in the given
   /// build context.
   static SfThemeData of(BuildContext context) {
-    final _SfInheritedTheme? inheritedTheme =
-        context.dependOnInheritedWidgetOfExactType<_SfInheritedTheme>();
+    final _SfInheritedTheme? inheritedTheme = context
+        .dependOnInheritedWidgetOfExactType<_SfInheritedTheme>();
     return inheritedTheme?.data ??
         (Theme.of(context).colorScheme.brightness == Brightness.light
             ? SfThemeData.light()
@@ -219,8 +219,8 @@ class _SfInheritedTheme extends InheritedTheme {
       data != oldWidget.data;
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final _SfInheritedTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<_SfInheritedTheme>();
+    final _SfInheritedTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<_SfInheritedTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfTheme(data: data, child: child);
@@ -749,72 +749,78 @@ class SfThemeData with Diagnosticable {
     assert(b != null);
     return SfThemeData.raw(
       brightness: t < 0.5 ? a!.brightness : b!.brightness,
-      pdfViewerThemeData:
-          SfPdfViewerThemeData.lerp(
-            a!.pdfViewerThemeData,
-            b!.pdfViewerThemeData,
-            t,
-          )!,
-      chartThemeData:
-          SfChartThemeData.lerp(a.chartThemeData, b.chartThemeData, t)!,
-      sparkChartThemeData:
-          SfSparkChartThemeData.lerp(
-            a.sparkChartThemeData,
-            b.sparkChartThemeData,
-            t,
-          )!,
-      calendarThemeData:
-          SfCalendarThemeData.lerp(
-            a.calendarThemeData,
-            b.calendarThemeData,
-            t,
-          )!,
-      dataGridThemeData:
-          SfDataGridThemeData.lerp(
-            a.dataGridThemeData,
-            b.dataGridThemeData,
-            t,
-          )!,
-      dataPagerThemeData:
-          SfDataPagerThemeData.lerp(
-            a.dataPagerThemeData,
-            b.dataPagerThemeData,
-            t,
-          )!,
-      dateRangePickerThemeData:
-          SfDateRangePickerThemeData.lerp(
-            a.dateRangePickerThemeData,
-            b.dateRangePickerThemeData,
-            t,
-          )!,
-      barcodeThemeData:
-          SfBarcodeThemeData.lerp(a.barcodeThemeData, b.barcodeThemeData, t)!,
-      gaugeThemeData:
-          SfGaugeThemeData.lerp(a.gaugeThemeData, b.gaugeThemeData, t)!,
-      sliderThemeData:
-          SfSliderThemeData.lerp(a.sliderThemeData, b.sliderThemeData, t)!,
-      rangeSelectorThemeData:
-          SfRangeSelectorThemeData.lerp(
-            a.rangeSelectorThemeData,
-            b.rangeSelectorThemeData,
-            t,
-          )!,
-      rangeSliderThemeData:
-          SfRangeSliderThemeData.lerp(
-            a.rangeSliderThemeData,
-            b.rangeSliderThemeData,
-            t,
-          )!,
+      pdfViewerThemeData: SfPdfViewerThemeData.lerp(
+        a!.pdfViewerThemeData,
+        b!.pdfViewerThemeData,
+        t,
+      )!,
+      chartThemeData: SfChartThemeData.lerp(
+        a.chartThemeData,
+        b.chartThemeData,
+        t,
+      )!,
+      sparkChartThemeData: SfSparkChartThemeData.lerp(
+        a.sparkChartThemeData,
+        b.sparkChartThemeData,
+        t,
+      )!,
+      calendarThemeData: SfCalendarThemeData.lerp(
+        a.calendarThemeData,
+        b.calendarThemeData,
+        t,
+      )!,
+      dataGridThemeData: SfDataGridThemeData.lerp(
+        a.dataGridThemeData,
+        b.dataGridThemeData,
+        t,
+      )!,
+      dataPagerThemeData: SfDataPagerThemeData.lerp(
+        a.dataPagerThemeData,
+        b.dataPagerThemeData,
+        t,
+      )!,
+      dateRangePickerThemeData: SfDateRangePickerThemeData.lerp(
+        a.dateRangePickerThemeData,
+        b.dateRangePickerThemeData,
+        t,
+      )!,
+      barcodeThemeData: SfBarcodeThemeData.lerp(
+        a.barcodeThemeData,
+        b.barcodeThemeData,
+        t,
+      )!,
+      gaugeThemeData: SfGaugeThemeData.lerp(
+        a.gaugeThemeData,
+        b.gaugeThemeData,
+        t,
+      )!,
+      sliderThemeData: SfSliderThemeData.lerp(
+        a.sliderThemeData,
+        b.sliderThemeData,
+        t,
+      )!,
+      rangeSelectorThemeData: SfRangeSelectorThemeData.lerp(
+        a.rangeSelectorThemeData,
+        b.rangeSelectorThemeData,
+        t,
+      )!,
+      rangeSliderThemeData: SfRangeSliderThemeData.lerp(
+        a.rangeSliderThemeData,
+        b.rangeSliderThemeData,
+        t,
+      )!,
       mapsThemeData: SfMapsThemeData.lerp(a.mapsThemeData, b.mapsThemeData, t)!,
-      treemapThemeData:
-          SfTreemapThemeData.lerp(a.treemapThemeData, b.treemapThemeData, t)!,
+      treemapThemeData: SfTreemapThemeData.lerp(
+        a.treemapThemeData,
+        b.treemapThemeData,
+        t,
+      )!,
       chatThemeData: SfChatThemeData.lerp(a.chatThemeData, b.chatThemeData, t)!,
-      aiAssistViewThemeData:
-          SfAIAssistViewThemeData.lerp(
-            a.aiAssistViewThemeData,
-            b.aiAssistViewThemeData,
-            t,
-          )!,
+      aiAssistViewThemeData: SfAIAssistViewThemeData.lerp(
+        a.aiAssistViewThemeData,
+        b.aiAssistViewThemeData,
+        t,
+      )!,
     );
   }
 

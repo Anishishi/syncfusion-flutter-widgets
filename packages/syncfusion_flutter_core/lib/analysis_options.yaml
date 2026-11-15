@@ -10,7 +10,7 @@
 include: package:flutter_lints/flutter.yaml
 
 # Specify analysis options.
-# 
+#
 # Until there are meta linter rules, each desired lint must be explicitly enabled.
 # See: https://github.com/dart-lang/linter/issues/288
 #
@@ -35,12 +35,12 @@ analyzer:
   errors:
     # allow having TODO comments in the code
     todo: ignore
-    
+
     #The below rules are ignored manually
     overridden_fields: ignore
     include_file_not_found: ignore
     invalid_dependency: ignore
-    
+
     avoid_dynamic_calls: ignore
     lines_longer_than_80_chars: ignore
     public_member_api_docs: ignore

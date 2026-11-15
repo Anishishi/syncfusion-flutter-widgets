@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../theme.dart';
 
 /// Applies a theme to descendant Syncfusion date range picker widgets.
@@ -67,8 +68,8 @@ class SfDateRangePickerTheme extends InheritedTheme {
   /// Defaults to [SfThemeData.dateRangePickerTheme] if there is no
   /// [SfDateRangePickerTheme] in the given build context.
   static SfDateRangePickerThemeData of(BuildContext context) {
-    final SfDateRangePickerTheme? sfDateRangePickerTheme =
-        context.dependOnInheritedWidgetOfExactType<SfDateRangePickerTheme>();
+    final SfDateRangePickerTheme? sfDateRangePickerTheme = context
+        .dependOnInheritedWidgetOfExactType<SfDateRangePickerTheme>();
     return sfDateRangePickerTheme?.data ??
         SfTheme.of(context).dateRangePickerThemeData;
   }
@@ -79,8 +80,8 @@ class SfDateRangePickerTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfDateRangePickerTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfDateRangePickerTheme>();
+    final SfDateRangePickerTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfDateRangePickerTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfDateRangePickerTheme(data: data, child: child);

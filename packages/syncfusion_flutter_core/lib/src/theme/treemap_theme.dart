@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../theme.dart';
 
@@ -71,8 +71,8 @@ class SfTreemapTheme extends InheritedTheme {
   /// Defaults to [SfTreemapTheme.treemapThemeData]
   /// if there is no [SfTreemapTheme] in the given build context.
   static SfTreemapThemeData of(BuildContext context) {
-    final SfTreemapTheme? sfTreemapTheme =
-        context.dependOnInheritedWidgetOfExactType<SfTreemapTheme>();
+    final SfTreemapTheme? sfTreemapTheme = context
+        .dependOnInheritedWidgetOfExactType<SfTreemapTheme>();
     return sfTreemapTheme?.data ?? SfTheme.of(context).treemapThemeData;
   }
 
@@ -81,8 +81,8 @@ class SfTreemapTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfTreemapTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfTreemapTheme>();
+    final SfTreemapTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfTreemapTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfTreemapTheme(data: data, child: child);

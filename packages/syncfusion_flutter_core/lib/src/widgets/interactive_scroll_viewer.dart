@@ -1,8 +1,10 @@
 part of '../../interactive_scroll_viewer_internal.dart';
 
 /// Triggers when double tap zoom invoked.
-typedef _DoubleTapZoomInvokedCallback =
-    Offset Function(Offset value, Offset tapPosition);
+typedef _DoubleTapZoomInvokedCallback = Offset Function(
+  Offset value,
+  Offset tapPosition,
+);
 
 /// [InteractiveScrollViewer] enables pan and zoom interactions with its child.
 @immutable
@@ -231,8 +233,8 @@ class InteractiveScrollViewerState extends State<InteractiveScrollViewer> {
   void scaleTo(double scale) {
     if (widget.transformationController != null) {
       scale = scale.clamp(widget.minScale, widget.maxScale);
-      final double zoomLevel =
-          widget.transformationController!.value.getMaxScaleOnAxis();
+      final double zoomLevel = widget.transformationController!.value
+          .getMaxScaleOnAxis();
       final Offset previousOffset = widget.transformationController!.toScene(
         Offset.zero,
       );
@@ -254,8 +256,8 @@ class InteractiveScrollViewerState extends State<InteractiveScrollViewer> {
     if (widget.transformationController != null) {
       const double minimumZoomLevel = 1;
       const double maximumZoomLevel = 2;
-      final double zoomLevel =
-          widget.transformationController!.value.getMaxScaleOnAxis();
+      final double zoomLevel = widget.transformationController!.value
+          .getMaxScaleOnAxis();
       Offset normalizedOffset;
       Offset offset;
       if (zoomLevel <= minimumZoomLevel) {
@@ -295,8 +297,9 @@ class InteractiveScrollViewerState extends State<InteractiveScrollViewer> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onDoubleTapDown:
-          widget.enableDoubleTapZooming ? _handleDoubleTapDown : null,
+      onDoubleTapDown: widget.enableDoubleTapZooming
+          ? _handleDoubleTapDown
+          : null,
       onDoubleTap: widget.enableDoubleTapZooming ? _handleDoubleTap : null,
       child: InteractiveViewer(
         minScale: widget.minScale,

@@ -1,6 +1,8 @@
 import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../theme.dart';
 
 /// Applies a theme to descendant [SfDataGrid] widgets.
@@ -66,8 +68,8 @@ class SfDataGridTheme extends InheritedTheme {
   /// is no [SfDataGridTheme] in the given build context.
   ///
   static SfDataGridThemeData of(BuildContext context) {
-    final SfDataGridTheme? sfDataGridTheme =
-        context.dependOnInheritedWidgetOfExactType<SfDataGridTheme>();
+    final SfDataGridTheme? sfDataGridTheme = context
+        .dependOnInheritedWidgetOfExactType<SfDataGridTheme>();
     return sfDataGridTheme?.data ?? SfTheme.of(context).dataGridThemeData;
   }
 
@@ -76,8 +78,8 @@ class SfDataGridTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfDataGridTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfDataGridTheme>();
+    final SfDataGridTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfDataGridTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfDataGridTheme(data: data, child: child);

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:syncfusion_flutter_core/core.dart';
+
 import '../../datepicker.dart';
 import 'picker_helper.dart';
 
@@ -491,14 +492,12 @@ class HijriDatePickerMonthViewSettings with Diagnosticable {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-      IterableDiagnostics<HijriDateTime>(
-        blackoutDates,
-      ).toDiagnosticsNode(name: 'blackoutDates'),
+      IterableDiagnostics<HijriDateTime>(blackoutDates)
+          .toDiagnosticsNode(name: 'blackoutDates'),
     );
     properties.add(
-      IterableDiagnostics<HijriDateTime>(
-        specialDates,
-      ).toDiagnosticsNode(name: 'specialDates'),
+      IterableDiagnostics<HijriDateTime>(specialDates)
+          .toDiagnosticsNode(name: 'specialDates'),
     );
     properties.add(IntProperty('firstDayOfWeek', firstDayOfWeek));
     properties.add(DoubleProperty('viewHeaderHeight', viewHeaderHeight));
@@ -2167,8 +2166,8 @@ class HijriDatePickerController extends DateRangePickerValueChangeNotifier {
       return;
     }
 
-    _selectedDates =
-        DateRangePickerHelper.cloneList(dates)!.cast<HijriDateTime>();
+    _selectedDates = DateRangePickerHelper.cloneList(dates)!
+        .cast<HijriDateTime>();
     notifyPropertyChangedListeners('selectedDates');
   }
 
@@ -2338,8 +2337,8 @@ class HijriDatePickerController extends DateRangePickerValueChangeNotifier {
       return;
     }
 
-    _selectedRanges =
-        DateRangePickerHelper.cloneList(ranges)!.cast<HijriDateRange>();
+    _selectedRanges = DateRangePickerHelper.cloneList(ranges)!
+        .cast<HijriDateRange>();
     notifyPropertyChangedListeners('selectedRanges');
   }
 
@@ -2593,17 +2592,15 @@ class HijriDatePickerController extends DateRangePickerValueChangeNotifier {
       DiagnosticsProperty<HijriDateTime>('selectedDate', selectedDate),
     );
     properties.add(
-      IterableDiagnostics<HijriDateTime>(
-        selectedDates,
-      ).toDiagnosticsNode(name: 'selectedDates'),
+      IterableDiagnostics<HijriDateTime>(selectedDates)
+          .toDiagnosticsNode(name: 'selectedDates'),
     );
     properties.add(
       DiagnosticsProperty<HijriDateRange>('selectedRange', selectedRange),
     );
     properties.add(
-      IterableDiagnostics<HijriDateRange>(
-        selectedRanges,
-      ).toDiagnosticsNode(name: 'selectedRanges'),
+      IterableDiagnostics<HijriDateRange>(selectedRanges)
+          .toDiagnosticsNode(name: 'selectedRanges'),
     );
     properties.add(EnumProperty<HijriDatePickerView>('view', view));
   }
@@ -2694,18 +2691,18 @@ class HijriDateRange with Diagnosticable {
 /// * [SfHijriDateRangePicker.cellBuilder], which matches this signature.
 /// * [SfHijriDateRangePicker], which uses this signature in one of it's
 /// callback.
-typedef HijriDateRangePickerCellBuilder =
-    Widget Function(
-      BuildContext context,
-      HijriDateRangePickerCellDetails cellDetails,
-    );
+typedef HijriDateRangePickerCellBuilder = Widget Function(
+  BuildContext context,
+  HijriDateRangePickerCellDetails cellDetails,
+);
 
 /// Signature for predicating dates for enabled date selections.
 ///
 /// [SelectableDayPredicate] parameter used to specify allowable days in the
 /// SfHijriDateRangePicker.
-typedef HijriDatePickerSelectableDayPredicate =
-    bool Function(HijriDateTime date);
+typedef HijriDatePickerSelectableDayPredicate = bool Function(
+  HijriDateTime date,
+);
 
 /// Contains the details that needed on calendar cell builder.
 ///

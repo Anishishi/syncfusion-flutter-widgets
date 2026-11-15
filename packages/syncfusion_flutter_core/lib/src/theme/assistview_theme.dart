@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'theme_widget.dart';
 
@@ -51,8 +51,8 @@ class SfAIAssistViewTheme extends InheritedTheme {
   /// Defaults to [SfThemeData.aiAssistViewThemeData] if there is no
   /// [SfAIAssistViewTheme] in the given build context.
   static SfAIAssistViewThemeData of(BuildContext context) {
-    final SfAIAssistViewTheme? assistTheme =
-        context.dependOnInheritedWidgetOfExactType<SfAIAssistViewTheme>();
+    final SfAIAssistViewTheme? assistTheme = context
+        .dependOnInheritedWidgetOfExactType<SfAIAssistViewTheme>();
     return assistTheme?.data ?? SfTheme.of(context).aiAssistViewThemeData;
   }
 
@@ -62,8 +62,8 @@ class SfAIAssistViewTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfAIAssistViewTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfAIAssistViewTheme>();
+    final SfAIAssistViewTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfAIAssistViewTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfAIAssistViewTheme(data: data, child: child);
@@ -1063,8 +1063,9 @@ class SfAIAssistViewThemeData with Diagnosticable {
         b.actionButtonShape,
         t,
       ),
-      actionButtonMouseCursor:
-          t < 0.5 ? a.actionButtonMouseCursor : b.actionButtonMouseCursor,
+      actionButtonMouseCursor: t < 0.5
+          ? a.actionButtonMouseCursor
+          : b.actionButtonMouseCursor,
       requestAvatarBackgroundColor: Color.lerp(
         a.requestAvatarBackgroundColor,
         b.requestAvatarBackgroundColor,

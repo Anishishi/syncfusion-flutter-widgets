@@ -1,6 +1,8 @@
 import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../theme.dart';
 
 /// Applies a theme to descendant Syncfusion range slider widgets.
@@ -25,8 +27,8 @@ class SfRangeSliderTheme extends InheritedTheme {
   /// Defaults to [SfThemeData.rangeSliderThemeData] if there is no
   /// [SfRangeSliderTheme] in the given build context.
   static SfRangeSliderThemeData? of(BuildContext context) {
-    final SfRangeSliderTheme? rangeSliderTheme =
-        context.dependOnInheritedWidgetOfExactType<SfRangeSliderTheme>();
+    final SfRangeSliderTheme? rangeSliderTheme = context
+        .dependOnInheritedWidgetOfExactType<SfRangeSliderTheme>();
     return rangeSliderTheme?.data ?? SfTheme.of(context).rangeSliderThemeData;
   }
 
@@ -35,8 +37,8 @@ class SfRangeSliderTheme extends InheritedTheme {
       data != oldWidget.data;
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfRangeSliderTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfRangeSliderTheme>();
+    final SfRangeSliderTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfRangeSliderTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfRangeSliderTheme(data: data, child: child);
@@ -421,10 +423,16 @@ class SfRangeSliderThemeData extends SfSliderThemeData {
       return null;
     }
     return SfRangeSliderThemeData(
-      activeTrackHeight:
-          lerpDouble(a!.activeTrackHeight, b!.activeTrackHeight, t)!,
-      inactiveTrackHeight:
-          lerpDouble(a.inactiveTrackHeight, b.inactiveTrackHeight, t)!,
+      activeTrackHeight: lerpDouble(
+        a!.activeTrackHeight,
+        b!.activeTrackHeight,
+        t,
+      )!,
+      inactiveTrackHeight: lerpDouble(
+        a.inactiveTrackHeight,
+        b.inactiveTrackHeight,
+        t,
+      )!,
       tickSize: Size.lerp(a.tickSize, b.tickSize, t),
       minorTickSize: Size.lerp(a.minorTickSize, b.minorTickSize, t),
       tickOffset: Offset.lerp(a.tickOffset, b.tickOffset, t),

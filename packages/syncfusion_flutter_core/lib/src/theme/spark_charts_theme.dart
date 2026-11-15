@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../theme.dart';
 
 /// Applies a theme to descendant Syncfusion spark chart widgets.
@@ -71,8 +72,8 @@ class SfSparkChartTheme extends InheritedTheme {
   /// Defaults to [SfSparkChartTheme.SparkChartThemeData]
   /// if there is no [SfSparkChartTheme] in the given build context.
   static SfSparkChartThemeData of(BuildContext context) {
-    final SfSparkChartTheme? sfSparkChartTheme =
-        context.dependOnInheritedWidgetOfExactType<SfSparkChartTheme>();
+    final SfSparkChartTheme? sfSparkChartTheme = context
+        .dependOnInheritedWidgetOfExactType<SfSparkChartTheme>();
     return sfSparkChartTheme?.data ?? SfTheme.of(context).sparkChartThemeData;
   }
 
@@ -82,8 +83,8 @@ class SfSparkChartTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfSparkChartTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfSparkChartTheme>();
+    final SfSparkChartTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfSparkChartTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfSparkChartTheme(data: data, child: child);

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:syncfusion_flutter_core/core.dart';
 import 'package:syncfusion_flutter_core/localizations.dart';
+
 import 'date_picker_manager.dart';
 import 'hijri_date_picker_manager.dart';
 
@@ -298,10 +299,9 @@ class DateRangePickerHelper {
     }
 
     final dynamic startDate = getFirstDate(range.startDate, isHijri, view);
-    final dynamic endDate =
-        range.endDate != null
-            ? getFirstDate(range.endDate, isHijri, view)
-            : startDate;
+    final dynamic endDate = range.endDate != null
+        ? getFirstDate(range.endDate, isHijri, view)
+        : startDate;
     final dynamic currentDateValue = getFirstDate(currentDate, isHijri, view);
     switch (extendableRangeSelectionDirection) {
       case ExtendableRangeSelectionDirection.none:
@@ -1054,10 +1054,9 @@ class DateRangePickerHelper {
 
   /// Returns week number for the given date.
   static int getWeekNumberOfYear(dynamic date, bool isHijri) {
-    final dynamic yearEndDate =
-        isHijri
-            ? HijriDateTime(date.year - 1, 12, 31)
-            : DateTime(date.year - 1, 12, 31);
+    final dynamic yearEndDate = isHijri
+        ? HijriDateTime(date.year - 1, 12, 31)
+        : DateTime(date.year - 1, 12, 31);
     final int dayOfYear = date.difference(yearEndDate).inDays as int;
     int weekNumber = (dayOfYear - date.weekday + 10) ~/ 7;
     if (weekNumber < 1) {
@@ -1107,12 +1106,11 @@ class DateRangePickerHelper {
     final List<double> array = <double>[6, 5];
     final List<PathMetric> sourceMetrics = sourcePath.computeMetrics().toList();
     final Rect sourceRect = sourcePath.getBounds();
-    final double restrictXPosition =
-        isRectSelection
-            ? isStartRange
-                ? sourceRect.right
-                : sourceRect.left
-            : -1;
+    final double restrictXPosition = isRectSelection
+        ? isStartRange
+              ? sourceRect.right
+              : sourceRect.left
+        : -1;
     for (int i = 0; i < sourceMetrics.length; i++) {
       final PathMetric metric = sourceMetrics[i];
       double distance = 0;

@@ -261,15 +261,13 @@ class SfTooltipState extends State<SfTooltip>
 
   @override
   Widget build(BuildContext context) {
-    final Animation<double> tooltipAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: animationController!,
-        curve: widget.animationCurve,
-      ),
-    );
+    final Animation<double> tooltipAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+            parent: animationController!,
+            curve: widget.animationCurve,
+          ),
+        );
     if (_show && !_didUpdate) {
       if (animationController?.status != AnimationStatus.forward) {
         animationController!.forward(from: 0.0);
@@ -507,7 +505,7 @@ class TooltipRenderBox extends RenderShiftedBox {
             position -
             (_isOutOfBoundInTop
                 ? _tooltipRect!.topLeft +
-                    Offset(0, _templateArrowHeight + _tooltipRect!.height)
+                      Offset(0, _templateArrowHeight + _tooltipRect!.height)
                 : _tooltipRect!.topLeft),
       );
     }
@@ -532,11 +530,10 @@ class TooltipRenderBox extends RenderShiftedBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    final Offset parentOffset =
-        parentData is BoxParentData
-            //ignore: avoid_as
-            ? (parentData! as BoxParentData).offset
-            : Offset.zero;
+    final Offset parentOffset = parentData is BoxParentData
+        //ignore: avoid_as
+        ? (parentData! as BoxParentData).offset
+        : Offset.zero;
     final Offset relativeOffset = offset - parentOffset;
     calculateLocation(_position != null ? (_position!) : parentOffset);
     context.canvas.translate(relativeOffset.dx, relativeOffset.dy);
@@ -624,32 +621,27 @@ class TooltipRenderBox extends RenderShiftedBox {
     Offset location,
     Offset templateLocation,
   ) {
-    final Paint strokePaint =
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..color =
-              _tooltip.borderWidth == 0
-                  ? Colors.transparent
-                  : _tooltip.borderColor
-          ..strokeWidth = _tooltip.borderWidth;
-    final Paint fillPaint =
-        Paint()
-          ..color = (_tooltip.color).withValues(alpha: _tooltip.opacity)
-          ..style = PaintingStyle.fill;
+    final Paint strokePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = _tooltip.borderWidth == 0
+          ? Colors.transparent
+          : _tooltip.borderColor
+      ..strokeWidth = _tooltip.borderWidth;
+    final Paint fillPaint = Paint()
+      ..color = (_tooltip.color).withValues(alpha: _tooltip.opacity)
+      ..style = PaintingStyle.fill;
     const double currentHeight = 5.0;
     const double arrowWidth = 8;
     const double padding = 0.1;
     final Size currentSize = Size(_templateSize.width, currentHeight);
     final num templateHeight = _templateSize.height;
     final num arrowHeight = currentSize.height + padding;
-    final num centerTemplateY =
-        _isOutOfBoundInTop
-            ? location.dy + currentSize.height + templateHeight / 2 + padding
-            : location.dy - templateHeight / 2 - padding;
-    double locationY =
-        _isOutOfBoundInTop
-            ? centerTemplateY - (templateHeight / 2) - arrowHeight
-            : centerTemplateY + templateHeight / 2;
+    final num centerTemplateY = _isOutOfBoundInTop
+        ? location.dy + currentSize.height + templateHeight / 2 + padding
+        : location.dy - templateHeight / 2 - padding;
+    double locationY = _isOutOfBoundInTop
+        ? centerTemplateY - (templateHeight / 2) - arrowHeight
+        : centerTemplateY + templateHeight / 2;
     final num centerX = location.dx + currentSize.width / 2;
     final Path path = Path();
     final RRect rect = RRect.fromLTRBAndCorners(
@@ -663,8 +655,9 @@ class TooltipRenderBox extends RenderShiftedBox {
       bottomLeft: Radius.circular(_borderRadius),
     );
     bool isVTypeArrow = true;
-    final String side =
-        (centerX < rect.left + rect.width / 2) ? 'left' : 'right';
+    final String side = (centerX < rect.left + rect.width / 2)
+        ? 'left'
+        : 'right';
     if (!_isOutOfBoundInTop) {
       locationY += arrowHeight - padding;
     }
@@ -862,12 +855,11 @@ class TooltipRenderBox extends RenderShiftedBox {
       _nosePointY = rect.top - (_normalPadding ?? 0);
       _nosePointX = rect.left;
       final double tooltipRightEnd = _x! + (rect.width / 2);
-      _xPos =
-          _xPos! < _boundaryRect.left
-              ? _boundaryRect.left
-              : tooltipRightEnd > _totalWidth
-              ? _totalWidth - rect.width
-              : _xPos;
+      _xPos = _xPos! < _boundaryRect.left
+          ? _boundaryRect.left
+          : tooltipRightEnd > _totalWidth
+          ? _totalWidth - rect.width
+          : _xPos;
       _yPos = _yPos! - (_pointerLength / 2);
     } else {
       _isTop = false;
@@ -881,12 +873,11 @@ class TooltipRenderBox extends RenderShiftedBox {
           (_y! >= _boundaryRect.top ? _y! : _boundaryRect.top) +
           (_inversePadding ?? 0);
       final double tooltipRightEnd = _x! + (rect.width / 2);
-      _xPos =
-          _xPos! < _boundaryRect.left
-              ? _boundaryRect.left
-              : tooltipRightEnd > _totalWidth
-              ? _totalWidth - rect.width
-              : _xPos;
+      _xPos = _xPos! < _boundaryRect.left
+          ? _boundaryRect.left
+          : tooltipRightEnd > _totalWidth
+          ? _totalWidth - rect.width
+          : _xPos;
     }
     if (_xPos! <= _boundaryRect.left + 5) {
       _xPos = _xPos! + 5;
@@ -914,8 +905,9 @@ class TooltipRenderBox extends RenderShiftedBox {
     bool isRight,
     Animation<double>? tooltipAnimation,
   ) {
-    final double animationFactor =
-        tooltipAnimation == null ? 1 : tooltipAnimation.value;
+    final double animationFactor = tooltipAnimation == null
+        ? 1
+        : tooltipAnimation.value;
     backgroundPath.reset();
     if (isLeft) {
       startX = rectF.left + (2 * borderRadius);
@@ -1032,20 +1024,19 @@ class TooltipRenderBox extends RenderShiftedBox {
         ),
       );
       if (_markerGradients![i] != null) {
-        _markerPaints[i] =
-            Paint()
-              ..shader = _markerGradients![i]!.createShader(
-                _getMarkerShapesPath(
-                  _markerTypes[i]!,
-                  Offset(markerPoint.dx, markerPoint.dy),
-                  _markerImages[i],
-                  Size(
-                    (2 * _markerSize) * animationFactor,
-                    (2 * _markerSize) * animationFactor,
-                  ),
-                ).getBounds(),
-              )
-              ..style = PaintingStyle.fill;
+        _markerPaints[i] = Paint()
+          ..shader = _markerGradients![i]!.createShader(
+            _getMarkerShapesPath(
+              _markerTypes[i]!,
+              Offset(markerPoint.dx, markerPoint.dy),
+              _markerImages[i],
+              Size(
+                (2 * _markerSize) * animationFactor,
+                (2 * _markerSize) * animationFactor,
+              ),
+            ).getBounds(),
+          )
+          ..style = PaintingStyle.fill;
       }
       canvas.drawPath(markerPath, _markerPaints[i]!);
       // ignore: omit_local_variable_types
@@ -1129,23 +1120,21 @@ class TooltipRenderBox extends RenderShiftedBox {
       backgroundPath.lineTo(endX + ((endX - startX) / 4), factor);
       backgroundPath.lineTo(startX + ((endX - startX) / 4), factor);
     }
-    final Paint fillPaint =
-        Paint()
-          ..color = (_tooltip.color).withValues(alpha: _tooltip.opacity)
-          ..strokeCap = StrokeCap.round
-          ..style = PaintingStyle.fill;
+    final Paint fillPaint = Paint()
+      ..color = (_tooltip.color).withValues(alpha: _tooltip.opacity)
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.fill;
 
-    final Paint strokePaint =
-        Paint()
-          ..color =
-              _tooltip.borderColor == Colors.transparent
-                  ? Colors.transparent
-                  : _tooltip.borderColor.withValues(alpha: _tooltip.opacity)
-          ..strokeCap = StrokeCap.butt
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = _tooltip.borderWidth;
-    strokePaint.color =
-        _tooltip.borderWidth == 0 ? Colors.transparent : strokePaint.color;
+    final Paint strokePaint = Paint()
+      ..color = _tooltip.borderColor == Colors.transparent
+          ? Colors.transparent
+          : _tooltip.borderColor.withValues(alpha: _tooltip.opacity)
+      ..strokeCap = StrokeCap.butt
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = _tooltip.borderWidth;
+    strokePaint.color = _tooltip.borderWidth == 0
+        ? Colors.transparent
+        : strokePaint.color;
 
     final Path tooltipPath = Path();
     tooltipPath.addRRect(tooltipRect);

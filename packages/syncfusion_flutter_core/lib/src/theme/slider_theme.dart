@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../theme.dart';
 
@@ -26,8 +26,8 @@ class SfSliderTheme extends InheritedTheme {
   /// Defaults to [SfThemeData.sliderThemeData] if there is no
   /// [SfSliderTheme] in the given build context.
   static SfSliderThemeData of(BuildContext context) {
-    final SfSliderTheme? sliderTheme =
-        context.dependOnInheritedWidgetOfExactType<SfSliderTheme>();
+    final SfSliderTheme? sliderTheme = context
+        .dependOnInheritedWidgetOfExactType<SfSliderTheme>();
     return sliderTheme?.data ?? SfTheme.of(context).sliderThemeData;
   }
 
@@ -36,8 +36,8 @@ class SfSliderTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfSliderTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfSliderTheme>();
+    final SfSliderTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfSliderTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfSliderTheme(data: data, child: child);
@@ -338,10 +338,16 @@ class SfSliderThemeData with Diagnosticable {
       return null;
     }
     return SfSliderThemeData(
-      activeTrackHeight:
-          lerpDouble(a!.activeTrackHeight, b!.activeTrackHeight, t)!,
-      inactiveTrackHeight:
-          lerpDouble(a.inactiveTrackHeight, b.inactiveTrackHeight, t)!,
+      activeTrackHeight: lerpDouble(
+        a!.activeTrackHeight,
+        b!.activeTrackHeight,
+        t,
+      )!,
+      inactiveTrackHeight: lerpDouble(
+        a.inactiveTrackHeight,
+        b.inactiveTrackHeight,
+        t,
+      )!,
       tickSize: Size.lerp(a.tickSize, b.tickSize, t),
       minorTickSize: Size.lerp(a.minorTickSize, b.minorTickSize, t),
       tickOffset: Offset.lerp(a.tickOffset, b.tickOffset, t),
@@ -475,8 +481,8 @@ class SfSliderThemeData with Diagnosticable {
       ),
       thumbStrokeWidth: lerpDouble(a.thumbStrokeWidth, b.thumbStrokeWidth, t),
       activeDividerStrokeWidth:
-      // ignore: lines_longer_than_80_chars
-      lerpDouble(a.activeDividerStrokeWidth, b.activeDividerStrokeWidth, t),
+          // ignore: lines_longer_than_80_chars
+          lerpDouble(a.activeDividerStrokeWidth, b.activeDividerStrokeWidth, t),
       // ignore: lines_longer_than_80_chars
       inactiveDividerStrokeWidth: lerpDouble(
         a.inactiveDividerStrokeWidth,

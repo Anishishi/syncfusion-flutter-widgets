@@ -153,8 +153,9 @@ List getVisibleDates(
     datesCollection = <DateTime>[];
   }
 
-  final int nonWorkingDaysCount =
-      nonWorkingDays == null ? 0 : nonWorkingDays.length;
+  final int nonWorkingDaysCount = nonWorkingDays == null
+      ? 0
+      : nonWorkingDays.length;
   final dynamic currentDate = getFirstDayOfWeekDate(
     visibleDatesCount + nonWorkingDaysCount,
     date,

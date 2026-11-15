@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../theme.dart';
 
 /// Applies a theme to descendant [SfPdfViewer] widgets.
@@ -70,8 +71,8 @@ class SfPdfViewerTheme extends InheritedTheme {
   /// [SfPdfViewerTheme] in the given build context.
   ///
   static SfPdfViewerThemeData? of(BuildContext context) {
-    final SfPdfViewerTheme? pdfViewerTheme =
-        context.dependOnInheritedWidgetOfExactType<SfPdfViewerTheme>();
+    final SfPdfViewerTheme? pdfViewerTheme = context
+        .dependOnInheritedWidgetOfExactType<SfPdfViewerTheme>();
     return pdfViewerTheme?.data ?? SfTheme.of(context).pdfViewerThemeData;
   }
 
@@ -80,8 +81,8 @@ class SfPdfViewerTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfPdfViewerTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfPdfViewerTheme>();
+    final SfPdfViewerTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfPdfViewerTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfPdfViewerTheme(data: data, child: child);

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../theme.dart';
 
@@ -25,8 +25,8 @@ class SfDataPagerTheme extends InheritedTheme {
   /// Defaults to [SfThemeData.dataPagerThemeData] if there
   /// is no [SfDataPagerTheme] in the given build context.
   static SfDataPagerThemeData? of(BuildContext context) {
-    final SfDataPagerTheme? sfDataPagerTheme =
-        context.dependOnInheritedWidgetOfExactType<SfDataPagerTheme>();
+    final SfDataPagerTheme? sfDataPagerTheme = context
+        .dependOnInheritedWidgetOfExactType<SfDataPagerTheme>();
     return sfDataPagerTheme?.data ?? SfTheme.of(context).dataPagerThemeData;
   }
 
@@ -35,8 +35,8 @@ class SfDataPagerTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfDataPagerTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfDataPagerTheme>();
+    final SfDataPagerTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfDataPagerTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfDataPagerTheme(data: data, child: child);

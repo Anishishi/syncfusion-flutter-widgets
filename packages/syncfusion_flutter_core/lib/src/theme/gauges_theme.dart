@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../theme.dart';
 
 /// Applies a theme to descendant Syncfusion radial gauges widgets.
@@ -73,8 +74,8 @@ class SfGaugeTheme extends InheritedTheme {
   /// if there is no [SfGaugeTheme] in the given
   /// build context.
   static SfGaugeThemeData? of(BuildContext context) {
-    final SfGaugeTheme? sfGaugeTheme =
-        context.dependOnInheritedWidgetOfExactType<SfGaugeTheme>();
+    final SfGaugeTheme? sfGaugeTheme = context
+        .dependOnInheritedWidgetOfExactType<SfGaugeTheme>();
     return sfGaugeTheme?.data ?? SfTheme.of(context).gaugeThemeData;
   }
 
@@ -82,8 +83,8 @@ class SfGaugeTheme extends InheritedTheme {
   bool updateShouldNotify(SfGaugeTheme oldWidget) => data != oldWidget.data;
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfGaugeTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfGaugeTheme>();
+    final SfGaugeTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfGaugeTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfGaugeTheme(data: data, child: child);
@@ -828,8 +829,11 @@ class SfGaugeThemeData with Diagnosticable {
       majorTickColor: Color.lerp(a.majorTickColor, b.majorTickColor, t),
       minorTickColor: Color.lerp(a.minorTickColor, b.minorTickColor, t),
       markerColor: Color.lerp(a.markerColor, b.markerColor, t),
-      markerBorderColor:
-          Color.lerp(a.markerBorderColor, b.markerBorderColor, t)!,
+      markerBorderColor: Color.lerp(
+        a.markerBorderColor,
+        b.markerBorderColor,
+        t,
+      )!,
       needleColor: Color.lerp(a.needleColor, b.needleColor, t),
       knobColor: Color.lerp(a.knobColor, b.knobColor, t),
       knobBorderColor: Color.lerp(a.knobBorderColor, b.knobBorderColor, t)!,
@@ -842,8 +846,11 @@ class SfGaugeThemeData with Diagnosticable {
       ),
       rangeColor: Color.lerp(a.rangeColor, b.rangeColor, t),
       titleBorderColor: Color.lerp(a.titleBorderColor, b.titleBorderColor, t)!,
-      titleBackgroundColor:
-          Color.lerp(a.titleBackgroundColor, b.titleBackgroundColor, t)!,
+      titleBackgroundColor: Color.lerp(
+        a.titleBackgroundColor,
+        b.titleBackgroundColor,
+        t,
+      )!,
       titleTextStyle: TextStyle.lerp(a.titleTextStyle, b.titleTextStyle, t),
       axisLabelTextStyle: TextStyle.lerp(
         a.axisLabelTextStyle,

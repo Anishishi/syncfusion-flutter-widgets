@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:material_ui/material_ui.dart';
 import 'package:syncfusion_flutter_core/core.dart';
 import 'package:syncfusion_flutter_core/localizations.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
+
 import '../../datepicker.dart';
 import 'picker_helper.dart';
 
@@ -257,23 +258,22 @@ class _YearViewState extends State<YearView> {
       final double cellHeight = height / YearView.maxRowCount;
       final int visibleDatesCount = widget.visibleDates.length ~/ viewCount;
       for (int j = 0; j < viewCount; j++) {
-        final int currentViewIndex =
-            widget.isRtl ? DateRangePickerHelper.getRtlIndex(viewCount, j) : j;
+        final int currentViewIndex = widget.isRtl
+            ? DateRangePickerHelper.getRtlIndex(viewCount, j)
+            : j;
 
         final int viewStartIndex = j * visibleDatesCount;
 
-        final double viewStartPosition =
-            isVerticalMultiView
-                ? 0
-                : (currentViewIndex * width) +
-                    (currentViewIndex * widget.multiViewSpacing);
+        final double viewStartPosition = isVerticalMultiView
+            ? 0
+            : (currentViewIndex * width) +
+                  (currentViewIndex * widget.multiViewSpacing);
         final double viewEndPosition = viewStartPosition + width;
         double xPosition = viewStartPosition;
-        double yPosition =
-            isHorizontalMultiView
-                ? 0
-                : (currentViewIndex * height) +
-                    (currentViewIndex * widget.multiViewSpacing);
+        double yPosition = isHorizontalMultiView
+            ? 0
+            : (currentViewIndex * height) +
+                  (currentViewIndex * widget.multiViewSpacing);
         for (int i = 0; i < visibleDatesCount; i++) {
           int currentIndex = i;
           if (widget.isRtl) {
@@ -304,33 +304,30 @@ class _YearViewState extends State<YearView> {
           }
 
           final dynamic date = widget.visibleDates[currentIndex];
-          final Widget child =
-              widget.cellBuilder(
-                    context,
-                    widget.isHijri
-                        ? HijriDateRangePickerCellDetails(
-                          date: date,
-                          visibleDates:
-                              widget.visibleDates.cast<HijriDateTime>(),
-                          bounds: Rect.fromLTWH(
-                            xPosition,
-                            yPosition,
-                            cellWidth,
-                            cellHeight,
-                          ),
-                        )
-                        : DateRangePickerCellDetails(
-                          date: date,
-                          visibleDates: widget.visibleDates.cast<DateTime>(),
-                          bounds: Rect.fromLTWH(
-                            xPosition,
-                            yPosition,
-                            cellWidth,
-                            cellHeight,
-                          ),
-                        ),
+          final Widget child = widget.cellBuilder(
+            context,
+            widget.isHijri
+                ? HijriDateRangePickerCellDetails(
+                    date: date,
+                    visibleDates: widget.visibleDates.cast<HijriDateTime>(),
+                    bounds: Rect.fromLTWH(
+                      xPosition,
+                      yPosition,
+                      cellWidth,
+                      cellHeight,
+                    ),
                   )
-                  as Widget;
+                : DateRangePickerCellDetails(
+                    date: date,
+                    visibleDates: widget.visibleDates.cast<DateTime>(),
+                    bounds: Rect.fromLTWH(
+                      xPosition,
+                      yPosition,
+                      cellWidth,
+                      cellHeight,
+                    ),
+                  ),
+          ) as Widget;
           _children.add(child);
           xPosition += cellWidth;
         }
@@ -2219,10 +2216,9 @@ abstract class _IYearViewRenderObject extends RenderBox
     final List<SemanticsNode> semanticsNodes = <SemanticsNode>[];
     for (int i = 0; i < semantics.length; i++) {
       final CustomPainterSemantics currentSemantics = semantics[i];
-      final SemanticsNode newChild =
-          _cacheNodes!.isNotEmpty
-              ? _cacheNodes!.removeAt(0)
-              : SemanticsNode(key: currentSemantics.key);
+      final SemanticsNode newChild = _cacheNodes!.isNotEmpty
+          ? _cacheNodes!.removeAt(0)
+          : SemanticsNode(key: currentSemantics.key);
 
       final SemanticsProperties properties = currentSemantics.properties;
       final SemanticsConfiguration config = SemanticsConfiguration();
@@ -2315,18 +2311,17 @@ abstract class _IYearViewRenderObject extends RenderBox
     final double cellHeight = height / 4;
     final int datesCount = visibleDates.length ~/ count;
     for (int j = 0; j < count; j++) {
-      final int currentViewIndex =
-          isRtl ? DateRangePickerHelper.getRtlIndex(count, j) : j;
+      final int currentViewIndex = isRtl
+          ? DateRangePickerHelper.getRtlIndex(count, j)
+          : j;
       left = isRtl ? width - cellWidth : 0;
       top = 0;
-      final double startXPosition =
-          isVerticalMultiView
-              ? 0
-              : (currentViewIndex * width) + (currentViewIndex * webUIPadding);
-      final double startYPosition =
-          isHorizontalMultiView
-              ? 0
-              : (currentViewIndex * height) + (currentViewIndex * webUIPadding);
+      final double startXPosition = isVerticalMultiView
+          ? 0
+          : (currentViewIndex * width) + (currentViewIndex * webUIPadding);
+      final double startYPosition = isHorizontalMultiView
+          ? 0
+          : (currentViewIndex * height) + (currentViewIndex * webUIPadding);
 
       final int startIndex = j * datesCount;
       for (int i = 0; i < datesCount; i++) {
@@ -2515,8 +2510,9 @@ abstract class _IYearViewRenderObject extends RenderBox
 
   String _getCellText(dynamic date) {
     if (_view == DateRangePickerView.year) {
-      final String format =
-          monthFormat == null || monthFormat!.isEmpty ? 'MMM' : monthFormat!;
+      final String format = monthFormat == null || monthFormat!.isEmpty
+          ? 'MMM'
+          : monthFormat!;
       if (isHijri) {
         return DateRangePickerHelper.getHijriMonthText(
           date,
@@ -2579,10 +2575,9 @@ abstract class _IYearViewRenderObject extends RenderBox
         yPosition + cellHeight >= _mouseHoverPosition.value!.offset!.dy) {
       _todayHighlightPaint.style = PaintingStyle.fill;
       _todayHighlightPaint.strokeWidth = 2;
-      _todayHighlightPaint.color =
-          selectionColor != null
-              ? selectionColor!.withValues(alpha: 0.4)
-              : datePickerTheme.selectionColor!.withValues(alpha: 0.4);
+      _todayHighlightPaint.color = selectionColor != null
+          ? selectionColor!.withValues(alpha: 0.4)
+          : datePickerTheme.selectionColor!.withValues(alpha: 0.4);
 
       if (centerYPosition - textHalfHeight < highlightPadding / 2) {
         highlightPadding = (centerYPosition - textHalfHeight / 2) - 1;
@@ -2654,19 +2649,17 @@ abstract class _IYearViewRenderObject extends RenderBox
     final double endYPosition =
         yPosition + centerYPosition + highlightPadding + textHalfHeight;
     final double endXPosition = xPosition + cellWidth;
-    final double cornerRadius =
-        isBetweenRange
-            ? 0
-            : (selectionShape == DateRangePickerSelectionShape.circle
-                ? (endYPosition - startYPosition) / 2
-                : 3);
+    final double cornerRadius = isBetweenRange
+        ? 0
+        : (selectionShape == DateRangePickerSelectionShape.circle
+              ? (endYPosition - startYPosition) / 2
+              : 3);
 
     _todayHighlightPaint.style = PaintingStyle.stroke;
     _todayHighlightPaint.strokeWidth = 1.0;
-    _todayHighlightPaint.color =
-        selectionColor != null
-            ? selectionColor!.withValues(alpha: 0.4)
-            : datePickerTheme.selectionColor!.withValues(alpha: 0.4);
+    _todayHighlightPaint.color = selectionColor != null
+        ? selectionColor!.withValues(alpha: 0.4)
+        : datePickerTheme.selectionColor!.withValues(alpha: 0.4);
     if (isStartRange) {
       rect = Rect.fromLTRB(
         endXPosition - cornerRadius,
@@ -2943,8 +2936,8 @@ class _SingleSelectionRenderObject extends _IYearViewRenderObject {
     );
     final double cornerRadius =
         selectionShape == DateRangePickerSelectionShape.circle
-            ? rect.height / 2
-            : 3;
+        ? rect.height / 2
+        : 3;
     _todayHighlightPaint.color =
         selectionColor ?? datePickerTheme.selectionColor!;
 
@@ -3105,8 +3098,8 @@ class _MultipleSelectionRenderObject extends _IYearViewRenderObject {
     );
     final double cornerRadius =
         selectionShape == DateRangePickerSelectionShape.circle
-            ? rect.height / 2
-            : 3;
+        ? rect.height / 2
+        : 3;
     _todayHighlightPaint.color =
         selectionColor ?? datePickerTheme.selectionColor!;
 
@@ -3277,12 +3270,11 @@ class _RangeSelectionRenderObject extends _IYearViewRenderObject {
           (isBetweenRange || isStartRange ? 0 : selectionPadding),
       yPosition + centerYPosition + highlightPadding + textHalfHeight,
     );
-    final double cornerRadius =
-        isBetweenRange
-            ? 0
-            : (selectionShape == DateRangePickerSelectionShape.circle
-                ? rect.height / 2
-                : 3);
+    final double cornerRadius = isBetweenRange
+        ? 0
+        : (selectionShape == DateRangePickerSelectionShape.circle
+              ? rect.height / 2
+              : 3);
     final double leftRadius = isStartRange || isSelectedDate ? cornerRadius : 0;
     final double rightRadius = isEndRange || isSelectedDate ? cornerRadius : 0;
     if (isSelectedDate) {
@@ -3558,12 +3550,11 @@ class _ExtendableRangeSelectionRenderObject extends _IYearViewRenderObject {
           (isBetweenRange || isStartRange ? 0 : selectionPadding),
       yPosition + centerYPosition + highlightPadding + textHalfHeight,
     );
-    final double cornerRadius =
-        isBetweenRange
-            ? 0
-            : (selectionShape == DateRangePickerSelectionShape.circle
-                ? rect.height / 2
-                : 3);
+    final double cornerRadius = isBetweenRange
+        ? 0
+        : (selectionShape == DateRangePickerSelectionShape.circle
+              ? rect.height / 2
+              : 3);
     final double leftRadius = isStartRange || isSelectedDate ? cornerRadius : 0;
     final double rightRadius = isEndRange || isSelectedDate ? cornerRadius : 0;
     if (isSelectedDate) {
@@ -3821,12 +3812,11 @@ class _MultiRangeSelectionRenderObject extends _IYearViewRenderObject {
           (isBetweenRange || isStartRange ? 0 : selectionPadding),
       yPosition + centerYPosition + highlightPadding + textHalfHeight,
     );
-    final double cornerRadius =
-        isBetweenRange
-            ? 0
-            : (selectionShape == DateRangePickerSelectionShape.circle
-                ? rect.height / 2
-                : 3);
+    final double cornerRadius = isBetweenRange
+        ? 0
+        : (selectionShape == DateRangePickerSelectionShape.circle
+              ? rect.height / 2
+              : 3);
     final double leftRadius = isStartRange || isSelectedDate ? cornerRadius : 0;
     final double rightRadius = isEndRange || isSelectedDate ? cornerRadius : 0;
     if (isSelectedDate) {
@@ -3988,8 +3978,9 @@ bool _isCurrentViewDateCell(
     return true;
   }
 
-  final int datesCount =
-      enableMultiView ? visibleDates.length ~/ 2 : visibleDates.length;
+  final int datesCount = enableMultiView
+      ? visibleDates.length ~/ 2
+      : visibleDates.length;
   final int middleIndex = (index * datesCount) + (datesCount ~/ 2);
   final int currentYear = visibleDates[middleIndex].year as int;
   if (pickerView == DateRangePickerView.decade) {
@@ -4043,8 +4034,9 @@ void _drawYearCells(
   if (isNeedWidgetPaint) {
     RenderBox? child = yearView.firstChild;
     for (int j = 0; j < count; j++) {
-      final int currentViewIndex =
-          yearView.isRtl ? DateRangePickerHelper.getRtlIndex(count, j) : j;
+      final int currentViewIndex = yearView.isRtl
+          ? DateRangePickerHelper.getRtlIndex(count, j)
+          : j;
 
       final int viewStartIndex = j * visibleDatesCount;
       final int viewEndIndex = ((j + 1) * visibleDatesCount) - 1;
@@ -4055,16 +4047,14 @@ void _drawYearCells(
         viewEndIndex,
       );
 
-      final double viewStartPosition =
-          isVerticalMultiView
-              ? 0
-              : (currentViewIndex * width) + (currentViewIndex * webUIPadding);
+      final double viewStartPosition = isVerticalMultiView
+          ? 0
+          : (currentViewIndex * width) + (currentViewIndex * webUIPadding);
       final double viewEndPosition = viewStartPosition + width;
       xPosition = viewStartPosition;
-      yPosition =
-          isHorizontalMultiView
-              ? 0
-              : (currentViewIndex * height) + (currentViewIndex * webUIPadding);
+      yPosition = isHorizontalMultiView
+          ? 0
+          : (currentViewIndex * height) + (currentViewIndex * webUIPadding);
       for (int i = 0; i < visibleDatesCount; i++) {
         int currentIndex = i;
         if (yearView.isRtl) {
@@ -4153,10 +4143,10 @@ void _drawYearCells(
             yearView._todayHighlightPaint.strokeWidth = 2;
             yearView._todayHighlightPaint.color =
                 yearView.selectionColor != null
-                    ? yearView.selectionColor!.withValues(alpha: 0.4)
-                    : yearView.datePickerTheme.selectionColor!.withValues(
-                      alpha: 0.4,
-                    );
+                ? yearView.selectionColor!.withValues(alpha: 0.4)
+                : yearView.datePickerTheme.selectionColor!.withValues(
+                    alpha: 0.4,
+                  );
 
             final Rect rect = Rect.fromLTRB(
               xPosition,
@@ -4188,8 +4178,9 @@ void _drawYearCells(
   final double centerYPosition = cellHeight / 2;
 
   for (int j = 0; j < count; j++) {
-    final int currentViewIndex =
-        yearView.isRtl ? DateRangePickerHelper.getRtlIndex(count, j) : j;
+    final int currentViewIndex = yearView.isRtl
+        ? DateRangePickerHelper.getRtlIndex(count, j)
+        : j;
 
     final int viewStartIndex = j * visibleDatesCount;
     final int viewEndIndex = ((j + 1) * visibleDatesCount) - 1;
@@ -4211,16 +4202,14 @@ void _drawYearCells(
       );
     }
 
-    final double viewStartPosition =
-        isVerticalMultiView
-            ? 0
-            : (currentViewIndex * width) + (currentViewIndex * webUIPadding);
+    final double viewStartPosition = isVerticalMultiView
+        ? 0
+        : (currentViewIndex * width) + (currentViewIndex * webUIPadding);
     final double viewEndPosition = viewStartPosition + width;
     xPosition = viewStartPosition;
-    yPosition =
-        isHorizontalMultiView
-            ? 0
-            : (currentViewIndex * height) + (currentViewIndex * webUIPadding);
+    yPosition = isHorizontalMultiView
+        ? 0
+        : (currentViewIndex * height) + (currentViewIndex * webUIPadding);
 
     for (int i = 0; i < visibleDatesCount; i++) {
       int currentIndex = i;
@@ -4316,8 +4305,9 @@ void _drawYearCells(
       yearView._textPainter.text = yearText;
       yearView._textPainter.layout(maxWidth: cellWidth);
 
-      final double highlightPadding =
-          yearView.selectionRadius == -1 ? 10 : yearView.selectionRadius;
+      final double highlightPadding = yearView.selectionRadius == -1
+          ? 10
+          : yearView.selectionRadius;
       final double textHalfHeight = yearView._textPainter.height / 2;
       if (isSelected && isEnableDate && !isDisabledDate) {
         yearView.drawSelection(

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../theme.dart';
 
 /// Applies a theme to descendant Syncfusion barcode widgets.
@@ -79,8 +80,8 @@ class SfBarcodeTheme extends InheritedTheme {
   /// Defaults to [SfBarcodeTheme.barcodeThemeData]
   /// if there is no [SfBarcodeTheme] in the given build context.
   static SfBarcodeThemeData of(BuildContext context) {
-    final SfBarcodeTheme? sfBarcodeTheme =
-        context.dependOnInheritedWidgetOfExactType<SfBarcodeTheme>();
+    final SfBarcodeTheme? sfBarcodeTheme = context
+        .dependOnInheritedWidgetOfExactType<SfBarcodeTheme>();
     return sfBarcodeTheme?.data ?? SfTheme.of(context).barcodeThemeData;
   }
 
@@ -89,8 +90,8 @@ class SfBarcodeTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfBarcodeTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfBarcodeTheme>();
+    final SfBarcodeTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfBarcodeTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfBarcodeTheme(data: data, child: child);

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:syncfusion_flutter_core/core.dart';
+
 import '../../datepicker.dart';
 import 'picker_helper.dart';
 
@@ -1093,14 +1094,12 @@ class DateRangePickerMonthViewSettings with Diagnosticable {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-      IterableDiagnostics<DateTime>(
-        blackoutDates,
-      ).toDiagnosticsNode(name: 'blackoutDates'),
+      IterableDiagnostics<DateTime>(blackoutDates)
+          .toDiagnosticsNode(name: 'blackoutDates'),
     );
     properties.add(
-      IterableDiagnostics<DateTime>(
-        specialDates,
-      ).toDiagnosticsNode(name: 'specialDates'),
+      IterableDiagnostics<DateTime>(specialDates)
+          .toDiagnosticsNode(name: 'specialDates'),
     );
     properties.add(IntProperty('numberOfWeeksInView', numberOfWeeksInView));
     properties.add(IntProperty('firstDayOfWeek', firstDayOfWeek));
@@ -3760,8 +3759,8 @@ class DateRangePickerController extends DateRangePickerValueChangeNotifier {
       return;
     }
 
-    _selectedRanges =
-        DateRangePickerHelper.cloneList(ranges)?.cast<PickerDateRange>();
+    _selectedRanges = DateRangePickerHelper.cloneList(ranges)
+        ?.cast<PickerDateRange>();
     notifyPropertyChangedListeners('selectedRanges');
   }
 
@@ -4009,17 +4008,15 @@ class DateRangePickerController extends DateRangePickerValueChangeNotifier {
     properties.add(DiagnosticsProperty<DateTime>('displayDate', displayDate));
     properties.add(DiagnosticsProperty<DateTime>('selectedDate', selectedDate));
     properties.add(
-      IterableDiagnostics<DateTime>(
-        selectedDates,
-      ).toDiagnosticsNode(name: 'selectedDates'),
+      IterableDiagnostics<DateTime>(selectedDates)
+          .toDiagnosticsNode(name: 'selectedDates'),
     );
     properties.add(
       DiagnosticsProperty<PickerDateRange>('selectedRange', selectedRange),
     );
     properties.add(
-      IterableDiagnostics<PickerDateRange>(
-        selectedRanges,
-      ).toDiagnosticsNode(name: 'selectedRanges'),
+      IterableDiagnostics<PickerDateRange>(selectedRanges)
+          .toDiagnosticsNode(name: 'selectedRanges'),
     );
     properties.add(EnumProperty<DateRangePickerView>('view', view));
   }
@@ -4283,11 +4280,10 @@ class PickerDateRange with Diagnosticable {
 /// See also:
 /// * [SfDateRangePicker.cellBuilder], which matches this signature.
 /// * [SfDateRangePicker], which uses this signature in one of it's callback.
-typedef DateRangePickerCellBuilder =
-    Widget Function(
-      BuildContext context,
-      DateRangePickerCellDetails cellDetails,
-    );
+typedef DateRangePickerCellBuilder = Widget Function(
+  BuildContext context,
+  DateRangePickerCellDetails cellDetails,
+);
 
 /// Signature for predicating dates for enabled date selections.
 ///

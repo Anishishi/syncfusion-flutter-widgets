@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Apply the different marker pointer.
 enum ShapeMarkerType {
@@ -964,9 +964,9 @@ Path _processStepLineShape({
     canvas.drawPath(
       isDashArray!
           ? _processDashPath(
-            path,
-            dashArray: _CircularIntervalList<double>(<double>[3, 2]),
-          )
+              path,
+              dashArray: _CircularIntervalList<double>(<double>[3, 2]),
+            )
           : path,
       paint..style = PaintingStyle.stroke,
     );
@@ -1608,9 +1608,9 @@ Path _processLineShape({
     canvas.drawPath(
       isDashArray!
           ? _processDashPath(
-            path,
-            dashArray: _CircularIntervalList<double>(<double>[3, 2]),
-          )
+              path,
+              dashArray: _CircularIntervalList<double>(<double>[3, 2]),
+            )
           : path,
       paint..style = PaintingStyle.stroke,
     );
@@ -1818,9 +1818,9 @@ Path _processSplineShape({
     canvas.drawPath(
       isDashArray!
           ? _processDashPath(
-            path,
-            dashArray: _CircularIntervalList<double>(<double>[3, 2]),
-          )
+              path,
+              dashArray: _CircularIntervalList<double>(<double>[3, 2]),
+            )
           : path,
       paint..style = PaintingStyle.stroke,
     );

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'theme_widget.dart';
 
@@ -47,8 +47,8 @@ class SfChatTheme extends InheritedTheme {
   /// Defaults to [SfThemeData.chatThemeData] if there is no
   /// [SfChatTheme] in the given build context.
   static SfChatThemeData of(BuildContext context) {
-    final SfChatTheme? chatTheme =
-        context.dependOnInheritedWidgetOfExactType<SfChatTheme>();
+    final SfChatTheme? chatTheme = context
+        .dependOnInheritedWidgetOfExactType<SfChatTheme>();
     return chatTheme?.data ?? SfTheme.of(context).chatThemeData;
   }
 
@@ -57,8 +57,8 @@ class SfChatTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfChatTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfChatTheme>();
+    final SfChatTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfChatTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfChatTheme(data: data, child: child);
@@ -943,8 +943,9 @@ class SfChatThemeData with Diagnosticable {
         b.actionButtonShape,
         t,
       ),
-      actionButtonMouseCursor:
-          t < 0.5 ? a.actionButtonMouseCursor : b.actionButtonMouseCursor,
+      actionButtonMouseCursor: t < 0.5
+          ? a.actionButtonMouseCursor
+          : b.actionButtonMouseCursor,
       outgoingAvatarBackgroundColor: Color.lerp(
         a.outgoingAvatarBackgroundColor,
         b.outgoingAvatarBackgroundColor,

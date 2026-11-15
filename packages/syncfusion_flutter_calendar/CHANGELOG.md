@@ -1,4 +1,10 @@
-## Unreleased
+﻿## [35.1.46] - 11/11/2026
+
+**General**
+
+* Migrated the Flutter calendar Material imports from the Flutter SDK to the standalone material_ui package.
+
+## [35.1.37] - 09/29/2026
 
 **General**
 
@@ -59,7 +65,7 @@
 
 **Bugs**
 
-* #GH1498 - The child widget in [loadMoreWidgetBuilder](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/loadMoreWidgetBuilder.html) was repeatedly invoked when [minDate](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/minDate.html) was set to current month-end date. Now, it runs once initially, and then load-more will be triggered only when required during scrolling. 
+* #GH1498 - The child widget in [loadMoreWidgetBuilder](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/loadMoreWidgetBuilder.html) was repeatedly invoked when [minDate](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/minDate.html) was set to current month-end date. Now, it runs once initially, and then load-more will be triggered only when required during scrolling.
 
 ## [31.2.15] - 11/25/2025
 
@@ -71,7 +77,7 @@
 
 **General**
 
-*  The translation for “No events” has been modified to “Etkinlik yok” from “Olay yok” for Turkish language. 
+*  The translation for “No events” has been modified to “Etkinlik yok” from “Olay yok” for Turkish language.
 
 ## [31.2.4] - 10/28/2025
 
@@ -257,7 +263,7 @@ Now, the appointment details are passed correctly to the [monthCellBuilder](http
 * Provided support to display week numbers of the year.
 * Provided ID, recurrence ID, and appointment type support.
 * Provided builder support for the resource header view.
-* Now, the occurrence appointment will contain the occurrence date details in the tap callbacks. 
+* Now, the occurrence appointment will contain the occurrence date details in the tap callbacks.
 * Now, appointments will be displayed based on the `appointmentDisplayMode` in month view when the month cell builder is used.
 
 ## [19.1.54] - 03/30/2021
@@ -297,7 +303,7 @@ No changes.
 ## [18.4.30] - 12/17/2020
 **Features**
 * The custom builder support is provided for the time region and the appointment views in the calendar.
-* Provided the interaction support for the resource header. 
+* Provided the interaction support for the resource header.
 * Support is provided to the right end padding for the cell touch region when the cell has an appointment in the calendar.
 
 **Enhancements**
@@ -389,7 +395,7 @@ No changes.
 ## [18.2.44] - 07/07/2020
 
 **Features**
-* The long press callback support 
+* The long press callback support
 * Schedule view support
 * Special time regions support
 * Navigation arrow support
@@ -428,11 +434,11 @@ No changes.
 **Bug fixes**
 * The `parseRRule` now works without the `count` value in `SfCalendar`.
 
-## [18.1.43-beta] - 04/07/2020 
+## [18.1.43-beta] - 04/07/2020
 
 No changes.
 
-## [18.1.42-beta] - 04/01/2020 
+## [18.1.42-beta] - 04/01/2020
 
 No changes.
 
@@ -477,7 +483,7 @@ No changes.
 
 Initial release.
 
-**Features** 
+**Features**
 * Day, week, workweek, timeline day, timeline week, timeline workweek, and month. Seven built-in calendar views.
 * Appointment scheduling. Default and custom appointments supported.
 * Recursive appointments with daily, weekly, monthly, and yearly recurrence types.

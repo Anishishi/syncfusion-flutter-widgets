@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../theme.dart';
 
 /// Applies a theme to descendant Syncfusion calendar widgets.
@@ -64,8 +65,8 @@ class SfCalendarTheme extends InheritedTheme {
   /// Defaults to [SfThemeData.calendarThemeData]
   /// if there is no [SfCalendarTheme] in the given build context.
   static SfCalendarThemeData of(BuildContext context) {
-    final SfCalendarTheme? sfCalendarTheme =
-        context.dependOnInheritedWidgetOfExactType<SfCalendarTheme>();
+    final SfCalendarTheme? sfCalendarTheme = context
+        .dependOnInheritedWidgetOfExactType<SfCalendarTheme>();
     return sfCalendarTheme?.data ?? SfTheme.of(context).calendarThemeData;
   }
 
@@ -74,8 +75,8 @@ class SfCalendarTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfCalendarTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfCalendarTheme>();
+    final SfCalendarTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfCalendarTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfCalendarTheme(data: data, child: child);

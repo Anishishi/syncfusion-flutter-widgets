@@ -5,8 +5,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:material_ui/material_ui.dart';
 import 'package:syncfusion_flutter_core/localizations.dart';
 
 import 'l10n/generated_syncfusion_localizations.dart';
