@@ -2,11 +2,74 @@
 
 **General**
 
+*  The compatible version of our Flutter gauges widget has been updated to Flutter SDK 3.47.
+
+## [32.2.9] - 03/10/2026
+
+## Radial Gauge
+
+**Bugs**
+
+* Now, the [MarkerPointer](https://pub.dev/documentation/syncfusion_flutter_gauges/latest/gauges/MarkerPointer-class.html) no longer throws a RenderObject.markNeedsPaint assertion when its image finishes decoding after the gauge has been disposed, such as during rapid layout rebuilds.
+
+## [32.2.7] - 02/24/2026
+
+## Linear Gauge
+
+**Bugs**
+
+*  Now, the [MarkerPointer](https://pub.dev/documentation/syncfusion_flutter_gauges/latest/gauges/MarkerPointer-class.html) drag position updates correctly when the gauge is placed inside a custom RenderObject that applies paint offsets. The drag logic uses globalToLocal to ensure accurate tracking in all layout scenarios.
+
+## [32.1.22] - 01/06/2026
+
+* No changes.
+
+## [31.2.15] - 11/25/2025
+
+**General**
+
+*  The compatible version of our Flutter gauges widget has been updated to Flutter SDK 3.38.
+
+## [31.2.5] - 11/04/2025
+
+## Radial Gauge
+
+**Bugs**
+
+* Now, the [MarkerPointer](https://pub.dev/documentation/syncfusion_flutter_gauges/latest/gauges/MarkerPointer-class.html) image will render properly without any clipping issues. 
+
+## [31.1.20] - 09/17/2025
+
+**General**
+
+*  The compatible version of our Flutter gauges widget has been updated to Flutter SDK 3.35.
+
+## [30.1.37] - 06/25/2025
+
+**General**
+
+*  The compatible version of our Flutter gauges widget has been updated to Flutter SDK 3.32.0.
+
+# [29.2.6] - 05/27/2025
+## Radial Gauge
+**Bugs**
+* #FR67597 - Now, the [WidgetPointer](https://pub.dev/documentation/syncfusion_flutter_gauges/latest/gauges/WidgetPointer-class.html) position will update properly, when we override the valueToFactor method in the custom axis renderer to update the widget pointer position.
+
+## [29.1.39] - 04/22/2025
+
+**General**
+
+* The minimum Dart version has been updated to 3.7.
+
+## [29.1.33] - 03/25/2025
+
+**General**
+
 *  The compatible version of our Flutter gauges widget has been updated to Flutter SDK 3.29.0.
 *  The Syncfusion<sup>&reg;</sup> Flutter gauges example sample have been updated to support [kotlin build scripts](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply) in Android platform.
 *  The Syncfusion<sup>&reg;</sup> Flutter gauges example sample have been updated to support [Swift package manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers) in macOS and iOS platforms.
 
-## [28.2.7] - 25/02/2025
+## [28.2.7] - 02/25/2025
 
 **General**
 

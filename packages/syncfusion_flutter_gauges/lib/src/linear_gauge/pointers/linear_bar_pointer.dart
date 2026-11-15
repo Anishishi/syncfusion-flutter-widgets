@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../linear_gauge/gauge/linear_gauge.dart';
 import '../../linear_gauge/gauge/linear_gauge_scope.dart';
 import '../../linear_gauge/pointers/linear_bar_renderer.dart';
@@ -7,24 +8,24 @@ import '../../linear_gauge/utils/enum.dart';
 /// [LinearBarPointer] has properties for customizing the linear gauge bar pointer.
 class LinearBarPointer extends SingleChildRenderObjectWidget {
   /// Creates a new instance for [LinearBarPointer].
-  const LinearBarPointer(
-      {Key? key,
-      required this.value,
-      this.enableAnimation = true,
-      this.animationDuration = 1000,
-      this.animationType = LinearAnimationType.ease,
-      this.onAnimationCompleted,
-      this.thickness = 5.0,
-      double offset = 0,
-      this.edgeStyle = LinearEdgeStyle.bothFlat,
-      this.position = LinearElementPosition.cross,
-      this.shaderCallback,
-      this.color,
-      this.borderColor,
-      this.borderWidth = 0,
-      Widget? child})
-      : offset = offset > 0 ? offset : 0,
-        super(key: key, child: child);
+  const LinearBarPointer({
+    Key? key,
+    required this.value,
+    this.enableAnimation = true,
+    this.animationDuration = 1000,
+    this.animationType = LinearAnimationType.ease,
+    this.onAnimationCompleted,
+    this.thickness = 5.0,
+    double offset = 0,
+    this.edgeStyle = LinearEdgeStyle.bothFlat,
+    this.position = LinearElementPosition.cross,
+    this.shaderCallback,
+    this.color,
+    this.borderColor,
+    this.borderWidth = 0,
+    Widget? child,
+  }) : offset = offset > 0 ? offset : 0,
+       super(key: key, child: child);
 
   /// Specifies the pointer value of [SfLinearGauge.barPointers].
   /// This value must be between the min and max value of an axis track.
@@ -272,36 +273,41 @@ class LinearBarPointer extends SingleChildRenderObjectWidget {
     final ThemeData themeData = Theme.of(context);
     final bool isMaterial3 = themeData.useMaterial3;
     final bool isDarkTheme = themeData.brightness == Brightness.dark;
-    final Color barPointerColor = isMaterial3
-        ? (isDarkTheme ? const Color(0XFFFFF500) : const Color(0XFF06AEE0))
-        : themeData.colorScheme.primary;
+    final Color barPointerColor =
+        isMaterial3
+            ? (isDarkTheme ? const Color(0XFFFFF500) : const Color(0XFF06AEE0))
+            : themeData.colorScheme.primary;
     return RenderLinearBarPointer(
-        value: value,
-        edgeStyle: edgeStyle,
-        shaderCallback: shaderCallback,
-        color: color ?? barPointerColor,
-        borderColor: borderColor ?? barPointerColor,
-        borderWidth: borderWidth,
-        thickness: thickness,
-        offset: offset,
-        position: position,
-        orientation: linearGaugeScope.orientation,
-        isAxisInversed: linearGaugeScope.isAxisInversed,
-        onAnimationCompleted: onAnimationCompleted,
-        animationController: linearGaugeScope.animationController,
-        pointerAnimation: linearGaugeScope.animation);
+      value: value,
+      edgeStyle: edgeStyle,
+      shaderCallback: shaderCallback,
+      color: color ?? barPointerColor,
+      borderColor: borderColor ?? barPointerColor,
+      borderWidth: borderWidth,
+      thickness: thickness,
+      offset: offset,
+      position: position,
+      orientation: linearGaugeScope.orientation,
+      isAxisInversed: linearGaugeScope.isAxisInversed,
+      onAnimationCompleted: onAnimationCompleted,
+      animationController: linearGaugeScope.animationController,
+      pointerAnimation: linearGaugeScope.animation,
+    );
   }
 
   @override
   void updateRenderObject(
-      BuildContext context, RenderLinearBarPointer renderObject) {
+    BuildContext context,
+    RenderLinearBarPointer renderObject,
+  ) {
     final LinearGaugeScope linearGaugeScope = LinearGaugeScope.of(context);
     final ThemeData themeData = Theme.of(context);
     final bool isMaterial3 = themeData.useMaterial3;
     final bool isDarkTheme = themeData.brightness == Brightness.dark;
-    final Color barPointerColor = isMaterial3
-        ? (isDarkTheme ? const Color(0XFFFFF500) : const Color(0XFF06AEE0))
-        : themeData.colorScheme.primary;
+    final Color barPointerColor =
+        isMaterial3
+            ? (isDarkTheme ? const Color(0XFFFFF500) : const Color(0XFF06AEE0))
+            : themeData.colorScheme.primary;
     renderObject
       ..value = value
       ..edgeStyle = edgeStyle

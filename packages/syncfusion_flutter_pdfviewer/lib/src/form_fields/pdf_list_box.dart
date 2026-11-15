@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+
 import '../../pdfviewer.dart';
 import 'pdf_form_field.dart';
 
@@ -128,9 +129,12 @@ class PdfListBoxFormFieldHelper extends PdfFormFieldHelper {
         heightPercentage: heightPercentage,
         selectedItems: listBoxFormField._selectedItems!,
         items: listBoxFormField._items,
+        readOnly: listBoxFormField.readOnly,
         font: pdfListBoxField.font?.name,
         fillColor: pdfListBoxField.backColor.isEmpty
-            ? const Color.fromARGB(255, 221, 228, 255)
+            ? pdfListBoxField.readOnly
+                  ? Colors.transparent
+                  : const Color.fromARGB(255, 221, 228, 255)
             : Color.fromRGBO(
                 pdfListBoxField.backColor.r,
                 pdfListBoxField.backColor.g,
@@ -290,11 +294,11 @@ void _showListBoxDialog(
             return SizedBox(
               height: 56.0 * listBoxHelper.listBoxFormField._items.length,
               width: 348,
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemBuilder: (BuildContext context, int index) {
-                  return listBoxHelper.isMultiSelect
-                      ? CheckboxListTile(
+              child: listBoxHelper.isMultiSelect
+                  ? ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemBuilder: (BuildContext context, int index) {
+                        return CheckboxListTile(
                           controlAffinity: ListTileControlAffinity.leading,
                           title: Text(
                             listBoxHelper.listBoxFormField._items[index],
@@ -314,36 +318,46 @@ void _showListBoxDialog(
                                 if (value) {
                                   newItems.add(
                                     listBoxHelper
-                                        .listBoxFormField._items[index],
+                                        .listBoxFormField
+                                        ._items[index],
                                   );
                                 } else {
                                   newItems.remove(
                                     listBoxHelper
-                                        .listBoxFormField._items[index],
+                                        .listBoxFormField
+                                        ._items[index],
                                   );
                                 }
                               }
                             });
                           },
-                        )
-                      : RadioListTile<String>(
-                          controlAffinity: ListTileControlAffinity.leading,
-                          title: Text(
-                            listBoxHelper.listBoxFormField._items[index],
-                          ),
-                          value: listBoxHelper.listBoxFormField._items[index],
-                          groupValue: newItems.isEmpty ? null : newItems.first,
-                          onChanged: (String? value) {
-                            setState(() {
-                              if (value != null) {
-                                newItems = <String>[value];
-                              }
-                            });
-                          },
                         );
-                },
-                itemCount: listBoxHelper.listBoxFormField._items.length,
-              ),
+                      },
+                      itemCount: listBoxHelper.listBoxFormField._items.length,
+                    )
+                  : RadioGroup<String>(
+                      groupValue: newItems.isEmpty ? null : newItems.first,
+                      onChanged: (String? value) {
+                        setState(() {
+                          if (value != null) {
+                            newItems = <String>[value];
+                          }
+                        });
+                      },
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemBuilder: (BuildContext context, int index) {
+                          return RadioListTile<String>(
+                            controlAffinity: ListTileControlAffinity.leading,
+                            title: Text(
+                              listBoxHelper.listBoxFormField._items[index],
+                            ),
+                            value: listBoxHelper.listBoxFormField._items[index],
+                          );
+                        },
+                        itemCount: listBoxHelper.listBoxFormField._items.length,
+                      ),
+                    ),
             );
           },
         ),

@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -8,7 +9,11 @@ import '../../radial_gauge/styles/radial_text_style.dart';
 class CircularAxisLabel {
   /// Creates the axis label with default or required properties.
   CircularAxisLabel(
-      this.labelStyle, this.text, this.index, this.needsRotateLabel);
+    this.labelStyle,
+    this.text,
+    this.index,
+    this.needsRotateLabel,
+  );
 
   /// Style for axis label text.
   late GaugeTextStyle labelStyle;

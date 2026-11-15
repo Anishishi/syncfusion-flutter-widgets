@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+
 import '../../pdfviewer.dart';
 import '../common/pdfviewer_helper.dart';
 import 'pdf_form_field.dart';
@@ -124,12 +125,14 @@ class PdfCheckboxFormFieldHelper extends PdfFormFieldHelper {
   void _updateChildItems() {
     if (checkboxFormField._children != null &&
         checkboxFormField._children!.isNotEmpty) {
-      for (int index = 0;
-          index < checkboxFormField._children!.length;
-          index++) {
-        final PdfCheckboxFormFieldHelper helper =
-            PdfFormFieldHelper.getHelper(checkboxFormField._children![index])
-                as PdfCheckboxFormFieldHelper;
+      for (
+        int index = 0;
+        index < checkboxFormField._children!.length;
+        index++
+      ) {
+        final PdfCheckboxFormFieldHelper helper = PdfFormFieldHelper.getHelper(
+          checkboxFormField._children![index],
+        ) as PdfCheckboxFormFieldHelper;
 
         if (helper.pdfCheckBoxItem != null) {
           checkboxFormField._children![index]._isChecked =
@@ -156,7 +159,9 @@ class PdfCheckboxFormFieldHelper extends PdfFormFieldHelper {
         heightPercentage: heightPercentage,
         selectionPadding: selectionPadding,
         fillColor: pdfCheckboxField.backColor.isEmpty
-            ? const Color.fromARGB(255, 221, 228, 255)
+            ? pdfCheckboxField.readOnly
+                  ? Colors.transparent
+                  : const Color.fromARGB(255, 221, 228, 255)
             : Color.fromRGBO(
                 pdfCheckboxField.backColor.r,
                 pdfCheckboxField.backColor.g,
@@ -171,7 +176,8 @@ class PdfCheckboxFormFieldHelper extends PdfFormFieldHelper {
                 pdfCheckboxField.borderColor.b,
                 1,
               ),
-        borderWidth: (pdfCheckboxField.borderWidth == 0
+        borderWidth:
+            (pdfCheckboxField.borderWidth == 0
                 ? 1
                 : pdfCheckboxField.borderWidth) /
             heightPercentage,
@@ -225,7 +231,7 @@ class PdfCheckbox extends StatefulWidget {
   final double borderWidth;
 
   @override
-  _PdfCheckboxState createState() => _PdfCheckboxState();
+  State<PdfCheckbox> createState() => _PdfCheckboxState();
 }
 
 class _PdfCheckboxState extends State<PdfCheckbox> {

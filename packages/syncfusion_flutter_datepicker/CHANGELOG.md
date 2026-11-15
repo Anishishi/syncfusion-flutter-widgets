@@ -2,6 +2,54 @@
 
 **General**
 
+*  The compatible version of our Flutter datepicker widget has been updated to Flutter SDK 3.47.
+
+## [34.1.30] - 09/07/2026
+
+**Bugs**
+
+* Improved [cellBuilder](https://pub.dev/documentation/syncfusion_flutter_datepicker/latest/datepicker/SfDateRangePicker/cellBuilder.html) rendering to correctly reflect theme changes across both month and year views in vertical scroll navigation.
+
+## [32.2.13+1] - 06/18/2026
+
+## Date Picker
+
+**Bugs**
+
+* Fixed tap and drag issues in the Date Range Picker that occurred when it was shifted from its normal position using an offset. Date selection and gestures now work accurately.
+
+## [32.1.25] - 01/27/2026
+
+* No changes.
+
+## [31.2.15] - 11/25/2025
+
+**General**
+
+*  The compatible version of our Flutter datepicker widget has been updated to Flutter SDK 3.38.
+
+## [31.1.20] - 09/17/2025
+
+**General**
+
+*  The compatible version of our Flutter datepicker widget has been updated to Flutter SDK 3.35.
+
+## [30.1.37] - 06/25/2025
+
+**General**
+
+*  The compatible version of our Flutter datepicker widget has been updated to Flutter SDK 3.32.0.
+
+## [29.1.39] - 22/04/2025
+
+**General**
+
+*  The minimum Dart version has been updated to 3.7.
+
+## [29.1.33] - 25/03/2025
+
+**General**
+
 *  The compatible version of our Flutter datepicker widget has been updated to Flutter SDK 3.29.0.
 *  The Syncfusion<sup>&reg;</sup> Flutter datepicker example sample have been updated to support [kotlin build scripts](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply) in Android platform.
 *  The Syncfusion<sup>&reg;</sup> Flutter datepicker example sample have been updated to support [Swift package manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers) in macOS and iOS platforms.

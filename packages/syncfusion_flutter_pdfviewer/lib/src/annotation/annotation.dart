@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+
 import '../../pdfviewer.dart';
 import '../common/pdfviewer_helper.dart';
 import 'annotation_view.dart';
@@ -15,7 +16,9 @@ typedef AnnotationPropertyChangedCallback = void Function(
 
 /// Callback definition for annotation property change.
 typedef AnnotationPropertyChangingCallback = bool Function(
-    Annotation annotation, String propertyName);
+  Annotation annotation,
+  String propertyName,
+);
 
 /// Represents a PDF annotation.
 abstract class Annotation extends ChangeNotifier {

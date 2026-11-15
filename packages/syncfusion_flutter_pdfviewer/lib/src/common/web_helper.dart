@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+
 import 'package:web/web.dart' as web;
 
 /// Checks whether focus node of pdf page view has primary focus.
@@ -45,3 +46,6 @@ String getPlatformType() {
   }
   return web.window.navigator.platform.toLowerCase();
 }
+
+/// In web, pdfium cannot loaded.
+bool isPdfiumLoaded() => false;

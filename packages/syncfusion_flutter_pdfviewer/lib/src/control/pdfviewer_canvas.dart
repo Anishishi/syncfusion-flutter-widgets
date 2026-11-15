@@ -183,13 +183,19 @@ class PdfViewerCanvas extends LeafRenderObjectWidget {
       ..interactionMode = interactionMode
       ..isMobileWebView = isMobileWebView
       ..enableTextSelection = enableTextSelection
-      ..enableDocumentLinkNavigation = enableDocumentLinkNavigation
-      ..enableHyperlinkNavigation = enableHyperlinkNavigation
+      // Enables hyperlink and document link navigation only when annotation mode is set to none.
+      ..enableDocumentLinkNavigation =
+          (pdfViewerController.annotationMode == PdfAnnotationMode.none) &&
+          enableDocumentLinkNavigation
+      ..enableHyperlinkNavigation =
+          (pdfViewerController.annotationMode == PdfAnnotationMode.none) &&
+          enableHyperlinkNavigation
       ..canShowHyperlinkDialog = canShowHyperlinkDialog
       ..currentSearchTextHighlightColor = currentSearchTextHighlightColor
       ..otherSearchTextHighlightColor = otherSearchTextHighlightColor
       ..scrollDirection = scrollDirection
       ..isSinglePageView = isSinglePageView
+      ..textDirection = textDirection
       ..viewportGlobalRect = viewportGlobalRect
       ..pdfTextSearchResult = pdfTextSearchResult
       ..onAnnotationSelectionChanged = onAnnotationSelectionChanged;
@@ -353,7 +359,9 @@ class CanvasRenderBox extends RenderBox {
   bool _isHyperLinkTapped = false;
   bool _isMousePointer = false;
   double _startBubbleTapX = 0;
+  double _startBubbleTapY = 0;
   double _endBubbleTapX = 0;
+  double _endBubbleTapY = 0;
   final double _bubbleSize = 16.0;
   final double _jumpOffset = 10.0;
   final double _maximumZoomLevel = 2.0;
@@ -374,9 +382,11 @@ class CanvasRenderBox extends RenderBox {
   late PdfDocumentLinkAnnotation? _documentLinkAnnotation;
   late PdfUriAnnotation? _pdfUriAnnotation;
   PdfTextWebLink? _pdfTextWebLink;
-  late final PdfPageRotateAngle _rotatedAngle =
-      pdfDocument!.pages[pageIndex].rotation;
+  late final PdfPageRotateAngle _rotatedAngle = pdfDocument != null
+      ? pdfDocument!.pages[pageIndex].rotation
+      : PdfPageRotateAngle.rotateAngle0;
   bool _isConsecutiveTap = false;
+  bool _isSelectedTextContainsRotatedGlyph = false;
 
   @override
   void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
@@ -412,20 +422,25 @@ class CanvasRenderBox extends RenderBox {
                 PdfAnnotationMode.strikethrough ||
             pdfViewerController.annotationMode == PdfAnnotationMode.underline ||
             pdfViewerController.annotationMode == PdfAnnotationMode.squiggly) {
-          if (_checkTextInLocation(event.localPosition, event.kind)) {
+          final Offset? localPosition = _globalToLocal(event.position);
+          if (localPosition != null &&
+              _checkTextInLocation(localPosition, event.kind)) {
             _dragRecognizer.addPointer(event);
             _verticalDragRecognizer.addPointer(event);
           }
         } else if (_textSelectionHelper.selectionEnabled) {
-          final bool isStartDragPossible = _checkStartBubblePosition(
-            event.localPosition,
-          );
-          final bool isEndDragPossible = _checkEndBubblePosition(
-            event.localPosition,
-          );
-          if (isStartDragPossible || isEndDragPossible) {
-            _dragRecognizer.addPointer(event);
-            _verticalDragRecognizer.addPointer(event);
+          final Offset? localPosition = _globalToLocal(event.position);
+          if (localPosition != null) {
+            final bool isStartDragPossible = _checkStartBubblePosition(
+              localPosition,
+            );
+            final bool isEndDragPossible = _checkEndBubblePosition(
+              localPosition,
+            );
+            if (isStartDragPossible || isEndDragPossible) {
+              _dragRecognizer.addPointer(event);
+              _verticalDragRecognizer.addPointer(event);
+            }
           }
         }
       }
@@ -447,7 +462,7 @@ class CanvasRenderBox extends RenderBox {
 
   /// Handles the tap down event
   void handleTapDown(TapDownDetails details) {
-    _tapDetails = details.localPosition;
+    _tapDetails = _globalToLocal(details.globalPosition);
     if (kIsDesktop &&
         !isMobileWebView &&
         enableTextSelection &&
@@ -488,8 +503,8 @@ class CanvasRenderBox extends RenderBox {
             buttonPadding: orientation == Orientation.portrait
                 ? const EdgeInsets.all(8)
                 : const EdgeInsets.all(6),
-            backgroundColor: _pdfViewerThemeData!
-                    .hyperlinkDialogStyle?.backgroundColor ??
+            backgroundColor:
+                _pdfViewerThemeData!.hyperlinkDialogStyle?.backgroundColor ??
                 _effectiveThemeData.hyperlinkDialogStyle?.backgroundColor ??
                 (Theme.of(context).colorScheme.brightness == Brightness.light
                     ? Colors.white
@@ -500,34 +515,34 @@ class CanvasRenderBox extends RenderBox {
                 Text(
                   _localizations.pdfHyperlinkLabel,
                   style: isMaterial3
-                      ? Theme.of(context)
-                          .textTheme
-                          .headlineMedium!
-                          .copyWith(
-                            fontSize: 24,
-                            color:
-                                Theme.of(context).brightness == Brightness.light
-                                    ? Colors.black.withValues(alpha: 0.87)
-                                    : Colors.white.withValues(alpha: 0.87),
-                          )
-                          .merge(
-                            _pdfViewerThemeData!
-                                .hyperlinkDialogStyle?.headerTextStyle,
-                          )
-                      : Theme.of(context)
-                          .textTheme
-                          .headlineMedium!
-                          .copyWith(
-                            fontSize: 20,
-                            color:
-                                Theme.of(context).brightness == Brightness.light
-                                    ? Colors.black.withValues(alpha: 0.87)
-                                    : Colors.white.withValues(alpha: 0.87),
-                          )
-                          .merge(
-                            _pdfViewerThemeData!
-                                .hyperlinkDialogStyle?.headerTextStyle,
-                          ),
+                      ? Theme.of(context).textTheme.headlineMedium!
+                            .copyWith(
+                              fontSize: 24,
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black.withValues(alpha: 0.87)
+                                  : Colors.white.withValues(alpha: 0.87),
+                            )
+                            .merge(
+                              _pdfViewerThemeData!
+                                  .hyperlinkDialogStyle
+                                  ?.headerTextStyle,
+                            )
+                      : Theme.of(context).textTheme.headlineMedium!
+                            .copyWith(
+                              fontSize: 20,
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black.withValues(alpha: 0.87)
+                                  : Colors.white.withValues(alpha: 0.87),
+                            )
+                            .merge(
+                              _pdfViewerThemeData!
+                                  .hyperlinkDialogStyle
+                                  ?.headerTextStyle,
+                            ),
                 ),
                 SizedBox(
                   height: isMaterial3 ? 40 : 36,
@@ -544,10 +559,13 @@ class CanvasRenderBox extends RenderBox {
                         : const RoundedRectangleBorder(),
                     child: Icon(
                       Icons.clear,
-                      color: _pdfViewerThemeData!
-                              .hyperlinkDialogStyle?.closeIconColor ??
+                      color:
+                          _pdfViewerThemeData!
+                              .hyperlinkDialogStyle
+                              ?.closeIconColor ??
                           _effectiveThemeData
-                              .hyperlinkDialogStyle?.closeIconColor ??
+                              .hyperlinkDialogStyle
+                              ?.closeIconColor ??
                           _themeData.colorScheme.onSurface.withValues(
                             alpha: 0.6,
                           ),
@@ -577,19 +595,19 @@ class CanvasRenderBox extends RenderBox {
                             : const EdgeInsets.fromLTRB(10, 0, 0, 8),
                         child: Text(
                           _localizations.pdfHyperlinkContentLabel,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
+                          style: Theme.of(context).textTheme.bodyMedium!
                               .copyWith(
                                 fontSize: 14,
-                                color: Theme.of(context).brightness ==
+                                color:
+                                    Theme.of(context).brightness ==
                                         Brightness.light
                                     ? Colors.black.withValues(alpha: 0.87)
                                     : Colors.white.withValues(alpha: 0.87),
                               )
                               .merge(
                                 _pdfViewerThemeData!
-                                    .hyperlinkDialogStyle?.contentTextStyle,
+                                    .hyperlinkDialogStyle
+                                    ?.contentTextStyle,
                               ),
                         ),
                       ),
@@ -605,19 +623,19 @@ class CanvasRenderBox extends RenderBox {
                         child: Text(
                           '$url?',
                           textDirection: TextDirection.ltr,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
+                          style: Theme.of(context).textTheme.bodyMedium!
                               .copyWith(
                                 fontSize: 14,
-                                color: Theme.of(context).brightness ==
+                                color:
+                                    Theme.of(context).brightness ==
                                         Brightness.light
                                     ? Colors.black.withValues(alpha: 0.87)
                                     : Colors.white.withValues(alpha: 0.87),
                               )
                               .merge(
                                 _pdfViewerThemeData!
-                                    .hyperlinkDialogStyle?.contentTextStyle,
+                                    .hyperlinkDialogStyle
+                                    ?.contentTextStyle,
                               ),
                         ),
                       ),
@@ -644,9 +662,7 @@ class CanvasRenderBox extends RenderBox {
                     : null,
                 child: Text(
                   _localizations.pdfHyperlinkDialogCancelLabel,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
+                  style: Theme.of(context).textTheme.bodyMedium!
                       .copyWith(
                         fontSize: 14,
                         fontWeight: isMaterial3 ? FontWeight.w500 : null,
@@ -656,7 +672,8 @@ class CanvasRenderBox extends RenderBox {
                       )
                       .merge(
                         _pdfViewerThemeData!
-                            .hyperlinkDialogStyle?.cancelTextStyle,
+                            .hyperlinkDialogStyle
+                            ?.cancelTextStyle,
                       ),
                 ),
               ),
@@ -679,9 +696,7 @@ class CanvasRenderBox extends RenderBox {
                       : null,
                   child: Text(
                     _localizations.pdfHyperlinkDialogOpenLabel,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
+                    style: Theme.of(context).textTheme.bodyMedium!
                         .copyWith(
                           fontSize: 14,
                           fontWeight: isMaterial3 ? FontWeight.w500 : null,
@@ -689,7 +704,8 @@ class CanvasRenderBox extends RenderBox {
                         )
                         .merge(
                           _pdfViewerThemeData!
-                              .hyperlinkDialogStyle?.openTextStyle,
+                              .hyperlinkDialogStyle
+                              ?.openTextStyle,
                         ),
                   ),
                 ),
@@ -718,11 +734,12 @@ class CanvasRenderBox extends RenderBox {
             scrollable: true,
             insetPadding: EdgeInsets.zero,
             titlePadding: isMaterial3 ? null : const EdgeInsets.all(16),
-            contentPadding:
-                isMaterial3 ? null : const EdgeInsets.symmetric(horizontal: 16),
+            contentPadding: isMaterial3
+                ? null
+                : const EdgeInsets.symmetric(horizontal: 16),
             buttonPadding: const EdgeInsets.all(24),
-            backgroundColor: _pdfViewerThemeData!
-                    .hyperlinkDialogStyle?.backgroundColor ??
+            backgroundColor:
+                _pdfViewerThemeData!.hyperlinkDialogStyle?.backgroundColor ??
                 _effectiveThemeData.hyperlinkDialogStyle?.backgroundColor ??
                 (Theme.of(context).colorScheme.brightness == Brightness.light
                     ? Colors.white
@@ -732,20 +749,19 @@ class CanvasRenderBox extends RenderBox {
               children: <Widget>[
                 Text(
                   _localizations.pdfHyperlinkLabel,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineMedium!
+                  style: Theme.of(context).textTheme.headlineMedium!
                       .copyWith(
                         fontSize: isMaterial3 ? 24 : 20,
                         color: isMaterial3
                             ? Theme.of(context).colorScheme.onSurface
                             : Theme.of(context).brightness == Brightness.light
-                                ? Colors.black.withValues(alpha: 0.87)
-                                : Colors.white.withValues(alpha: 0.87),
+                            ? Colors.black.withValues(alpha: 0.87)
+                            : Colors.white.withValues(alpha: 0.87),
                       )
                       .merge(
                         _pdfViewerThemeData!
-                            .hyperlinkDialogStyle?.headerTextStyle,
+                            .hyperlinkDialogStyle
+                            ?.headerTextStyle,
                       ),
                 ),
                 SizedBox(
@@ -763,10 +779,13 @@ class CanvasRenderBox extends RenderBox {
                         : const RoundedRectangleBorder(),
                     child: Icon(
                       Icons.clear,
-                      color: _pdfViewerThemeData!
-                              .hyperlinkDialogStyle?.closeIconColor ??
+                      color:
+                          _pdfViewerThemeData!
+                              .hyperlinkDialogStyle
+                              ?.closeIconColor ??
                           _effectiveThemeData
-                              .hyperlinkDialogStyle?.closeIconColor ??
+                              .hyperlinkDialogStyle
+                              ?.closeIconColor ??
                           _themeData.colorScheme.onSurface.withValues(
                             alpha: 0.6,
                           ),
@@ -791,19 +810,19 @@ class CanvasRenderBox extends RenderBox {
                             : const EdgeInsets.fromLTRB(2, 0, 0, 8),
                         child: Text(
                           _localizations.pdfHyperlinkContentLabel,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
+                          style: Theme.of(context).textTheme.bodyMedium!
                               .copyWith(
                                 fontSize: 14,
-                                color: Theme.of(context).brightness ==
+                                color:
+                                    Theme.of(context).brightness ==
                                         Brightness.light
                                     ? Colors.black.withValues(alpha: 0.87)
                                     : Colors.white.withValues(alpha: 0.87),
                               )
                               .merge(
                                 _pdfViewerThemeData!
-                                    .hyperlinkDialogStyle?.contentTextStyle,
+                                    .hyperlinkDialogStyle
+                                    ?.contentTextStyle,
                               ),
                         ),
                       ),
@@ -817,19 +836,19 @@ class CanvasRenderBox extends RenderBox {
                         child: Text(
                           '$url?',
                           textDirection: TextDirection.ltr,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
+                          style: Theme.of(context).textTheme.bodyMedium!
                               .copyWith(
                                 fontSize: 14,
-                                color: Theme.of(context).brightness ==
+                                color:
+                                    Theme.of(context).brightness ==
                                         Brightness.light
                                     ? Colors.black.withValues(alpha: 0.87)
                                     : Colors.white.withValues(alpha: 0.87),
                               )
                               .merge(
                                 _pdfViewerThemeData!
-                                    .hyperlinkDialogStyle?.contentTextStyle,
+                                    .hyperlinkDialogStyle
+                                    ?.contentTextStyle,
                               ),
                         ),
                       ),
@@ -855,9 +874,7 @@ class CanvasRenderBox extends RenderBox {
                     : null,
                 child: Text(
                   _localizations.pdfHyperlinkDialogCancelLabel,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
+                  style: Theme.of(context).textTheme.bodyMedium!
                       .copyWith(
                         fontSize: 14,
                         fontWeight: isMaterial3 ? FontWeight.w500 : null,
@@ -867,7 +884,8 @@ class CanvasRenderBox extends RenderBox {
                       )
                       .merge(
                         _pdfViewerThemeData!
-                            .hyperlinkDialogStyle?.cancelTextStyle,
+                            .hyperlinkDialogStyle
+                            ?.cancelTextStyle,
                       ),
                 ),
               ),
@@ -887,9 +905,7 @@ class CanvasRenderBox extends RenderBox {
                     : null,
                 child: Text(
                   _localizations.pdfHyperlinkDialogOpenLabel,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
+                  style: Theme.of(context).textTheme.bodyMedium!
                       .copyWith(
                         fontSize: 14,
                         fontWeight: isMaterial3 ? FontWeight.w500 : null,
@@ -897,7 +913,8 @@ class CanvasRenderBox extends RenderBox {
                       )
                       .merge(
                         _pdfViewerThemeData!
-                            .hyperlinkDialogStyle?.openTextStyle,
+                            .hyperlinkDialogStyle
+                            ?.openTextStyle,
                       ),
                 ),
               ),
@@ -910,6 +927,10 @@ class CanvasRenderBox extends RenderBox {
 
   /// Handles the tap up event
   void handleTapUp(TapUpDetails details) {
+    final Offset? localPosition = _globalToLocal(details.globalPosition);
+    if (localPosition == null) {
+      return;
+    }
     if (!_textSelectionHelper.enableTapSelection) {
       clearSelection();
     }
@@ -919,7 +940,8 @@ class CanvasRenderBox extends RenderBox {
       _textSelectionHelper.enableTapSelection = false;
     }
     _viewId = pageIndex;
-    if (enableHyperlinkNavigation || enableDocumentLinkNavigation) {
+    if (pdfDocument != null &&
+        (enableHyperlinkNavigation || enableDocumentLinkNavigation)) {
       final double heightPercentage =
           pdfDocument!.pages[_viewId!].size.height / height;
       final double widthPercentage =
@@ -961,18 +983,18 @@ class CanvasRenderBox extends RenderBox {
               final bool isTel = _pdfTextWebLink!.url.startsWith('tel:');
               final String scheme = isMailID
                   ? !_pdfTextWebLink!.url.contains('mailto')
-                      ? 'mailto'
-                      : ''
+                        ? 'mailto'
+                        : ''
                   : isTel
-                      ? 'tel'
-                      : (!_pdfTextWebLink!.url.contains('https') &&
-                              !_pdfTextWebLink!.url.contains('http'))
-                          ? 'https'
-                          : '';
+                  ? 'tel'
+                  : (!_pdfTextWebLink!.url.contains('https') &&
+                        !_pdfTextWebLink!.url.contains('http'))
+                  ? 'https'
+                  : '';
               final Uri url = !_pdfTextWebLink!.url.contains(scheme)
                   ? scheme.contains('mailto') || scheme.contains('tel')
-                      ? Uri(scheme: scheme, path: _pdfTextWebLink!.url)
-                      : Uri(scheme: scheme, host: _pdfTextWebLink!.url)
+                        ? Uri(scheme: scheme, path: _pdfTextWebLink!.url)
+                        : Uri(scheme: scheme, host: _pdfTextWebLink!.url)
                   : Uri.parse(_pdfTextWebLink!.url);
               _showHyperLinkDialog(url);
               markNeedsPaint();
@@ -985,15 +1007,15 @@ class CanvasRenderBox extends RenderBox {
             _documentLinkAnnotation =
                 page.annotations[index] as PdfDocumentLinkAnnotation;
             assert(_documentLinkAnnotation != null);
-            if ((details.localPosition.dy >=
+            if ((localPosition.dy >=
                     (_documentLinkAnnotation!.bounds.top / heightPercentage)) &&
-                (details.localPosition.dy <=
+                (localPosition.dy <=
                     (_documentLinkAnnotation!.bounds.bottom /
                         heightPercentage)) &&
-                (details.localPosition.dx >=
+                (localPosition.dx >=
                     (_documentLinkAnnotation!.bounds.left /
                         heightPercentage)) &&
-                (details.localPosition.dx <=
+                (localPosition.dx <=
                     (_documentLinkAnnotation!.bounds.right /
                         heightPercentage))) {
               if (_documentLinkAnnotation!.destination?.page != null) {
@@ -1015,7 +1037,9 @@ class CanvasRenderBox extends RenderBox {
                 if (destinationPageIndex > 0) {
                   _isTOCTapped = true;
                   final double pageOffset =
-                      pdfPages[destinationPageIndex]!.pageOffset;
+                      pdfPages[destinationPageIndex] != null
+                      ? pdfPages[destinationPageIndex]!.pageOffset
+                      : 0;
                   if (isSinglePageView) {
                     _totalPageOffset = Offset(positionX, positionY);
                   } else {
@@ -1067,27 +1091,27 @@ class CanvasRenderBox extends RenderBox {
         }
       }
     }
-    _checkIfLinkAnnotationIsClicked(details.localPosition);
+    _checkIfLinkAnnotationIsClicked(localPosition);
   }
 
   /// Checks whether an annotation is present in the position.
-  Annotation? findAnnotation(Offset offset, int pageNumber) {
-    final double heightPercentage =
-        pdfDocument!.pages[pageIndex].size.height / height;
+  Annotation? findAnnotation(Offset localPosition, int pageNumber) {
+    if (pdfDocument != null) {
+      final double heightPercentage =
+          pdfDocument!.pages[pageIndex].size.height / height;
 
-    final List<Annotation> annotations = pdfViewerController
-        .getAnnotations()
-        .where(
-          (Annotation annotation) => annotation.pageNumber == pageNumber,
-        )
-        .toList();
+      final List<Annotation> annotations = pdfViewerController
+          .getAnnotations()
+          .where((Annotation annotation) => annotation.pageNumber == pageNumber)
+          .toList();
 
-    annotations.sort(
-      (Annotation b, Annotation a) => a.zOrder.compareTo(b.zOrder),
-    );
-    for (final Annotation annotation in annotations) {
-      if (_canSelectAnnotation(offset, annotation, heightPercentage)) {
-        return annotation;
+      annotations.sort(
+        (Annotation b, Annotation a) => a.zOrder.compareTo(b.zOrder),
+      );
+      for (final Annotation annotation in annotations) {
+        if (_canSelectAnnotation(localPosition, annotation, heightPercentage)) {
+          return annotation;
+        }
       }
     }
     return null;
@@ -1096,8 +1120,8 @@ class CanvasRenderBox extends RenderBox {
   /// Checks whether the Link annotation is clicked or not,
   /// and skips annotation selection if the link annotation is clicked
   /// and deselects the annotation if the annotation is already selected.
-  void _checkIfLinkAnnotationIsClicked(Offset offset) {
-    final Annotation? annotation = findAnnotation(offset, pageIndex + 1);
+  void _checkIfLinkAnnotationIsClicked(Offset localPosition) {
+    final Annotation? annotation = findAnnotation(localPosition, pageIndex + 1);
     if (!_isHyperLinkTapped && !_isTOCTapped) {
       if (annotation != null) {
         if (!annotation.isSelected) {
@@ -1114,14 +1138,14 @@ class CanvasRenderBox extends RenderBox {
   /// Checks whether the annotation can be selected or not,
   /// regardless of the annotation bounds.
   bool _canSelectAnnotation(
-    Offset position,
+    Offset localPosition,
     Annotation annotation,
     double heightPercentage,
   ) {
     List<Rect> textMarkupRects = <Rect>[];
     final Offset tappedPagePosition = Offset(
-      position.dx * heightPercentage,
-      position.dy * heightPercentage,
+      localPosition.dx * heightPercentage,
+      localPosition.dy * heightPercentage,
     );
     if (annotation is HighlightAnnotation) {
       textMarkupRects = annotation.textMarkupRects;
@@ -1141,7 +1165,8 @@ class CanvasRenderBox extends RenderBox {
     }
 
     if (annotation is StickyNoteAnnotation) {
-      final Rect scaledBounds = annotation.boundingBox.topLeft &
+      final Rect scaledBounds =
+          annotation.boundingBox.topLeft * heightPercentage &
           (annotation.boundingBox.size / pdfViewerController.zoomLevel);
       if (scaledBounds.contains(tappedPagePosition)) {
         return true;
@@ -1156,10 +1181,12 @@ class CanvasRenderBox extends RenderBox {
     double heightPercentage,
     Rect bounds,
   ) {
-    if ((details.localPosition.dy >= (bounds.top / heightPercentage)) &&
-        (details.localPosition.dy <= (bounds.bottom / heightPercentage)) &&
-        (details.localPosition.dx >= (bounds.left / heightPercentage)) &&
-        (details.localPosition.dx <= (bounds.right / heightPercentage))) {
+    final Offset? localPosition = _globalToLocal(details.globalPosition);
+    if (localPosition != null &&
+        (localPosition.dy >= (bounds.top / heightPercentage)) &&
+        (localPosition.dy <= (bounds.bottom / heightPercentage)) &&
+        (localPosition.dx >= (bounds.left / heightPercentage)) &&
+        (localPosition.dx <= (bounds.right / heightPercentage))) {
       return true;
     }
     return false;
@@ -1182,9 +1209,11 @@ class CanvasRenderBox extends RenderBox {
   /// Handles the long press started event.cursorMode
   void handleLongPressStart(LongPressStartDetails details) {
     _isConsecutiveTap = false;
+    _isSelectedTextContainsRotatedGlyph = false;
     if (kIsDesktop && !isMobileWebView && pdfDocument != null) {
       clearMouseSelection();
-      final bool isTOC = findTOC(details.localPosition);
+      final Offset? localPosition = _globalToLocal(details.globalPosition);
+      final bool isTOC = localPosition != null && findTOC(localPosition);
       if (interactionMode == PdfInteractionMode.selection &&
           !isTOC &&
           !_isMousePointer) {
@@ -1198,10 +1227,11 @@ class CanvasRenderBox extends RenderBox {
   /// Handles the Drag start event.
   void handleDragStart(DragStartDetails details) {
     _isConsecutiveTap = false;
-    final Annotation? annotation = findAnnotation(
-      details.localPosition,
-      pageIndex + 1,
-    );
+    final Offset? localPosition = _globalToLocal(details.globalPosition);
+    if (localPosition == null) {
+      return;
+    }
+    final Annotation? annotation = findAnnotation(localPosition, pageIndex + 1);
     if (annotation == null) {
       _enableMouseSelection(details, 'DragStart');
       if (_textSelectionHelper.selectionEnabled) {
@@ -1234,13 +1264,19 @@ class CanvasRenderBox extends RenderBox {
       _updateSelectionPan(details);
     }
     if (_textSelectionHelper.selectionEnabled) {
-      _dragDetails = details.localPosition;
+      final Offset? localPosition = _globalToLocal(details.globalPosition);
+      if (localPosition == null) {
+        return;
+      }
+      _dragDetails = localPosition;
       if (_startBubbleDragging) {
-        _startBubbleTapX = details.localPosition.dx;
+        _startBubbleTapX = localPosition.dx;
+        _startBubbleTapY = localPosition.dy;
         markNeedsPaint();
         triggerNullCallback();
       } else if (_endBubbleDragging) {
-        _endBubbleTapX = details.localPosition.dx;
+        _endBubbleTapX = localPosition.dx;
+        _endBubbleTapY = localPosition.dy;
         markNeedsPaint();
         if (onTextSelectionChanged != null) {
           onTextSelectionChanged!(PdfTextSelectionChangedDetails(null, null));
@@ -1278,17 +1314,21 @@ class CanvasRenderBox extends RenderBox {
 
   /// Handles the drag down event.
   void handleDragDown(DragDownDetails details) {
-    _dragDownDetails = details.localPosition;
+    final Offset? localPosition = _globalToLocal(details.globalPosition);
+    if (localPosition != null) {
+      _dragDownDetails = localPosition;
+    }
   }
 
   /// Handles the double tap down event.
   void handleDoubleTapDown(PointerDownEvent details) {
     _textSelectionHelper.enableTapSelection = true;
     _isConsecutiveTap = true;
-    final Annotation? annotation = findAnnotation(
-      details.localPosition,
-      pageIndex + 1,
-    );
+    final Offset? localPosition = _globalToLocal(details.position);
+    if (localPosition == null) {
+      return;
+    }
+    final Annotation? annotation = findAnnotation(localPosition, pageIndex + 1);
     if (annotation == null) {
       _enableMouseSelection(details, 'DoubleTap');
     }
@@ -1298,10 +1338,11 @@ class CanvasRenderBox extends RenderBox {
   void handleTripleTapDown(PointerDownEvent details) {
     _textSelectionHelper.enableTapSelection = true;
     _isConsecutiveTap = true;
-    final Annotation? annotation = findAnnotation(
-      details.localPosition,
-      pageIndex + 1,
-    );
+    final Offset? localPosition = _globalToLocal(details.position);
+    if (localPosition == null) {
+      return;
+    }
+    final Annotation? annotation = findAnnotation(localPosition, pageIndex + 1);
     if (annotation == null) {
       _enableMouseSelection(details, 'TripleTap');
     }
@@ -1311,43 +1352,54 @@ class CanvasRenderBox extends RenderBox {
     Offset position,
     PointerDeviceKind pointerDeviceKind,
   ) {
-    if (_textSelectionHelper.textLines == null ||
-        _textSelectionHelper.viewId != pageIndex) {
-      _textSelectionHelper.viewId = pageIndex;
-      _textSelectionHelper.textLines = PdfTextExtractor(
-        pdfDocument!,
-      ).extractTextLines(startPageIndex: pageIndex);
-    }
-    for (int textLineIndex = 0;
+    if (pdfDocument != null) {
+      if (_textSelectionHelper.textLines == null ||
+          _textSelectionHelper.viewId != pageIndex) {
+        _textSelectionHelper.viewId = pageIndex;
+        _textSelectionHelper.textLines = PdfTextExtractor(pdfDocument!)
+            .extractTextLines(startPageIndex: pageIndex);
+      }
+      for (
+        int textLineIndex = 0;
         textLineIndex < _textSelectionHelper.textLines!.length;
-        textLineIndex++) {
-      final double heightPercentage =
-          pdfDocument!.pages[_textSelectionHelper.viewId!].size.height / height;
-      for (int wordIndex = 0;
+        textLineIndex++
+      ) {
+        final double heightPercentage =
+            pdfDocument!.pages[_textSelectionHelper.viewId!].size.height /
+            height;
+        for (
+          int wordIndex = 0;
           wordIndex <
               _textSelectionHelper
-                  .textLines![textLineIndex].wordCollection.length;
-          wordIndex++) {
-        final TextWord textWord = _textSelectionHelper
-            .textLines![textLineIndex].wordCollection[wordIndex];
-        for (int glyphIndex = 0;
+                  .textLines![textLineIndex]
+                  .wordCollection
+                  .length;
+          wordIndex++
+        ) {
+          final TextWord textWord = _textSelectionHelper
+              .textLines![textLineIndex]
+              .wordCollection[wordIndex];
+          for (
+            int glyphIndex = 0;
             glyphIndex < textWord.glyphs.length;
-            glyphIndex++) {
-          final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
-          Rect glyphBounds = textGlyph.bounds;
-          if (pdfViewerController.annotationMode != PdfAnnotationMode.none) {
-            if (pointerDeviceKind == PointerDeviceKind.touch &&
-                glyphIndex == 0) {
-              glyphBounds = Rect.fromLTRB(
-                glyphBounds.left - glyphBounds.width,
-                glyphBounds.top - glyphBounds.height,
-                glyphBounds.right,
-                glyphBounds.bottom,
-              );
+            glyphIndex++
+          ) {
+            final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
+            Rect glyphBounds = textGlyph.bounds;
+            if (pdfViewerController.annotationMode != PdfAnnotationMode.none) {
+              if (pointerDeviceKind == PointerDeviceKind.touch &&
+                  glyphIndex == 0) {
+                glyphBounds = Rect.fromLTRB(
+                  glyphBounds.left - glyphBounds.width,
+                  glyphBounds.top - glyphBounds.height,
+                  glyphBounds.right,
+                  glyphBounds.bottom,
+                );
+              }
             }
-          }
-          if (glyphBounds.contains(position * heightPercentage)) {
-            return true;
+            if (glyphBounds.contains(position * heightPercentage)) {
+              return true;
+            }
           }
         }
       }
@@ -1357,66 +1409,83 @@ class CanvasRenderBox extends RenderBox {
 
   /// Enable mouse selection for mouse pointer,double tap and triple tap selection.
   void _enableMouseSelection(dynamic details, String gestureType) {
+    Offset globalPosition = Offset.zero;
+    if (details is PositionedGestureDetails) {
+      globalPosition = details.globalPosition;
+    } else if (details is PointerEvent) {
+      globalPosition = details.position;
+    }
+    final Offset? localPosition = _globalToLocal(globalPosition);
     if ((kIsDesktop &&
             !isMobileWebView &&
             enableTextSelection &&
             interactionMode == PdfInteractionMode.selection &&
             _isMousePointer) ||
         pdfViewerController.annotationMode != PdfAnnotationMode.none) {
-      final bool isTOC = findTOC(details.localPosition);
+      final bool isTOC = localPosition != null && findTOC(localPosition);
       _textSelectionHelper.initialScrollOffset = 0;
       _textSelectionHelper.finalScrollOffset = 0;
-      if (pdfViewerController.annotationMode != PdfAnnotationMode.none ||
-          details.kind == PointerDeviceKind.mouse && !isTOC) {
+      if (localPosition != null &&
+          (pdfViewerController.annotationMode != PdfAnnotationMode.none ||
+              details.kind == PointerDeviceKind.mouse && !isTOC)) {
         if (_textSelectionHelper.selectionEnabled) {
           final bool isStartDragPossible = _checkStartBubblePosition(
-            details.localPosition,
+            localPosition,
           );
-          final bool isEndDragPossible = _checkEndBubblePosition(
-            details.localPosition,
-          );
+          final bool isEndDragPossible = _checkEndBubblePosition(localPosition);
           if (isStartDragPossible || isEndDragPossible) {
             _textSelectionHelper.mouseSelectionEnabled = false;
           } else {
             clearSelection();
           }
         }
+        if (pdfDocument == null) {
+          return;
+        }
         if (_textSelectionHelper.textLines == null ||
             _textSelectionHelper.viewId != pageIndex) {
           _textSelectionHelper.viewId = pageIndex;
-          _textSelectionHelper.textLines = PdfTextExtractor(
-            pdfDocument!,
-          ).extractTextLines(startPageIndex: pageIndex);
+          _textSelectionHelper.textLines = PdfTextExtractor(pdfDocument!)
+              .extractTextLines(startPageIndex: pageIndex);
         }
         final double heightPercentage =
             pdfDocument!.pages[_textSelectionHelper.viewId!].size.height /
-                height;
+            height;
         if (gestureType == 'DragStart' &&
             _textSelectionHelper.mouseSelectionEnabled) {
           _textSelectionHelper.endBubbleX =
-              (details.localPosition.dx as double) * heightPercentage;
+              (localPosition.dx) * heightPercentage;
           _textSelectionHelper.endBubbleY =
-              (details.localPosition.dy as double) * heightPercentage;
+              (localPosition.dy) * heightPercentage;
           _textSelectionHelper.startBubbleX =
-              (details.localPosition.dx as double) * heightPercentage;
+              (localPosition.dx) * heightPercentage;
           _textSelectionHelper.startBubbleY =
-              (details.localPosition.dy as double) * heightPercentage;
+              (localPosition.dy) * heightPercentage;
         }
-        for (int textLineIndex = 0;
-            textLineIndex < _textSelectionHelper.textLines!.length;
-            textLineIndex++) {
+        for (
+          int textLineIndex = 0;
+          textLineIndex < _textSelectionHelper.textLines!.length;
+          textLineIndex++
+        ) {
           final TextLine textLine =
               _textSelectionHelper.textLines![textLineIndex];
-          for (int wordIndex = 0;
-              wordIndex <
-                  _textSelectionHelper
-                      .textLines![textLineIndex].wordCollection.length;
-              wordIndex++) {
+          for (
+            int wordIndex = 0;
+            wordIndex <
+                _textSelectionHelper
+                    .textLines![textLineIndex]
+                    .wordCollection
+                    .length;
+            wordIndex++
+          ) {
             final TextWord textWord = _textSelectionHelper
-                .textLines![textLineIndex].wordCollection[wordIndex];
-            for (int glyphIndex = 0;
-                glyphIndex < textWord.glyphs.length;
-                glyphIndex++) {
+                .textLines![textLineIndex]
+                .wordCollection[wordIndex];
+            for (
+              int glyphIndex = 0;
+              glyphIndex < textWord.glyphs.length;
+              glyphIndex++
+            ) {
               final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
               if (gestureType == 'DragStart') {
                 Rect glyphBounds = textGlyph.bounds;
@@ -1431,9 +1500,7 @@ class CanvasRenderBox extends RenderBox {
                   );
                 }
 
-                if (glyphBounds.contains(
-                  details.localPosition * heightPercentage,
-                )) {
+                if (glyphBounds.contains(localPosition * heightPercentage)) {
                   _textSelectionHelper.firstSelectedGlyph = textGlyph;
                   _textSelectionHelper.startIndex = textLineIndex;
                   _textSelectionHelper.endIndex = textLineIndex;
@@ -1442,7 +1509,7 @@ class CanvasRenderBox extends RenderBox {
               } else if (gestureType == 'DoubleTap') {
                 triggerNullCallback();
                 if (textWord.bounds.contains(
-                  details.localPosition * heightPercentage,
+                  localPosition * heightPercentage,
                 )) {
                   _textSelectionHelper.firstSelectedGlyph =
                       textWord.glyphs.first;
@@ -1461,7 +1528,7 @@ class CanvasRenderBox extends RenderBox {
               } else if (gestureType == 'TripleTap') {
                 triggerNullCallback();
                 if (textLine.bounds.contains(
-                  details.localPosition * heightPercentage,
+                  localPosition * heightPercentage,
                 )) {
                   _textSelectionHelper.firstSelectedGlyph =
                       textLine.wordCollection.first.glyphs.first;
@@ -1494,6 +1561,15 @@ class CanvasRenderBox extends RenderBox {
         onTextSelectionDragStarted();
       }
       _textSelectionHelper.mouseSelectionEnabled = true;
+    }
+  }
+
+  /// Converts global position to local coordinates when the widget is attached and sized
+  Offset? _globalToLocal(Offset globalPosition) {
+    if (attached && hasSize) {
+      return globalToLocal(globalPosition);
+    } else {
+      return null;
     }
   }
 
@@ -1552,6 +1628,10 @@ class CanvasRenderBox extends RenderBox {
 
   /// Updates the selection details when panning over the viewport.
   void _updateSelectionPan(DragUpdateDetails details) {
+    final Offset? localPosition = _globalToLocal(details.globalPosition);
+    if (localPosition == null) {
+      return;
+    }
     _scrollWhileSelection();
     final double currentOffset = pdfViewerController.scrollOffset.dy;
     if (viewportGlobalRect != null &&
@@ -1579,23 +1659,26 @@ class CanvasRenderBox extends RenderBox {
         !_textSelectionHelper.isCursorExit) {
       double endBubbleValue;
       if (_rotatedAngle == PdfPageRotateAngle.rotateAngle180) {
-        endBubbleValue = -(_textSelectionHelper.finalScrollOffset -
-            _textSelectionHelper.initialScrollOffset);
+        endBubbleValue =
+            -(_textSelectionHelper.finalScrollOffset -
+                _textSelectionHelper.initialScrollOffset);
       } else {
-        endBubbleValue = _textSelectionHelper.finalScrollOffset -
+        endBubbleValue =
+            _textSelectionHelper.finalScrollOffset -
             _textSelectionHelper.initialScrollOffset;
       }
-      final double heightPercentage =
-          pdfDocument!.pages[_textSelectionHelper.viewId!].size.height / height;
-      _textSelectionHelper.endBubbleX =
-          details.localPosition.dx * heightPercentage;
-      _textSelectionHelper.endBubbleY =
-          (details.localPosition.dy + endBubbleValue) * heightPercentage;
-      _textSelectionHelper.startBubbleX =
-          details.localPosition.dx * heightPercentage;
-      _textSelectionHelper.startBubbleY =
-          (details.localPosition.dy + endBubbleValue) * heightPercentage;
-      markNeedsPaint();
+      if (pdfDocument != null) {
+        final double heightPercentage =
+            pdfDocument!.pages[_textSelectionHelper.viewId!].size.height /
+            height;
+        _textSelectionHelper.endBubbleX = localPosition.dx * heightPercentage;
+        _textSelectionHelper.endBubbleY =
+            (localPosition.dy + endBubbleValue) * heightPercentage;
+        _textSelectionHelper.startBubbleX = localPosition.dx * heightPercentage;
+        _textSelectionHelper.startBubbleY =
+            (localPosition.dy + endBubbleValue) * heightPercentage;
+        markNeedsPaint();
+      }
     }
   }
 
@@ -1625,8 +1708,9 @@ class CanvasRenderBox extends RenderBox {
   void scroll(bool isReachedTop, bool isSelectionScroll) {
     if (isSelectionScroll) {
       double endBubbleValue = isReachedTop ? -3 : 3;
-      if (pdfDocument!.pages[pageIndex].rotation ==
-          PdfPageRotateAngle.rotateAngle180) {
+      if (pdfDocument != null &&
+          pdfDocument!.pages[pageIndex].rotation ==
+              PdfPageRotateAngle.rotateAngle180) {
         endBubbleValue = -endBubbleValue;
       } else {
         endBubbleValue = endBubbleValue;
@@ -1634,7 +1718,8 @@ class CanvasRenderBox extends RenderBox {
       _textSelectionHelper.endBubbleY =
           _textSelectionHelper.endBubbleY! + endBubbleValue;
     }
-    final double position = pdfViewerController.scrollOffset.dy +
+    final double position =
+        pdfViewerController.scrollOffset.dy +
         (isReachedTop ? -_jumpOffset : _jumpOffset);
 
     if (isSelectionScroll) {
@@ -1658,15 +1743,28 @@ class CanvasRenderBox extends RenderBox {
   /// Check the tap position same as the start bubble position.
   bool _checkStartBubblePosition(Offset details) {
     if (_textSelectionHelper.selectionEnabled) {
-      final double startBubbleX = _textSelectionHelper.startBubbleX! /
+      final double startBubbleX =
+          _textSelectionHelper.startBubbleX! /
           _textSelectionHelper.heightPercentage!;
-      final double startBubbleY = _textSelectionHelper.startBubbleY! /
+      final double startBubbleY =
+          _textSelectionHelper.startBubbleY! /
           _textSelectionHelper.heightPercentage!;
-      if (details.dx >= startBubbleX - (_bubbleSize * _maximumZoomLevel) &&
-          details.dx <= startBubbleX &&
-          details.dy >= startBubbleY - _bubbleSize &&
-          details.dy <= startBubbleY + _bubbleSize) {
-        return true;
+      if (_isSelectedTextContainsRotatedGlyph) {
+        if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+          if (details.dy <= startBubbleY + (_bubbleSize * _maximumZoomLevel) &&
+              details.dy >= startBubbleY &&
+              details.dx >= startBubbleX - _bubbleSize &&
+              details.dx <= startBubbleX + _bubbleSize) {
+            return true;
+          }
+        }
+      } else {
+        if (details.dx >= startBubbleX - (_bubbleSize * _maximumZoomLevel) &&
+            details.dx <= startBubbleX &&
+            details.dy >= startBubbleY - _bubbleSize &&
+            details.dy <= startBubbleY + _bubbleSize) {
+          return true;
+        }
       }
     }
     return false;
@@ -1675,24 +1773,39 @@ class CanvasRenderBox extends RenderBox {
   /// Check the tap position same as the end bubble position.
   bool _checkEndBubblePosition(Offset details) {
     if (_textSelectionHelper.selectionEnabled) {
-      final double endBubbleX = _textSelectionHelper.endBubbleX! /
+      final double endBubbleX =
+          _textSelectionHelper.endBubbleX! /
           _textSelectionHelper.heightPercentage!;
-      final double endBubbleY = _textSelectionHelper.endBubbleY! /
+      final double endBubbleY =
+          _textSelectionHelper.endBubbleY! /
           _textSelectionHelper.heightPercentage!;
-      if (details.dx >= endBubbleX &&
-          details.dx <= endBubbleX + (_bubbleSize * _maximumZoomLevel) &&
-          details.dy >= endBubbleY - _bubbleSize &&
-          details.dy <= endBubbleY + _bubbleSize) {
-        return true;
+      if (_isSelectedTextContainsRotatedGlyph) {
+        if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+          if (details.dy <= endBubbleY &&
+              details.dy >= endBubbleY - (_bubbleSize * _maximumZoomLevel) &&
+              details.dx >= endBubbleX - _bubbleSize &&
+              details.dx <= endBubbleX + _bubbleSize) {
+            return true;
+          }
+        }
+      } else {
+        if (details.dx >= endBubbleX &&
+            details.dx <= endBubbleX + (_bubbleSize * _maximumZoomLevel) &&
+            details.dy >= endBubbleY - _bubbleSize &&
+            details.dy <= endBubbleY + _bubbleSize) {
+          return true;
+        }
       }
     }
     return false;
   }
 
   List<TextLine> _sortTextLines(List<TextLine> textLines) {
-    for (int textLineIndex = 0;
-        textLineIndex < textLines.length;
-        textLineIndex++) {
+    for (
+      int textLineIndex = 0;
+      textLineIndex < textLines.length;
+      textLineIndex++
+    ) {
       for (int index = textLineIndex + 1; index < textLines.length; index++) {
         if (textLines[textLineIndex].bounds.bottom >
             textLines[index].bounds.bottom) {
@@ -1711,26 +1824,29 @@ class CanvasRenderBox extends RenderBox {
     int pageIndex,
     PdfPageRotateAngle angle,
   ) {
-    if (angle != PdfPageRotateAngle.rotateAngle0) {
-      List<TextLine> textLines = PdfTextExtractor(
-        pdfDocument!,
-      ).extractTextLines(startPageIndex: pageIndex);
+    if (pdfDocument != null && angle != PdfPageRotateAngle.rotateAngle0) {
+      List<TextLine> textLines = PdfTextExtractor(pdfDocument!)
+          .extractTextLines(startPageIndex: pageIndex);
       textLines = _sortTextLines(textLines);
       TextLine? textLine;
-      for (int textLineIndex = 0;
-          textLineIndex < textLines.length;
-          textLineIndex++) {
+      for (
+        int textLineIndex = 0;
+        textLineIndex < textLines.length;
+        textLineIndex++
+      ) {
         if (textLines[textLineIndex].bounds.topLeft.dy >= offset.dy) {
           textLine = textLines[textLineIndex];
           break;
         }
       }
-      final Rect bounds = getRotatedTextBounds(
-        textLine!.bounds,
-        pageIndex,
-        angle,
-      );
-      offset = bounds.topLeft;
+      if (textLine != null) {
+        final Rect bounds = getRotatedTextBounds(
+          textLine.bounds,
+          pageIndex,
+          angle,
+        );
+        offset = bounds.topLeft;
+      }
     }
     return offset;
   }
@@ -1741,39 +1857,42 @@ class CanvasRenderBox extends RenderBox {
     int pageIndex,
     PdfPageRotateAngle angle,
   ) {
-    Rect? rotatedTextBounds;
-    final double height = pdfDocument!.pages[pageIndex].size.height;
-    final double width = pdfDocument!.pages[pageIndex].size.width;
-    switch (angle) {
-      case PdfPageRotateAngle.rotateAngle0:
-        rotatedTextBounds = textBounds;
-        break;
-      case PdfPageRotateAngle.rotateAngle90:
-        rotatedTextBounds = Rect.fromLTRB(
-          height - textBounds.bottom,
-          textBounds.left,
-          (height - textBounds.bottom) + textBounds.height,
-          textBounds.left + textBounds.width,
-        );
-        break;
-      case PdfPageRotateAngle.rotateAngle180:
-        rotatedTextBounds = Rect.fromLTRB(
-          width - textBounds.right,
-          height - textBounds.bottom,
-          (width - textBounds.right) + textBounds.width,
-          (height - textBounds.bottom) + textBounds.height,
-        );
-        break;
-      case PdfPageRotateAngle.rotateAngle270:
-        rotatedTextBounds = Rect.fromLTRB(
-          textBounds.top,
-          width - textBounds.right,
-          textBounds.top + textBounds.height,
-          (width - textBounds.right) + textBounds.width,
-        );
-        break;
+    if (pdfDocument != null) {
+      Rect? rotatedTextBounds;
+      final double height = pdfDocument!.pages[pageIndex].size.height;
+      final double width = pdfDocument!.pages[pageIndex].size.width;
+      switch (angle) {
+        case PdfPageRotateAngle.rotateAngle0:
+          rotatedTextBounds = textBounds;
+          break;
+        case PdfPageRotateAngle.rotateAngle90:
+          rotatedTextBounds = Rect.fromLTRB(
+            height - textBounds.bottom,
+            textBounds.left,
+            (height - textBounds.bottom) + textBounds.height,
+            textBounds.left + textBounds.width,
+          );
+          break;
+        case PdfPageRotateAngle.rotateAngle180:
+          rotatedTextBounds = Rect.fromLTRB(
+            width - textBounds.right,
+            height - textBounds.bottom,
+            (width - textBounds.right) + textBounds.width,
+            (height - textBounds.bottom) + textBounds.height,
+          );
+          break;
+        case PdfPageRotateAngle.rotateAngle270:
+          rotatedTextBounds = Rect.fromLTRB(
+            textBounds.top,
+            width - textBounds.right,
+            textBounds.top + textBounds.height,
+            (width - textBounds.right) + textBounds.width,
+          );
+          break;
+      }
+      return rotatedTextBounds;
     }
-    return rotatedTextBounds;
+    return textBounds;
   }
 
   /// Enable text selection.
@@ -1808,7 +1927,8 @@ class CanvasRenderBox extends RenderBox {
 
   /// Remove history for Text Selection.
   void _handleHistoryEntryRemoved() {
-    if (textCollection!.isNotEmpty &&
+    if (textCollection != null &&
+        textCollection!.isNotEmpty &&
         _textSelectionHelper.historyEntry != null) {
       Navigator.of(context).maybePop();
     }
@@ -1819,6 +1939,8 @@ class CanvasRenderBox extends RenderBox {
   /// clears Text Selection.
   bool clearSelection() {
     _isRTLText = false;
+    _isSelectedTextContainsRotatedGlyph = false;
+    _isConsecutiveTap = false;
     clearMouseSelection();
     final bool clearTextSelection = !_textSelectionHelper.selectionEnabled;
     if (_textSelectionHelper.selectionEnabled) {
@@ -1853,23 +1975,29 @@ class CanvasRenderBox extends RenderBox {
 
   /// Find the text while hover by mouse.
   TextLine? findTextWhileHover(Offset details) {
-    if (_textSelectionHelper.cursorTextLines == null ||
-        _textSelectionHelper.cursorPageNumber != pageIndex) {
-      _textSelectionHelper.cursorPageNumber = pageIndex;
-      _textSelectionHelper.cursorTextLines = PdfTextExtractor(
-        pdfDocument!,
-      ).extractTextLines(startPageIndex: pageIndex);
-    }
-    final double heightPercentage =
-        pdfDocument!.pages[_textSelectionHelper.cursorPageNumber!].size.height /
-            height;
-    if (_textSelectionHelper.cursorTextLines != null) {
-      for (int textLineIndex = 0;
+    if (pdfDocument != null) {
+      if (_textSelectionHelper.cursorTextLines == null ||
+          _textSelectionHelper.cursorPageNumber != pageIndex) {
+        _textSelectionHelper.cursorPageNumber = pageIndex;
+        _textSelectionHelper.cursorTextLines = PdfTextExtractor(pdfDocument!)
+            .extractTextLines(startPageIndex: pageIndex);
+      }
+      final double heightPercentage =
+          pdfDocument!
+              .pages[_textSelectionHelper.cursorPageNumber!]
+              .size
+              .height /
+          height;
+      if (_textSelectionHelper.cursorTextLines != null) {
+        for (
+          int textLineIndex = 0;
           textLineIndex < _textSelectionHelper.cursorTextLines!.length;
-          textLineIndex++) {
-        if (_textSelectionHelper.cursorTextLines![textLineIndex].bounds
-            .contains(details * heightPercentage)) {
-          return _textSelectionHelper.cursorTextLines![textLineIndex];
+          textLineIndex++
+        ) {
+          if (_textSelectionHelper.cursorTextLines![textLineIndex].bounds
+              .contains(details * heightPercentage)) {
+            return _textSelectionHelper.cursorTextLines![textLineIndex];
+          }
         }
       }
     }
@@ -1877,21 +2005,25 @@ class CanvasRenderBox extends RenderBox {
   }
 
   /// Find the TOC bounds while hover by mouse.
-  bool findTOC(Offset details) {
+  bool findTOC(Offset localPosition) {
     if (_textSelectionHelper.cursorPageNumber != pageIndex) {
       _textSelectionHelper.cursorPageNumber = pageIndex;
+    }
+    if (pdfDocument == null) {
+      return false;
     }
     final PdfPage page =
         pdfDocument!.pages[_textSelectionHelper.cursorPageNumber!];
     final double heightPercentage =
         pdfDocument!.pages[_textSelectionHelper.cursorPageNumber!].size.height /
-            height;
-    final Offset hoverDetails = details * heightPercentage;
+        height;
+    final Offset hoverDetails = localPosition * heightPercentage;
     for (int index = 0; index < page.annotations.count; index++) {
       final bool hasTOC =
           page.annotations[index] is PdfDocumentLinkAnnotation &&
-              enableDocumentLinkNavigation;
-      final bool hasURI = (page.annotations[index] is PdfUriAnnotation ||
+          enableDocumentLinkNavigation;
+      final bool hasURI =
+          (page.annotations[index] is PdfUriAnnotation ||
               page.annotations[index] is PdfTextWebLink) &&
           enableHyperlinkNavigation;
       if (hasTOC) {
@@ -1957,6 +2089,9 @@ class CanvasRenderBox extends RenderBox {
     final double glyphCenterY = textGlyph.bounds.center.dy;
     final double top = startGlyph.bounds.top;
     final double bottom = startGlyph.bounds.bottom;
+    final double left = startGlyph.bounds.left;
+    final double right = startGlyph.bounds.right;
+
     if (isRTLText && !_isConsecutiveTap) {
       if ((glyphCenterY > top && glyphCenterY < startBubbleDetails.dy) &&
           (glyphCenterX < startGlyph.bounds.right || glyphCenterY > bottom) &&
@@ -1976,21 +2111,45 @@ class CanvasRenderBox extends RenderBox {
         }
       }
     } else {
-      if ((glyphCenterY > top && glyphCenterY < endBubbleDetails.dy) &&
-          (glyphCenterX > startGlyph.bounds.left || glyphCenterY > bottom) &&
-          (textGlyph.bounds.bottom < endBubbleDetails.dy ||
-              glyphCenterX < endBubbleDetails.dx)) {
-        return true;
-      }
-      if (endBubbleDetails.dy < top ||
-          (endBubbleDetails.dy < bottom &&
-              endBubbleDetails.dx < startGlyph.bounds.left)) {
-        if ((glyphCenterY > endBubbleDetails.dy && glyphCenterY < bottom) &&
-            (glyphCenterX > endBubbleDetails.dx ||
-                textGlyph.bounds.top > endBubbleDetails.dy) &&
-            (textGlyph.bounds.bottom < top ||
-                glyphCenterX < startGlyph.bounds.left)) {
+      if (textGlyph.isRotated) {
+        if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+          if ((glyphCenterX > left && glyphCenterX < endBubbleDetails.dx) &&
+              (glyphCenterY < startGlyph.bounds.bottom ||
+                  glyphCenterX > right) &&
+              (textGlyph.bounds.right < endBubbleDetails.dx ||
+                  glyphCenterY > endBubbleDetails.dy)) {
+            return true;
+          }
+
+          if (endBubbleDetails.dx < left ||
+              (endBubbleDetails.dx < right &&
+                  endBubbleDetails.dy > startGlyph.bounds.bottom)) {
+            if ((glyphCenterX > endBubbleDetails.dx && glyphCenterX < right) &&
+                (glyphCenterY < endBubbleDetails.dy ||
+                    textGlyph.bounds.left > endBubbleDetails.dx) &&
+                (textGlyph.bounds.right < left ||
+                    glyphCenterY > startGlyph.bounds.top)) {
+              return true;
+            }
+          }
+        }
+      } else {
+        if ((glyphCenterY > top && glyphCenterY < endBubbleDetails.dy) &&
+            (glyphCenterX > startGlyph.bounds.left || glyphCenterY > bottom) &&
+            (textGlyph.bounds.bottom < endBubbleDetails.dy ||
+                glyphCenterX < endBubbleDetails.dx)) {
           return true;
+        }
+        if (endBubbleDetails.dy < top ||
+            (endBubbleDetails.dy < bottom &&
+                endBubbleDetails.dx < startGlyph.bounds.left)) {
+          if ((glyphCenterY > endBubbleDetails.dy && glyphCenterY < bottom) &&
+              (glyphCenterX > endBubbleDetails.dx ||
+                  textGlyph.bounds.top > endBubbleDetails.dy) &&
+              (textGlyph.bounds.bottom < top ||
+                  glyphCenterX < startGlyph.bounds.left)) {
+            return true;
+          }
         }
       }
     }
@@ -2011,19 +2170,35 @@ class CanvasRenderBox extends RenderBox {
     Paint bubblePaint,
     Offset startBubbleOffset,
   ) {
-    canvas.drawRRect(
-      RRect.fromLTRBAndCorners(
-        startBubbleOffset.dx - (_bubbleSize / _zoomPercentage),
-        startBubbleOffset.dy,
-        startBubbleOffset.dx,
-        startBubbleOffset.dy + (_bubbleSize / _zoomPercentage),
-        topLeft: const Radius.circular(10.0),
-        topRight: const Radius.circular(1.0),
-        bottomRight: const Radius.circular(10.0),
-        bottomLeft: const Radius.circular(10.0),
-      ),
-      bubblePaint,
-    );
+    if (_isSelectedTextContainsRotatedGlyph) {
+      canvas.drawRRect(
+        RRect.fromLTRBAndCorners(
+          startBubbleOffset.dx,
+          startBubbleOffset.dy,
+          startBubbleOffset.dx + (_bubbleSize / _zoomPercentage),
+          startBubbleOffset.dy + (_bubbleSize / _zoomPercentage),
+          topLeft: const Radius.circular(1.0),
+          topRight: const Radius.circular(10.0),
+          bottomRight: const Radius.circular(10.0),
+          bottomLeft: const Radius.circular(10.0),
+        ),
+        bubblePaint,
+      );
+    } else {
+      canvas.drawRRect(
+        RRect.fromLTRBAndCorners(
+          startBubbleOffset.dx - (_bubbleSize / _zoomPercentage),
+          startBubbleOffset.dy,
+          startBubbleOffset.dx,
+          startBubbleOffset.dy + (_bubbleSize / _zoomPercentage),
+          topLeft: const Radius.circular(10.0),
+          topRight: const Radius.circular(1.0),
+          bottomRight: const Radius.circular(10.0),
+          bottomLeft: const Radius.circular(10.0),
+        ),
+        bubblePaint,
+      );
+    }
   }
 
   /// Draw the end bubble.
@@ -2032,19 +2207,35 @@ class CanvasRenderBox extends RenderBox {
     Paint bubblePaint,
     Offset endBubbleOffset,
   ) {
-    canvas.drawRRect(
-      RRect.fromLTRBAndCorners(
-        endBubbleOffset.dx,
-        endBubbleOffset.dy,
-        endBubbleOffset.dx + (_bubbleSize / _zoomPercentage),
-        endBubbleOffset.dy + (_bubbleSize / _zoomPercentage),
-        topLeft: const Radius.circular(1.0),
-        topRight: const Radius.circular(10.0),
-        bottomRight: const Radius.circular(10.0),
-        bottomLeft: const Radius.circular(10.0),
-      ),
-      bubblePaint,
-    );
+    if (_isSelectedTextContainsRotatedGlyph) {
+      canvas.drawRRect(
+        RRect.fromLTRBAndCorners(
+          endBubbleOffset.dx,
+          endBubbleOffset.dy,
+          endBubbleOffset.dx + (_bubbleSize / _zoomPercentage),
+          endBubbleOffset.dy - (_bubbleSize / _zoomPercentage),
+          topLeft: const Radius.circular(10.0),
+          bottomLeft: const Radius.circular(1.0),
+          topRight: const Radius.circular(10.0),
+          bottomRight: const Radius.circular(10.0),
+        ),
+        bubblePaint,
+      );
+    } else {
+      canvas.drawRRect(
+        RRect.fromLTRBAndCorners(
+          endBubbleOffset.dx,
+          endBubbleOffset.dy,
+          endBubbleOffset.dx + (_bubbleSize / _zoomPercentage),
+          endBubbleOffset.dy + (_bubbleSize / _zoomPercentage),
+          topLeft: const Radius.circular(1.0),
+          topRight: const Radius.circular(10.0),
+          bottomRight: const Radius.circular(10.0),
+          bottomLeft: const Radius.circular(10.0),
+        ),
+        bubblePaint,
+      );
+    }
   }
 
   /// Draw the Rect for selected text.
@@ -2078,27 +2269,31 @@ class CanvasRenderBox extends RenderBox {
 
   /// Draw the selection background color while tapping the hyperlink.
   void _drawHyperLinkTapColor(Canvas canvas, Offset offset, Rect bounds) {
-    final double heightPercentage =
-        pdfDocument!.pages[_viewId!].size.height / height;
-    final Paint wordPaint = Paint()
-      ..color = const Color.fromRGBO(228, 238, 244, 0.75);
-    canvas.drawRect(
-      offset.translate(
-            bounds.left / heightPercentage,
-            bounds.top / heightPercentage,
-          ) &
-          Size(
-            bounds.width / heightPercentage,
-            bounds.height / heightPercentage,
-          ),
-      wordPaint,
-    );
+    if (pdfDocument != null) {
+      final double heightPercentage =
+          pdfDocument!.pages[_viewId!].size.height / height;
+      final Paint wordPaint = Paint()
+        ..color = const Color.fromRGBO(228, 238, 244, 0.75);
+      canvas.drawRect(
+        offset.translate(
+              bounds.left / heightPercentage,
+              bounds.top / heightPercentage,
+            ) &
+            Size(
+              bounds.width / heightPercentage,
+              bounds.height / heightPercentage,
+            ),
+        wordPaint,
+      );
+    }
   }
 
   /// Perform document link navigation.
   void _performDocumentLinkNavigation(Canvas canvas, Offset offset) {
     if (pageIndex == _viewId) {
-      if (_isTOCTapped) {
+      if (_isTOCTapped &&
+          pdfDocument != null &&
+          _documentLinkAnnotation != null) {
         final double heightPercentage =
             pdfDocument!.pages[_viewId!].size.height / height;
         final Paint wordPaint = Paint()
@@ -2123,12 +2318,13 @@ class CanvasRenderBox extends RenderBox {
               Offset(_totalPageOffset.dx, _totalPageOffset.dy),
             );
           } else {
-            final double xOffSet = textDirection == TextDirection.rtl &&
+            final double xOffSet =
+                textDirection == TextDirection.rtl &&
                     scrollDirection == PdfScrollDirection.horizontal &&
                     !isSinglePageView
                 ? (pdfScrollableStateKey.currentWidget! as PdfScrollable)
-                        .maxScrollExtent -
-                    _totalPageOffset.dx
+                          .maxScrollExtent -
+                      _totalPageOffset.dx
                 : _totalPageOffset.dx;
             pdfViewerController.jumpTo(
               xOffset: xOffSet,
@@ -2143,7 +2339,9 @@ class CanvasRenderBox extends RenderBox {
 
   /// Perform text search.
   void _performTextSearch(Canvas canvas, Offset offset) {
-    if (textCollection!.isNotEmpty) {
+    if (textCollection != null &&
+        textCollection!.isNotEmpty &&
+        pdfDocument != null) {
       final Paint currentInstancePaint = Paint()
         ..color = currentSearchTextHighlightColor;
       final Paint otherInstancePaint = Paint()
@@ -2180,7 +2378,7 @@ class CanvasRenderBox extends RenderBox {
     Paint textPaint,
     Paint bubblePaint,
   ) {
-    if (_textSelectionHelper.viewId == pageIndex) {
+    if (pdfDocument != null && _textSelectionHelper.viewId == pageIndex) {
       final TextGlyph startGlyph = _textSelectionHelper.firstSelectedGlyph!;
       final Offset startBubbleDetails = Offset(
         _textSelectionHelper.startBubbleX!,
@@ -2204,9 +2402,11 @@ class CanvasRenderBox extends RenderBox {
           startPoint: startGlyph.bounds,
         );
       }
-      for (int textLineIndex = _textSelectionHelper.startIndex;
-          textLineIndex <= _textSelectionHelper.endIndex;
-          textLineIndex++) {
+      for (
+        int textLineIndex = _textSelectionHelper.startIndex;
+        textLineIndex <= _textSelectionHelper.endIndex;
+        textLineIndex++
+      ) {
         final TextLine line = _textSelectionHelper.textLines![textLineIndex];
         final bool isRTLText = intl.Bidi.detectRtlDirectionality(line.text);
         Rect? startPoint;
@@ -2227,13 +2427,17 @@ class CanvasRenderBox extends RenderBox {
           }
         }
         final List<TextWord> textWordCollection = line.wordCollection;
-        for (int wordIndex = 0;
-            wordIndex < textWordCollection.length;
-            wordIndex++) {
+        for (
+          int wordIndex = 0;
+          wordIndex < textWordCollection.length;
+          wordIndex++
+        ) {
           final TextWord textWord = textWordCollection[wordIndex];
-          for (int glyphIndex = 0;
-              glyphIndex < textWord.glyphs.length;
-              glyphIndex++) {
+          for (
+            int glyphIndex = 0;
+            glyphIndex < textWord.glyphs.length;
+            glyphIndex++
+          ) {
             final TextGlyph glyph = textWord.glyphs[glyphIndex];
             final bool canSelectGlyph = checkGlyphInRegion(
               glyph,
@@ -2252,7 +2456,8 @@ class CanvasRenderBox extends RenderBox {
                 glyphIndex,
               );
               _textSelectionHelper.copiedText = glyphText;
-              final Rect textRectOffset = offset.translate(
+              final Rect textRectOffset =
+                  offset.translate(
                     glyph.bounds.left / heightPercentage,
                     glyph.bounds.top / heightPercentage,
                   ) &
@@ -2320,11 +2525,22 @@ class CanvasRenderBox extends RenderBox {
                     maxY / heightPercentage,
                   );
                 }
-                if (endBubbleDetails.dy < startGlyph.bounds.top) {
-                  startOffset = Offset(
-                    endBubbleDetails.dx / heightPercentage,
-                    endBubbleDetails.dy / heightPercentage,
-                  );
+                if (glyph.isRotated) {
+                  if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                    if (endBubbleDetails.dx < startGlyph.bounds.left) {
+                      startOffset = Offset(
+                        endBubbleDetails.dx / heightPercentage,
+                        endBubbleDetails.dy / heightPercentage,
+                      );
+                    }
+                  }
+                } else {
+                  if (endBubbleDetails.dy < startGlyph.bounds.top) {
+                    startOffset = Offset(
+                      endBubbleDetails.dx / heightPercentage,
+                      endBubbleDetails.dy / heightPercentage,
+                    );
+                  }
                 }
                 _textSelectionHelper.globalSelectedRegion = Rect.fromPoints(
                   localToGlobal(startOffset),
@@ -2424,10 +2640,19 @@ class CanvasRenderBox extends RenderBox {
       double glyphPosition = 0;
       if (glyphIndex < textWord.text.length - 1) {
         final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
-        final double currentGlyph =
-            textGlyph.bounds.width + textGlyph.bounds.left;
-        final double nextGlyph = textWord.glyphs[glyphIndex + 1].bounds.left;
-        glyphPosition = (currentGlyph - nextGlyph).abs();
+        if (glyph.isRotated) {
+          if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+            glyphPosition =
+                (textGlyph.bounds.top -
+                        textWord.glyphs[glyphIndex + 1].bounds.bottom)
+                    .abs();
+          }
+        } else {
+          final double currentGlyphEnd = textGlyph.bounds.right;
+          final double nextGlyphStart =
+              textWord.glyphs[glyphIndex + 1].bounds.left;
+          glyphPosition = (currentGlyphEnd - nextGlyphStart).abs();
+        }
       }
       glyphText = (glyphPosition > 1.0)
           ? '$glyphText${glyph.text} '
@@ -2459,36 +2684,82 @@ class CanvasRenderBox extends RenderBox {
     for (int i = 0; i < _textSelectionHelper.textLines!.length; i++) {
       final TextLine line = _textSelectionHelper.textLines![i];
       final bool isRTLText = intl.Bidi.detectRtlDirectionality(line.text);
+      Rect extendBounds = line.bounds;
+      final isRotatedGlyph = line.wordCollection.first.glyphs.first.isRotated;
+      if (pdfDocument != null && _textSelectionHelper.viewId != null) {
+        if (isRotatedGlyph) {
+          if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+            extendBounds = Rect.fromLTRB(
+              line.bounds.left,
+              0,
+              line.bounds.right,
+              pdfDocument!.pages[_textSelectionHelper.viewId!].size.height,
+            );
+          }
+        } else {
+          /// Extends line bounds horizontally to cover full page width, allowing free space for text selection.
+          extendBounds = Rect.fromLTRB(
+            0,
+            line.bounds.top,
+            pdfDocument!.pages[_textSelectionHelper.viewId!].size.width,
+            line.bounds.bottom,
+          );
+        }
+      }
       if (!isMouseSelection) {
         if (isRTLText) {
-          if (line.bounds.contains(details * heightPercentage)) {
+          if (extendBounds.contains(details * heightPercentage)) {
             if (_startBubbleDragging && i >= _textSelectionHelper.startIndex) {
               _textSelectionHelper.endIndex = i;
             } else if (_endBubbleDragging &&
                 i <= _textSelectionHelper.endIndex) {
               _textSelectionHelper.startIndex = i;
+              break;
             }
           }
         } else {
-          if (line.bounds.contains(details * heightPercentage)) {
+          if (extendBounds.contains(details * heightPercentage)) {
             if (_startBubbleDragging && i <= _textSelectionHelper.endIndex) {
               _textSelectionHelper.startIndex = i;
             } else if (_endBubbleDragging &&
                 i >= _textSelectionHelper.startIndex) {
               _textSelectionHelper.endIndex = i;
+              break;
             }
           }
         }
-      } else if ((line.bounds.contains(details) ||
-              (_textSelectionHelper.isCursorExit &&
-                  details.dy > line.bounds.top / heightPercentage)) &&
-          i <= _textSelectionHelper.endIndex &&
-          (details.dy < startPoint.top)) {
-        _textSelectionHelper.startIndex = i;
-      } else if (line.bounds.contains(details) &&
-          i >= _textSelectionHelper.startIndex &&
-          (details.dy > startPoint.top)) {
-        _textSelectionHelper.endIndex = i;
+      } else {
+        if (isRotatedGlyph) {
+          if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+            if ((extendBounds.contains(details) ||
+                    (_textSelectionHelper.isCursorExit &&
+                        details.dx > line.bounds.left / heightPercentage)) &&
+                i <= _textSelectionHelper.endIndex &&
+                (details.dx < startPoint.left)) {
+              _textSelectionHelper.startIndex = i;
+              break;
+            } else if (extendBounds.contains(details) &&
+                i >= _textSelectionHelper.startIndex &&
+                (details.dx > startPoint.left)) {
+              _textSelectionHelper.endIndex = i;
+              break;
+            }
+          }
+        } else {
+          if ((extendBounds.contains(details) ||
+                  (_textSelectionHelper.isCursorExit &&
+                      details.dy > line.bounds.top / heightPercentage)) &&
+              i <= _textSelectionHelper.endIndex &&
+              (details.dy < startPoint.top)) {
+            _textSelectionHelper.startIndex = i;
+            break;
+          } else if (extendBounds.contains(details) &&
+              i >= _textSelectionHelper.startIndex &&
+              (details.dy > startPoint.top)) {
+            _textSelectionHelper.endIndex = i;
+            break;
+          }
+        }
       }
     }
   }
@@ -2503,9 +2774,11 @@ class CanvasRenderBox extends RenderBox {
     Offset startPoint = Offset.zero,
     Rect endPoint = Rect.zero,
   }) {
-    for (int textLineIndex = 0;
-        textLineIndex < _textSelectionHelper.textLines!.length;
-        textLineIndex++) {
+    for (
+      int textLineIndex = 0;
+      textLineIndex < _textSelectionHelper.textLines!.length;
+      textLineIndex++
+    ) {
       final TextLine line = _textSelectionHelper.textLines![textLineIndex];
       if (textLineIndex < _textSelectionHelper.startIndex ||
           textLineIndex > _textSelectionHelper.endIndex) {
@@ -2528,7 +2801,8 @@ class CanvasRenderBox extends RenderBox {
                 top.floor() / heightPercentage >= startPoint.dy.floor() &&
                 right.floor() <= endPoint.right.floor() &&
                 bottom.floor() <= endPoint.bottom.floor())) {
-          final Rect lineRectOffset = offset.translate(
+          final Rect lineRectOffset =
+              offset.translate(
                 left / heightPercentage,
                 top / heightPercentage,
               ) &
@@ -2556,7 +2830,8 @@ class CanvasRenderBox extends RenderBox {
     switch (theme.platform) {
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
-        _selectionColor ??= selectionTheme.selectionColor ??
+        _selectionColor ??=
+            selectionTheme.selectionColor ??
             cupertinoTheme.primaryColor.withValues(alpha: 0.40);
         _selectionHandleColor ??=
             selectionTheme.selectionHandleColor ?? cupertinoTheme.primaryColor;
@@ -2565,7 +2840,8 @@ class CanvasRenderBox extends RenderBox {
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-        _selectionColor ??= selectionTheme.selectionColor ??
+        _selectionColor ??=
+            selectionTheme.selectionColor ??
             theme.colorScheme.primary.withValues(alpha: 0.40);
         _selectionHandleColor ??=
             selectionTheme.selectionHandleColor ?? theme.colorScheme.primary;
@@ -2594,17 +2870,20 @@ class CanvasRenderBox extends RenderBox {
       final double heightPercentage =
           pdfDocument!.pages[_textSelectionHelper.viewId!].size.height / height;
       _textSelectionHelper.heightPercentage = heightPercentage;
-      _textSelectionHelper.textLines = PdfTextExtractor(
-        pdfDocument!,
-      ).extractTextLines(startPageIndex: _textSelectionHelper.viewId);
-      for (int textLineIndex = 0;
-          textLineIndex < _textSelectionHelper.textLines!.length;
-          textLineIndex++) {
+      _textSelectionHelper.textLines = PdfTextExtractor(pdfDocument!)
+          .extractTextLines(startPageIndex: _textSelectionHelper.viewId);
+      for (
+        int textLineIndex = 0;
+        textLineIndex < _textSelectionHelper.textLines!.length;
+        textLineIndex++
+      ) {
         final TextLine line = _textSelectionHelper.textLines![textLineIndex];
         final List<TextWord> textWordCollection = line.wordCollection;
-        for (int wordIndex = 0;
-            wordIndex < textWordCollection.length;
-            wordIndex++) {
+        for (
+          int wordIndex = 0;
+          wordIndex < textWordCollection.length;
+          wordIndex++
+        ) {
           final TextWord textWord = textWordCollection[wordIndex];
           final Rect wordBounds = textWord.bounds;
           if (_tapDetails != null &&
@@ -2615,12 +2894,32 @@ class CanvasRenderBox extends RenderBox {
             _textSelectionHelper.endBubbleLine =
                 _textSelectionHelper.textLines![textLineIndex];
             _startBubbleTapX = textWord.bounds.bottomLeft.dx / heightPercentage;
+            _startBubbleTapY = textWord.bounds.bottomLeft.dy / heightPercentage;
             _textSelectionHelper.startBubbleY = textWord.bounds.bottomLeft.dy;
             _endBubbleTapX = textWord.bounds.bottomRight.dx / heightPercentage;
+            _endBubbleTapY = textWord.bounds.bottomRight.dy / heightPercentage;
             _textSelectionHelper.endBubbleY = textWord.bounds.bottomRight.dy;
             _textSelectionHelper.startBubbleX = textWord.bounds.bottomLeft.dx;
             _textSelectionHelper.endBubbleX = textWord.bounds.bottomRight.dx;
-            final Rect textRectOffset = offset.translate(
+            if (textWord.glyphs.first.isRotated) {
+              if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                _isSelectedTextContainsRotatedGlyph = true;
+                _startBubbleTapX =
+                    textWord.bounds.bottomRight.dx / heightPercentage;
+                _startBubbleTapY =
+                    textWord.bounds.bottomRight.dy / heightPercentage;
+                _endBubbleTapX = textWord.bounds.topRight.dx / heightPercentage;
+                _endBubbleTapY = textWord.bounds.topRight.dy / heightPercentage;
+                _textSelectionHelper.startBubbleX =
+                    textWord.bounds.bottomRight.dx;
+                _textSelectionHelper.startBubbleY =
+                    textWord.bounds.bottomRight.dy;
+                _textSelectionHelper.endBubbleX = textWord.bounds.topRight.dx;
+                _textSelectionHelper.endBubbleY = textWord.bounds.topRight.dy;
+              }
+            }
+            final Rect textRectOffset =
+                offset.translate(
                   textWord.bounds.left / heightPercentage,
                   textWord.bounds.top / heightPercentage,
                 ) &
@@ -2629,14 +2928,26 @@ class CanvasRenderBox extends RenderBox {
                   wordBounds.height / heightPercentage,
                 );
             _drawTextRect(canvas, textPaint, textRectOffset);
-            final Offset startBubbleOffset = offset.translate(
+            Offset startBubbleOffset = offset.translate(
               textWord.bounds.bottomLeft.dx / heightPercentage,
               textWord.bounds.bottomLeft.dy / heightPercentage,
             );
-            final Offset endBubbleOffset = offset.translate(
+            Offset endBubbleOffset = offset.translate(
               textWord.bounds.bottomRight.dx / heightPercentage,
               textWord.bounds.bottomRight.dy / heightPercentage,
             );
+            if (textWord.glyphs.first.isRotated) {
+              if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                startBubbleOffset = offset.translate(
+                  textWord.bounds.bottomRight.dx / heightPercentage,
+                  textWord.bounds.bottomRight.dy / heightPercentage,
+                );
+                endBubbleOffset = offset.translate(
+                  textWord.bounds.topRight.dx / heightPercentage,
+                  textWord.bounds.topRight.dy / heightPercentage,
+                );
+              }
+            }
             _drawStartBubble(canvas, bubblePaint, startBubbleOffset);
             _drawEndBubble(canvas, bubblePaint, endBubbleOffset);
             _textSelectionHelper.globalSelectedRegion = Rect.fromPoints(
@@ -2656,8 +2967,9 @@ class CanvasRenderBox extends RenderBox {
             final bool isRTLGlyph = intl.Bidi.detectRtlDirectionality(
               textWord.text,
             );
-            _textSelectionHelper.firstSelectedGlyph =
-                isRTLGlyph ? textWord.glyphs.last : textWord.glyphs.first;
+            _textSelectionHelper.firstSelectedGlyph = isRTLGlyph
+                ? textWord.glyphs.last
+                : textWord.glyphs.first;
             _textSelectionHelper.selectionEnabled = true;
             _textSelectionHelper.selectedTextLines.clear();
             _textSelectionHelper.selectedTextLines.add(
@@ -2683,25 +2995,54 @@ class CanvasRenderBox extends RenderBox {
         _findStartAndEndIndex(_dragDetails!, heightPercentage, false);
       }
       if (_isRTLText ? _endBubbleDragging : _startBubbleDragging) {
-        for (int textLineIndex = _textSelectionHelper.startIndex;
-            textLineIndex <= _textSelectionHelper.endIndex;
-            textLineIndex++) {
+        for (
+          int textLineIndex = _textSelectionHelper.startIndex;
+          textLineIndex <= _textSelectionHelper.endIndex;
+          textLineIndex++
+        ) {
           final TextLine line = _textSelectionHelper.textLines![textLineIndex];
           if (!_isRTLText) {
-            if (_dragDetails != null &&
-                _dragDetails!.dy <=
-                    _textSelectionHelper.endBubbleY! / heightPercentage &&
-                _dragDetails!.dy >= (line.bounds.top / heightPercentage)) {
-              _textSelectionHelper.startBubbleLine = line;
-              _textSelectionHelper.startBubbleY = line.bounds.bottomLeft.dy;
+            if (line.wordCollection.first.glyphs.first.isRotated) {
+              if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                _isSelectedTextContainsRotatedGlyph = true;
+                if (_dragDetails != null &&
+                    _dragDetails!.dx <=
+                        _textSelectionHelper.endBubbleX! / heightPercentage &&
+                    _dragDetails!.dx >= (line.bounds.left / heightPercentage)) {
+                  _textSelectionHelper.startBubbleLine = line;
+                  _textSelectionHelper.startBubbleX = line.bounds.right;
+                }
+              }
+            } else {
+              if (_dragDetails != null &&
+                  _dragDetails!.dy <=
+                      _textSelectionHelper.endBubbleY! / heightPercentage &&
+                  _dragDetails!.dy >= (line.bounds.top / heightPercentage)) {
+                _textSelectionHelper.startBubbleLine = line;
+                _textSelectionHelper.startBubbleY = line.bounds.bottomLeft.dy;
+              }
             }
-            if (_dragDetails != null &&
-                _dragDetails!.dy >=
-                    _textSelectionHelper.endBubbleY! / heightPercentage) {
-              _textSelectionHelper.startBubbleLine =
-                  _textSelectionHelper.endBubbleLine;
-              _textSelectionHelper.startBubbleY =
-                  _textSelectionHelper.endBubbleLine!.bounds.bottom;
+
+            if (line.wordCollection.first.glyphs.first.isRotated) {
+              if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                if (_dragDetails != null &&
+                    _dragDetails!.dx >=
+                        _textSelectionHelper.endBubbleX! / heightPercentage) {
+                  _textSelectionHelper.startBubbleLine =
+                      _textSelectionHelper.endBubbleLine;
+                  _textSelectionHelper.startBubbleX =
+                      _textSelectionHelper.endBubbleLine!.bounds.right;
+                }
+              }
+            } else {
+              if (_dragDetails != null &&
+                  _dragDetails!.dy >=
+                      _textSelectionHelper.endBubbleY! / heightPercentage) {
+                _textSelectionHelper.startBubbleLine =
+                    _textSelectionHelper.endBubbleLine;
+                _textSelectionHelper.startBubbleY =
+                    _textSelectionHelper.endBubbleLine!.bounds.bottom;
+              }
             }
           } else {
             if (_dragDetails != null &&
@@ -2717,87 +3058,204 @@ class CanvasRenderBox extends RenderBox {
               _textSelectionHelper.endBubbleY = line.bounds.bottom;
             }
           }
-          for (int wordIndex = 0;
-              wordIndex <
-                  (_isRTLText
-                      ? _textSelectionHelper
-                          .endBubbleLine!.wordCollection.length
-                      : _textSelectionHelper
-                          .startBubbleLine!.wordCollection.length);
-              wordIndex++) {
+          for (
+            int wordIndex = 0;
+            wordIndex <
+                (_isRTLText
+                    ? _textSelectionHelper.endBubbleLine!.wordCollection.length
+                    : _textSelectionHelper
+                          .startBubbleLine!
+                          .wordCollection
+                          .length);
+            wordIndex++
+          ) {
             final TextWord textWord = _isRTLText
                 ? _textSelectionHelper.endBubbleLine!.wordCollection[wordIndex]
                 : _textSelectionHelper
-                    .startBubbleLine!.wordCollection[wordIndex];
-            for (int glyphIndex = 0;
-                glyphIndex < textWord.glyphs.length;
-                glyphIndex++) {
+                      .startBubbleLine!
+                      .wordCollection[wordIndex];
+            for (
+              int glyphIndex = 0;
+              glyphIndex < textWord.glyphs.length;
+              glyphIndex++
+            ) {
               final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
-              if (_startBubbleTapX >=
-                      (textGlyph.bounds.bottomLeft.dx / heightPercentage) &&
-                  !_isRTLText &&
-                  _startBubbleTapX <=
-                      (textGlyph.bounds.bottomRight.dx / heightPercentage)) {
-                _textSelectionHelper.startBubbleX =
-                    textGlyph.bounds.bottomLeft.dx;
-                _textSelectionHelper.firstSelectedGlyph = textGlyph;
-              } else if (_endBubbleTapX >=
-                      (textGlyph.bounds.bottomLeft.dx / heightPercentage) &&
-                  _isRTLText &&
-                  _endBubbleTapX <=
-                      (textGlyph.bounds.bottomRight.dx / heightPercentage)) {
-                _textSelectionHelper.endBubbleX =
-                    textGlyph.bounds.bottomRight.dx;
-                _textSelectionHelper.firstSelectedGlyph = textGlyph;
+              if (!_isRTLText) {
+                if (line.wordCollection.first.glyphs.first.isRotated) {
+                  if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                    if (_startBubbleTapY <=
+                            (textGlyph.bounds.bottom / heightPercentage) &&
+                        _startBubbleTapY >=
+                            (textGlyph.bounds.top / heightPercentage)) {
+                      _textSelectionHelper.startBubbleY =
+                          textGlyph.bounds.bottomRight.dy;
+                      _textSelectionHelper.firstSelectedGlyph = textGlyph;
+                    }
+                  }
+                } else {
+                  if (_startBubbleTapX >=
+                          (textGlyph.bounds.bottomLeft.dx / heightPercentage) &&
+                      _startBubbleTapX <=
+                          (textGlyph.bounds.bottomRight.dx /
+                              heightPercentage)) {
+                    _textSelectionHelper.startBubbleX =
+                        textGlyph.bounds.bottomLeft.dx;
+                    _textSelectionHelper.firstSelectedGlyph = textGlyph;
+                  }
+                }
+              } else {
+                if (_endBubbleTapX >=
+                        (textGlyph.bounds.bottomLeft.dx / heightPercentage) &&
+                    _endBubbleTapX <=
+                        (textGlyph.bounds.bottomRight.dx / heightPercentage)) {
+                  _textSelectionHelper.endBubbleX =
+                      textGlyph.bounds.bottomRight.dx;
+                  _textSelectionHelper.firstSelectedGlyph = textGlyph;
+                }
               }
             }
           }
           if (!_isRTLText) {
-            if (_startBubbleTapX <
-                (_textSelectionHelper.startBubbleLine!.bounds.bottomLeft.dx /
-                    heightPercentage)) {
-              _textSelectionHelper.startBubbleX =
-                  _textSelectionHelper.startBubbleLine!.bounds.bottomLeft.dx;
-              _textSelectionHelper.firstSelectedGlyph = _textSelectionHelper
-                  .startBubbleLine!.wordCollection.first.glyphs.first;
+            if (line.wordCollection.first.glyphs.first.isRotated) {
+              if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                if (_startBubbleTapY >
+                    (_textSelectionHelper.startBubbleLine!.bounds.bottom /
+                        heightPercentage)) {
+                  _textSelectionHelper.startBubbleY =
+                      _textSelectionHelper.startBubbleLine!.bounds.bottom;
+                  _textSelectionHelper.firstSelectedGlyph = _textSelectionHelper
+                      .startBubbleLine!
+                      .wordCollection
+                      .first
+                      .glyphs
+                      .first;
+                }
+              }
+            } else {
+              if (_startBubbleTapX <
+                  (_textSelectionHelper.startBubbleLine!.bounds.bottomLeft.dx /
+                      heightPercentage)) {
+                _textSelectionHelper.startBubbleX =
+                    _textSelectionHelper.startBubbleLine!.bounds.bottomLeft.dx;
+                _textSelectionHelper.firstSelectedGlyph = _textSelectionHelper
+                    .startBubbleLine!
+                    .wordCollection
+                    .first
+                    .glyphs
+                    .first;
+              }
             }
-            if (_startBubbleTapX >=
-                (_textSelectionHelper.startBubbleLine!.bounds.bottomRight.dx /
-                    heightPercentage)) {
-              _textSelectionHelper.startBubbleX = _textSelectionHelper
-                  .startBubbleLine!
-                  .wordCollection
-                  .last
-                  .glyphs
-                  .last
-                  .bounds
-                  .bottomLeft
-                  .dx;
-              _textSelectionHelper.firstSelectedGlyph = _textSelectionHelper
-                  .startBubbleLine!.wordCollection.last.glyphs.last;
+
+            if (line.wordCollection.first.glyphs.first.isRotated) {
+              if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                if (_startBubbleTapY <=
+                    (_textSelectionHelper.startBubbleLine!.bounds.top /
+                        heightPercentage)) {
+                  _textSelectionHelper.startBubbleY = _textSelectionHelper
+                      .startBubbleLine!
+                      .wordCollection
+                      .last
+                      .glyphs
+                      .last
+                      .bounds
+                      .bottom;
+                  _textSelectionHelper.firstSelectedGlyph = _textSelectionHelper
+                      .startBubbleLine!
+                      .wordCollection
+                      .last
+                      .glyphs
+                      .last;
+                }
+              }
+            } else {
+              if (_startBubbleTapX >=
+                  (_textSelectionHelper.startBubbleLine!.bounds.bottomRight.dx /
+                      heightPercentage)) {
+                _textSelectionHelper.startBubbleX = _textSelectionHelper
+                    .startBubbleLine!
+                    .wordCollection
+                    .last
+                    .glyphs
+                    .last
+                    .bounds
+                    .bottomLeft
+                    .dx;
+                _textSelectionHelper.firstSelectedGlyph = _textSelectionHelper
+                    .startBubbleLine!
+                    .wordCollection
+                    .last
+                    .glyphs
+                    .last;
+              }
             }
-            if (_textSelectionHelper.startBubbleLine!.bounds.bottom /
-                        heightPercentage ==
-                    _textSelectionHelper.endBubbleLine!.bounds.bottom /
-                        heightPercentage &&
-                _startBubbleTapX >= _endBubbleTapX) {
-              for (int wordIndex = 0;
+
+            if (line.wordCollection.first.glyphs.first.isRotated) {
+              if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                if (_textSelectionHelper.startBubbleLine!.bounds.right /
+                            heightPercentage ==
+                        _textSelectionHelper.endBubbleLine!.bounds.right /
+                            heightPercentage &&
+                    _startBubbleTapY <= _endBubbleTapY) {
+                  for (
+                    int wordIndex = 0;
+                    wordIndex <
+                        _textSelectionHelper
+                            .startBubbleLine!
+                            .wordCollection
+                            .length;
+                    wordIndex++
+                  ) {
+                    final TextWord textWord = _textSelectionHelper
+                        .startBubbleLine!
+                        .wordCollection[wordIndex];
+                    for (
+                      int glyphIndex = 0;
+                      glyphIndex < textWord.glyphs.length;
+                      glyphIndex++
+                    ) {
+                      final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
+                      if (textGlyph.bounds.top / heightPercentage ==
+                          _textSelectionHelper.endBubbleY! / heightPercentage) {
+                        _textSelectionHelper.startBubbleY =
+                            textGlyph.bounds.bottom;
+                        _textSelectionHelper.firstSelectedGlyph = textGlyph;
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            } else {
+              if (_textSelectionHelper.startBubbleLine!.bounds.bottom /
+                          heightPercentage ==
+                      _textSelectionHelper.endBubbleLine!.bounds.bottom /
+                          heightPercentage &&
+                  _startBubbleTapX >= _endBubbleTapX) {
+                for (
+                  int wordIndex = 0;
                   wordIndex <
                       _textSelectionHelper
-                          .startBubbleLine!.wordCollection.length;
-                  wordIndex++) {
-                final TextWord textWord = _textSelectionHelper
-                    .startBubbleLine!.wordCollection[wordIndex];
-                for (int glyphIndex = 0;
+                          .startBubbleLine!
+                          .wordCollection
+                          .length;
+                  wordIndex++
+                ) {
+                  final TextWord textWord = _textSelectionHelper
+                      .startBubbleLine!
+                      .wordCollection[wordIndex];
+                  for (
+                    int glyphIndex = 0;
                     glyphIndex < textWord.glyphs.length;
-                    glyphIndex++) {
-                  final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
-                  if (textGlyph.bounds.bottomRight.dx / heightPercentage ==
-                      _textSelectionHelper.endBubbleX! / heightPercentage) {
-                    _textSelectionHelper.startBubbleX =
-                        textGlyph.bounds.bottomLeft.dx;
-                    _textSelectionHelper.firstSelectedGlyph = textGlyph;
-                    break;
+                    glyphIndex++
+                  ) {
+                    final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
+                    if (textGlyph.bounds.bottomRight.dx / heightPercentage ==
+                        _textSelectionHelper.endBubbleX! / heightPercentage) {
+                      _textSelectionHelper.startBubbleX =
+                          textGlyph.bounds.bottomLeft.dx;
+                      _textSelectionHelper.firstSelectedGlyph = textGlyph;
+                      break;
+                    }
                   }
                 }
               }
@@ -2819,7 +3277,11 @@ class CanvasRenderBox extends RenderBox {
                 _textSelectionHelper.endBubbleX =
                     _textSelectionHelper.endBubbleLine!.bounds.bottomLeft.dx;
                 _textSelectionHelper.firstSelectedGlyph = _textSelectionHelper
-                    .endBubbleLine!.wordCollection.first.glyphs.first;
+                    .endBubbleLine!
+                    .wordCollection
+                    .first
+                    .glyphs
+                    .first;
               }
               if (_endBubbleTapX >=
                   (_textSelectionHelper.endBubbleLine!.bounds.bottomRight.dx /
@@ -2834,116 +3296,229 @@ class CanvasRenderBox extends RenderBox {
                     .bottomLeft
                     .dx;
                 _textSelectionHelper.firstSelectedGlyph = _textSelectionHelper
-                    .endBubbleLine!.wordCollection.last.glyphs.last;
+                    .endBubbleLine!
+                    .wordCollection
+                    .last
+                    .glyphs
+                    .last;
               }
             }
           }
         }
       } else if (_isRTLText ? _startBubbleDragging : _endBubbleDragging) {
-        for (int textLineIndex = _textSelectionHelper.startIndex;
-            textLineIndex <= _textSelectionHelper.endIndex;
-            textLineIndex++) {
+        for (
+          int textLineIndex = _textSelectionHelper.startIndex;
+          textLineIndex <= _textSelectionHelper.endIndex;
+          textLineIndex++
+        ) {
           final TextLine line = _textSelectionHelper.textLines![textLineIndex];
-          if (_dragDetails != null &&
-              !_isRTLText &&
-              _dragDetails!.dy >=
-                  (_textSelectionHelper.startBubbleLine!.bounds.top /
-                      heightPercentage) &&
-              _dragDetails!.dy >= (line.bounds.topLeft.dy / heightPercentage)) {
-            _textSelectionHelper.endBubbleLine = line;
-            _textSelectionHelper.endBubbleY = line.bounds.bottomRight.dy;
+          if (!_isRTLText) {
+            if (line.wordCollection.first.glyphs.first.isRotated) {
+              if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                _isSelectedTextContainsRotatedGlyph = true;
+                if (_dragDetails != null &&
+                    _dragDetails!.dx >=
+                        (_textSelectionHelper.startBubbleLine!.bounds.left /
+                            heightPercentage) &&
+                    _dragDetails!.dx <=
+                        (line.bounds.right / heightPercentage)) {
+                  _textSelectionHelper.endBubbleLine = line;
+                  _textSelectionHelper.endBubbleX = line.bounds.topRight.dx;
+                }
+              }
+            } else {
+              if (_dragDetails != null &&
+                  _dragDetails!.dy >=
+                      (_textSelectionHelper.startBubbleLine!.bounds.top /
+                          heightPercentage) &&
+                  _dragDetails!.dy >=
+                      (line.bounds.topLeft.dy / heightPercentage)) {
+                _textSelectionHelper.endBubbleLine = line;
+                _textSelectionHelper.endBubbleY = line.bounds.bottomRight.dy;
+              }
+            }
+          } else {
+            if (_dragDetails != null &&
+                _dragDetails!.dy >=
+                    (_textSelectionHelper.startBubbleLine!.bounds.top /
+                        heightPercentage) &&
+                _dragDetails!.dy >=
+                    (line.bounds.topLeft.dy / heightPercentage)) {
+              _textSelectionHelper.startBubbleLine = line;
+              _textSelectionHelper.startBubbleY = line.bounds.bottomRight.dy;
+            } else if (_dragDetails != null &&
+                _dragDetails!.dy <=
+                    (_textSelectionHelper.startBubbleLine!.bounds.bottom /
+                        heightPercentage)) {
+              _textSelectionHelper.startBubbleLine = line;
+              _textSelectionHelper.startBubbleY = line.bounds.bottom;
+            }
           }
-          if (_dragDetails != null &&
-              _isRTLText &&
-              _dragDetails!.dy >=
-                  (_textSelectionHelper.startBubbleLine!.bounds.top /
-                      heightPercentage) &&
-              _dragDetails!.dy >= (line.bounds.topLeft.dy / heightPercentage)) {
-            _textSelectionHelper.startBubbleLine = line;
-            _textSelectionHelper.startBubbleY = line.bounds.bottomRight.dy;
-          } else if (_dragDetails != null &&
-              _isRTLText &&
-              _dragDetails!.dy <=
-                  (_textSelectionHelper.startBubbleLine!.bounds.bottom /
-                      heightPercentage)) {
-            _textSelectionHelper.startBubbleLine = line;
-            _textSelectionHelper.startBubbleY = line.bounds.bottom;
-          }
-          for (int wordIndex = 0;
-              wordIndex <
-                  (_isRTLText
-                      ? _textSelectionHelper
-                          .startBubbleLine!.wordCollection.length
-                      : _textSelectionHelper
-                          .endBubbleLine!.wordCollection.length);
-              wordIndex++) {
+          for (
+            int wordIndex = 0;
+            wordIndex <
+                (_isRTLText
+                    ? _textSelectionHelper
+                          .startBubbleLine!
+                          .wordCollection
+                          .length
+                    : _textSelectionHelper
+                          .endBubbleLine!
+                          .wordCollection
+                          .length);
+            wordIndex++
+          ) {
             final TextWord textWord = _isRTLText
                 ? _textSelectionHelper
-                    .startBubbleLine!.wordCollection[wordIndex]
+                      .startBubbleLine!
+                      .wordCollection[wordIndex]
                 : _textSelectionHelper.endBubbleLine!.wordCollection[wordIndex];
-            for (int glyphIndex = 0;
-                glyphIndex < textWord.glyphs.length;
-                glyphIndex++) {
+            for (
+              int glyphIndex = 0;
+              glyphIndex < textWord.glyphs.length;
+              glyphIndex++
+            ) {
               final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
-              if (!_isRTLText &&
-                  _endBubbleTapX >=
-                      (textGlyph.bounds.bottomLeft.dx / heightPercentage) &&
-                  _endBubbleTapX <=
-                      (textGlyph.bounds.bottomRight.dx / heightPercentage)) {
-                _textSelectionHelper.endBubbleX =
-                    textGlyph.bounds.bottomRight.dx;
-              } else if (_isRTLText &&
-                  _startBubbleTapX >=
-                      (textGlyph.bounds.bottomLeft.dx / heightPercentage) &&
-                  _startBubbleTapX <=
-                      (textGlyph.bounds.bottomRight.dx / heightPercentage)) {
-                _textSelectionHelper.startBubbleX =
-                    textGlyph.bounds.bottomRight.dx;
+              if (!_isRTLText) {
+                if (line.wordCollection.first.glyphs.first.isRotated) {
+                  if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                    if (_endBubbleTapY <=
+                            (textGlyph.bounds.bottomRight.dy /
+                                heightPercentage) &&
+                        _endBubbleTapY >=
+                            (textGlyph.bounds.topRight.dy / heightPercentage)) {
+                      _textSelectionHelper.endBubbleY =
+                          textGlyph.bounds.topRight.dy;
+                    }
+                  }
+                } else {
+                  if (_endBubbleTapX >=
+                          (textGlyph.bounds.bottomLeft.dx / heightPercentage) &&
+                      _endBubbleTapX <=
+                          (textGlyph.bounds.bottomRight.dx /
+                              heightPercentage)) {
+                    _textSelectionHelper.endBubbleX =
+                        textGlyph.bounds.bottomRight.dx;
+                  }
+                }
+              } else {
+                if (_startBubbleTapX >=
+                        (textGlyph.bounds.bottomLeft.dx / heightPercentage) &&
+                    _startBubbleTapX <=
+                        (textGlyph.bounds.bottomRight.dx / heightPercentage)) {
+                  _textSelectionHelper.startBubbleX =
+                      textGlyph.bounds.bottomRight.dx;
+                }
               }
             }
           }
           if (!_isRTLText) {
-            if (_endBubbleTapX.floor() >
-                (_textSelectionHelper.endBubbleLine!.bounds.bottomRight.dx /
-                        heightPercentage)
-                    .floor()) {
-              _textSelectionHelper.endBubbleX =
-                  _textSelectionHelper.endBubbleLine!.bounds.bottomRight.dx;
-            }
-            if (_endBubbleTapX.floor() <=
-                (_textSelectionHelper.endBubbleLine!.bounds.bottomLeft.dx /
-                        heightPercentage)
-                    .floor()) {
-              _textSelectionHelper.endBubbleX = _textSelectionHelper
-                  .endBubbleLine!
-                  .wordCollection
-                  .first
-                  .glyphs
-                  .first
-                  .bounds
-                  .bottomRight
-                  .dx;
-            }
-            if (_textSelectionHelper.endBubbleLine!.bounds.bottom /
-                        heightPercentage ==
-                    _textSelectionHelper.startBubbleLine!.bounds.bottom /
-                        heightPercentage &&
-                _endBubbleTapX < _startBubbleTapX) {
-              for (int wordIndex = 0;
+            if (line.wordCollection.first.glyphs.first.isRotated) {
+              if (_rotatedAngle == PdfPageRotateAngle.rotateAngle90) {
+                if (_endBubbleTapY.floor() <
+                    (_textSelectionHelper.endBubbleLine!.bounds.topRight.dy /
+                            heightPercentage)
+                        .floor()) {
+                  _textSelectionHelper.endBubbleY =
+                      _textSelectionHelper.endBubbleLine!.bounds.topRight.dy;
+                }
+                if (_endBubbleTapY.floor() >=
+                    (_textSelectionHelper.endBubbleLine!.bounds.bottomRight.dy /
+                            heightPercentage)
+                        .floor()) {
+                  _textSelectionHelper.endBubbleY = _textSelectionHelper
+                      .endBubbleLine!
+                      .wordCollection
+                      .first
+                      .glyphs
+                      .first
+                      .bounds
+                      .topRight
+                      .dy;
+                }
+
+                if (_textSelectionHelper.endBubbleLine!.bounds.right /
+                            heightPercentage ==
+                        _textSelectionHelper.startBubbleLine!.bounds.right /
+                            heightPercentage &&
+                    _endBubbleTapY > _startBubbleTapY) {
+                  for (
+                    int wordIndex = 0;
+                    wordIndex <
+                        _textSelectionHelper
+                            .endBubbleLine!
+                            .wordCollection
+                            .length;
+                    wordIndex++
+                  ) {
+                    final TextWord textWord = _textSelectionHelper
+                        .endBubbleLine!
+                        .wordCollection[wordIndex];
+                    for (
+                      int glyphIndex = 0;
+                      glyphIndex < textWord.glyphs.length;
+                      glyphIndex++
+                    ) {
+                      final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
+                      if (textGlyph.bounds.bottomRight.dy / heightPercentage ==
+                          _textSelectionHelper.startBubbleY! /
+                              heightPercentage) {
+                        _textSelectionHelper.endBubbleY =
+                            textGlyph.bounds.topRight.dy;
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            } else {
+              if (_endBubbleTapX.floor() >
+                  (_textSelectionHelper.endBubbleLine!.bounds.bottomRight.dx /
+                          heightPercentage)
+                      .floor()) {
+                _textSelectionHelper.endBubbleX =
+                    _textSelectionHelper.endBubbleLine!.bounds.bottomRight.dx;
+              }
+              if (_endBubbleTapX.floor() <=
+                  (_textSelectionHelper.endBubbleLine!.bounds.bottomLeft.dx /
+                          heightPercentage)
+                      .floor()) {
+                _textSelectionHelper.endBubbleX = _textSelectionHelper
+                    .endBubbleLine!
+                    .wordCollection
+                    .first
+                    .glyphs
+                    .first
+                    .bounds
+                    .bottomRight
+                    .dx;
+              }
+              if (_textSelectionHelper.endBubbleLine!.bounds.bottom /
+                          heightPercentage ==
+                      _textSelectionHelper.startBubbleLine!.bounds.bottom /
+                          heightPercentage &&
+                  _endBubbleTapX < _startBubbleTapX) {
+                for (
+                  int wordIndex = 0;
                   wordIndex <
                       _textSelectionHelper.endBubbleLine!.wordCollection.length;
-                  wordIndex++) {
-                final TextWord textWord = _textSelectionHelper
-                    .endBubbleLine!.wordCollection[wordIndex];
-                for (int glyphIndex = 0;
+                  wordIndex++
+                ) {
+                  final TextWord textWord = _textSelectionHelper
+                      .endBubbleLine!
+                      .wordCollection[wordIndex];
+                  for (
+                    int glyphIndex = 0;
                     glyphIndex < textWord.glyphs.length;
-                    glyphIndex++) {
-                  final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
-                  if (textGlyph.bounds.bottomLeft.dx / heightPercentage ==
-                      _textSelectionHelper.startBubbleX! / heightPercentage) {
-                    _textSelectionHelper.endBubbleX =
-                        textGlyph.bounds.bottomRight.dx;
-                    break;
+                    glyphIndex++
+                  ) {
+                    final TextGlyph textGlyph = textWord.glyphs[glyphIndex];
+                    if (textGlyph.bounds.bottomLeft.dx / heightPercentage ==
+                        _textSelectionHelper.startBubbleX! / heightPercentage) {
+                      _textSelectionHelper.endBubbleX =
+                          textGlyph.bounds.bottomRight.dx;
+                      break;
+                    }
                   }
                 }
               }

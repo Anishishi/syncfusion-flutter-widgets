@@ -6,8 +6,14 @@ import 'text_glyph.dart';
 /// Details of a word present in the line.
 class TextWord {
   //constructor
-  TextWord._(this.text, this.fontName, this.fontStyle, List<TextGlyph> glyphs,
-      this.bounds, this.fontSize) {
+  TextWord._(
+    this.text,
+    this.fontName,
+    this.fontStyle,
+    List<TextGlyph> glyphs,
+    this.bounds,
+    this.fontSize,
+  ) {
     _glyphs = glyphs;
   }
 
@@ -33,13 +39,18 @@ class TextWord {
   List<TextGlyph> get glyphs => _glyphs;
 }
 
-// ignore: avoid_classes_with_only_static_members
 /// [TextWord] helper
+// ignore: avoid_classes_with_only_static_members
 class TextWordHelper {
   /// internal method
-  static TextWord initialize(String text, String fontName,
-      List<PdfFontStyle> fontStyle, List<TextGlyph> glyphs,
-      [Rect bounds = Rect.zero, double fontSize = 0]) {
+  static TextWord initialize(
+    String text,
+    String fontName,
+    List<PdfFontStyle> fontStyle,
+    List<TextGlyph> glyphs, [
+    Rect bounds = Rect.zero,
+    double fontSize = 0,
+  ]) {
     return TextWord._(text, fontName, fontStyle, glyphs, bounds, fontSize);
   }
 }
