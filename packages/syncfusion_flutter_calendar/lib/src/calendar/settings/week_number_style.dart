@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Sets the style to customize the week number text of [SfCalendar].
 ///
@@ -106,9 +106,6 @@ class WeekNumberStyle with Diagnosticable {
 
   @override
   int get hashCode {
-    return Object.hash(
-      backgroundColor,
-      textStyle,
-    );
+    return Object.hash(backgroundColor, textStyle);
   }
 }

@@ -1,4 +1,131 @@
-## Unreleased
+﻿## [35.1.46] - 11/11/2026
+
+**General**
+
+* Migrated the Flutter calendar Material imports from the Flutter SDK to the standalone material_ui package.
+
+## [35.1.37] - 09/29/2026
+
+**General**
+
+*  The compatible version of our Flutter calendar widget has been updated to Flutter SDK 3.47.
+
+## [34.2.5] - 8/25/2026
+
+**Bug**
+
+* Fixed an issue where appointment start times were incorrectly shifted when appointments were dragged from the center or bottom in day, week, work week, and timeline views.
+
+## [34.2.4] - 8/18/2026
+
+**Bug**
+
+* Fixed an issue where appointments could not be dragged to late-hour time slots or across day boundaries in day and week views.
+
+## [34.1.32] - 7/20/2026
+
+**Bugs**
+
+* Resolved a crash that could occur when switching the [viewNavigationMode](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/viewNavigationMode.html) from [none](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/ViewNavigationMode.html) to [snap](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/ViewNavigationMode.html) while a swipe gesture was in progress.
+
+* Standardized gesture coordinate handling by converting global touch positions to local coordinates for reliable interaction behavior.
+
+## [33.2.12] - 6/09/2026
+
+**Bugs**
+
+
+* Fixed a crash that occurred during fast navigation and exit, caused by animations continuing after the calendar view was disposed. Added safeguards to ensure that animations are safely stopped, preventing errors.
+
+## [33.2.6] - 5/12/2026
+
+**Bugs**
+
+* Fixed duplicate appointments appearing in Month view when the appointment count exceeds the [appointmentDisplayCount](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/MonthViewSettings/appointmentDisplayCount.html) limit with a [appointmentBuilder](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/appointmentBuilder.html). This fix applies to both single-day and multi-day appointments.
+
+## [33.1.47] - 04/07/2026
+
+**Breaking changes**
+
+* The size property in [ResourceViewSettings](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/resourceViewSettings.html) is now deprecated. Use the new explicit height and width properties instead to control each resource item's height and the resource panel’s width, respectively.
+
+## [33.1.44] - 03/16/2026
+
+**Features**
+
+* #FR29362 - Added explicit `height` and `width` support to [ResourceViewSettings](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/resourceViewSettings.html). When provided, `height` adjusts each resource item's height and `width` adjusts the resource panel width. These explicit values take precedence over `size`.
+
+## [32.1.24] - 01/20/2026
+
+**General**
+
+* Upgraded the `timezone` package to the latest version 0.11.0.
+
+## [32.1.22] - 01/06/2026
+
+**Bugs**
+
+* #GH1498 - The child widget in [loadMoreWidgetBuilder](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/loadMoreWidgetBuilder.html) was repeatedly invoked when [minDate](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/minDate.html) was set to current month-end date. Now, it runs once initially, and then load-more will be triggered only when required during scrolling.
+
+## [31.2.15] - 11/25/2025
+
+**General**
+
+*  The compatible version of our Flutter calendar widget has been updated to Flutter SDK 3.38.
+
+## [31.2.5] - 11/04/2025
+
+**General**
+
+*  The translation for “No events” has been modified to “Etkinlik yok” from “Olay yok” for Turkish language.
+
+## [31.2.4] - 10/28/2025
+
+**Enhancements**
+
+* \#FB70566 - The display of exceeding events has been improved for all-day events with [appointmentBuilder](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/appointmentBuilder.html) customization.
+
+**Breaking changes**
+
+* \#FB70575 - The [leadingDateTextStyle](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/MonthCellStyle/leadingDatesTextStyle.html) now applies to dates in the previous month, while the [trailingDateTextStyle](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/MonthCellStyle/trailingDatesTextStyle.html) applies to dates in the next month in the month view.
+
+## [31.1.20] - 09/17/2025
+
+**General**
+
+* The compatible version of our Flutter calendar widget has been updated to Flutter SDK 3.35.
+
+## [30.1.37] - 06/25/2025
+
+**General**
+
+* Upgraded the `timezone` package to the latest version 0.10.1.
+
+* The compatible version of our Flutter calendar widget has been updated to Flutter SDK 3.32.0.
+
+## [29.1.39] - 22/04/2025
+
+**General**
+
+*  The minimum Dart version has been updated to 3.7.
+
+**Bugs**
+
+* \#FB66714 - Now, the font size is no longer calculated with a negative value in [SfCalendar](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar-class.html) when placed in a constrained space.
+
+* \#FB66695 - Now, the [headerDateFormat](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/headerDateFormat.html) is applied correctly in the resource view of [SfCalendar](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar-class.html), displaying the date in the expected format.
+
+* \#FB66695 - Now, the week number in the resource view of [SfCalendar](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar-class.html), is fully visible and no longer gets cut off when sufficient space is available.
+
+* \#FB66690 - Now, the calendar cell overlay position updates correctly in the month view when the [timeRulerSize](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/TimeSlotViewSettings/timeRulerSize.html) is added in the [timeSlotViewSettings](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/timeSlotViewSettings.html) of SfCalendar.
+
+## [29.1.37] - 08/04/2025
+
+**Bugs**
+
+* \#FB66610 - Now, the interactive widgets will work on the [appointmentBuilder](https://pub.dev/documentation/syncfusion_flutter_calendar/latest/calendar/SfCalendar/appointmentBuilder.html) in SfCalendar.
+
+## [29.1.33] - 25/03/2025
 
 **General**
 
@@ -136,7 +263,7 @@ Now, the appointment details are passed correctly to the [monthCellBuilder](http
 * Provided support to display week numbers of the year.
 * Provided ID, recurrence ID, and appointment type support.
 * Provided builder support for the resource header view.
-* Now, the occurrence appointment will contain the occurrence date details in the tap callbacks. 
+* Now, the occurrence appointment will contain the occurrence date details in the tap callbacks.
 * Now, appointments will be displayed based on the `appointmentDisplayMode` in month view when the month cell builder is used.
 
 ## [19.1.54] - 03/30/2021
@@ -176,7 +303,7 @@ No changes.
 ## [18.4.30] - 12/17/2020
 **Features**
 * The custom builder support is provided for the time region and the appointment views in the calendar.
-* Provided the interaction support for the resource header. 
+* Provided the interaction support for the resource header.
 * Support is provided to the right end padding for the cell touch region when the cell has an appointment in the calendar.
 
 **Enhancements**
@@ -268,7 +395,7 @@ No changes.
 ## [18.2.44] - 07/07/2020
 
 **Features**
-* The long press callback support 
+* The long press callback support
 * Schedule view support
 * Special time regions support
 * Navigation arrow support
@@ -307,11 +434,11 @@ No changes.
 **Bug fixes**
 * The `parseRRule` now works without the `count` value in `SfCalendar`.
 
-## [18.1.43-beta] - 04/07/2020 
+## [18.1.43-beta] - 04/07/2020
 
 No changes.
 
-## [18.1.42-beta] - 04/01/2020 
+## [18.1.42-beta] - 04/01/2020
 
 No changes.
 
@@ -356,7 +483,7 @@ No changes.
 
 Initial release.
 
-**Features** 
+**Features**
 * Day, week, workweek, timeline day, timeline week, timeline workweek, and month. Seven built-in calendar views.
 * Appointment scheduling. Default and custom appointments supported.
 * Recursive appointments with daily, weekly, monthly, and yearly recurrence types.

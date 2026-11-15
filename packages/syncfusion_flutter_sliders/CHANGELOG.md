@@ -2,11 +2,87 @@
 
 **General**
 
+*  The compatible version of our Flutter sliders widget has been updated to Flutter SDK 3.47.
+
+## [32.2.8] - 03/03/2026
+
+## SfSlider
+
+**Bugs**
+
+*  Fixed an issue where the slider tooltip appeared in the wrong position when it exceeded its offset bounds. It now stays correctly aligned with the thumb while dragging.
+
+## SfRangeSlider
+
+**Bugs**
+
+*  Fixed the tooltip and thumb behavior when dragging near or beyond the track. Both tooltips now remain within the track and display the correct clamped values without overlapping or crossing.
+
+## SfRangeSelector
+
+**Bugs**
+
+*  Fixed tooltip and thumb positioning issues when the widget is shifted by an offset. Both tooltips now stay within the track and display the correct clamped values during drag interactions.
+
+## [32.1.25] - 01/27/2026
+
+* No changes.
+
+## [31.2.15] - 11/25/2025
+
+**General**
+
+*  The compatible version of our Flutter sliders widget has been updated to Flutter SDK 3.38.
+
+## [31.1.20] - 09/17/2025
+
+**General**
+
+*  The compatible version of our Flutter sliders widget has been updated to Flutter SDK 3.35.
+
+## [30.1.37] - 06/25/2025
+
+**General**
+
+*  The compatible version of our Flutter sliders widget has been updated to Flutter SDK 3.32.0.
+
+## Slider
+
+**Features**
+
+* #FR49315 - Now, the Slider labels can be customized individually using the `onLabelCreated` property.
+
+## Range Slider
+
+**Features**
+
+* #FR49315 - Now, the Range Slider labels can be customized individually using the `onLabelCreated` property.
+
+## Range Selector
+
+**Features**
+
+* #FR49315 - Now, the Range Selector labels can be customized individually using the `onLabelCreated` property.
+
+### Breaking changes
+
+The `labelFormatterCallback` property has been deprecated. Use `onLabelCreated` instead to customize the label's format and style.
+
+## [29.1.39] - 04/22/2025
+
+**General**
+
+* The minimum Dart version has been updated to 3.7.
+
+## [29.1.33] - 03/25/2025
+
+**General**
+
 *  The compatible version of our Flutter sliders widget has been updated to Flutter SDK 3.29.0.
 *  The Syncfusion<sup>&reg;</sup> Flutter sliders example sample have been updated to support [kotlin build scripts](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply) in Android platform.
 *  The Syncfusion<sup>&reg;</sup> Flutter sliders example sample have been updated to support [Swift package manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers) in macOS and iOS platforms.
 
-## [28.2.7] - 25/02/2025
+## [28.2.7] - 02/25/2025
 
 **General**
 

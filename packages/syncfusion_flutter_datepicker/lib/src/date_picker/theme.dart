@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
 /// [SfDateRangePickerThemeDataKey] this class provides material2 and material3
@@ -22,18 +22,18 @@ class SfDateRangePickerThemeKey extends SfDateRangePickerThemeData {
   @override
   Color? get backgroundColor => Theme.of(context).useMaterial3
       ? (Theme.of(context).brightness == Brightness.light
-          ? const Color.fromRGBO(238, 232, 244, 1)
-          : const Color.fromRGBO(48, 45, 56, 1))
+            ? const Color.fromRGBO(238, 232, 244, 1)
+            : const Color.fromRGBO(48, 45, 56, 1))
       : Colors.transparent;
 
   @override
   Color? get headerBackgroundColor => Theme.of(context).useMaterial3
       ? (Theme.of(context).brightness == Brightness.light
-          ? const Color.fromRGBO(238, 232, 244, 1)
-          : const Color.fromRGBO(48, 45, 56, 1))
+            ? const Color.fromRGBO(238, 232, 244, 1)
+            : const Color.fromRGBO(48, 45, 56, 1))
       : Theme.of(context).brightness == Brightness.light
-          ? Colors.white
-          : Colors.grey[850];
+      ? Colors.white
+      : Colors.grey[850];
 
   @override
   Color? get viewHeaderBackgroundColor => colorScheme.transparent;

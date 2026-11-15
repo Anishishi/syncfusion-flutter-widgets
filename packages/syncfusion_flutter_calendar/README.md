@@ -26,14 +26,14 @@ The Flutter Calendar widget has built-in configurable views such as day, week, w
 ##  Calendar features
 
 * **Multiple calendar views** - A wide range of built-in view modes are available: day, week, workweek, month, schedule, timeline day, timeline week, timeline workweek. The control allows you to conveniently customize every view with unique, view-specific options.
- 
+
 ![multiple_calenda_views](https://cdn.syncfusion.com/content/images/FTControl/Calendar/flutter-calendar-views.png)
 
 * **Appointments** - Appointments contain information on events scheduled at specific times. In addition to default appointments, users can use their own collections to connect a business entity to an appointment by mapping their fields, such as start time, end time, subject, notes, and recurrence.
 
 ![appointments](https://cdn.syncfusion.com/content/images/FTControl/Calendar/flutter-calendar-appointments.png)
 
-* **Recurring appointments** - Easily configure recurring events to be repeated on a daily, weekly, monthly, or yearly basis with optimized recurrence options. You can also skip or change the occurrence of a recurring appointment. 
+* **Recurring appointments** - Easily configure recurring events to be repeated on a daily, weekly, monthly, or yearly basis with optimized recurrence options. You can also skip or change the occurrence of a recurring appointment.
 
 ![recurring_events](https://cdn.syncfusion.com/content/images/FTControl/Flutter/Recurrence+agenda.jpg)
 
@@ -67,7 +67,7 @@ The Flutter Calendar widget has built-in configurable views such as day, week, w
 
 * **Number of days in view** - Customize the number of days in view in the flutter event calendar.
 
-* **First day of the week** - Customize the first day of the week as needed. The default is Sunday. 
+* **First day of the week** - Customize the first day of the week as needed. The default is Sunday.
 
 ![first_day_of_the_week](https://cdn.syncfusion.com/content/images/FTControl/Flutter/First+day+of+week+2.png)
 
@@ -83,13 +83,13 @@ The Flutter Calendar widget has built-in configurable views such as day, week, w
 
 ![current_time_indicator](https://cdn.syncfusion.com/content/images/FTControl/Flutter/calendar/current_time_indicator.png)
 
-* **Custom start and end hours** - Display the event calendar timeslot views with specific time durations by hiding the unwanted hours.  
+* **Custom start and end hours** - Display the event calendar timeslot views with specific time durations by hiding the unwanted hours.
 
 * **Month agenda view** - Display appointments in a list as shown in the following month view by clicking on a day.
- 
+
 ![month_agenda_view](https://cdn.syncfusion.com/content/images/FTControl/Flutter/Month+agenda+view+2.png)
 
-* **Week numbers** - Display the week numbers of the year in the month, week, and work week views of the Calendar. 
+* **Week numbers** - Display the week numbers of the year in the month, week, and work week views of the Calendar.
 
 ![week_numbers](https://cdn.syncfusion.com/content/images/FTControl/Calendar/calendar-weeknumber.png)
 
@@ -119,7 +119,7 @@ The Flutter Calendar widget has built-in configurable views such as day, week, w
 
 * **Minimum and maximum dates** - Restrict the date navigation for end users by using the minimum and maximum dates.
 
-![min_max_dates](https://cdn.syncfusion.com/content/images/FTControl/Flutter/calendar/min_max_date.png) 
+![min_max_dates](https://cdn.syncfusion.com/content/images/FTControl/Flutter/calendar/min_max_date.png)
 
 * **Web layout** -  Web layout improved for better experience, and now the mouse hovering effect has been applied to all the calendar elements.
 
@@ -134,10 +134,9 @@ Explore the full capabilities of our Flutter widgets on your device by installin
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.syncfusion.flutter.examples"><img src="https://cdn.syncfusion.com/content/images/FTControl/google-play-store.png"/></a>
   <a href="https://flutter.syncfusion.com"><img src="https://cdn.syncfusion.com/content/images/FTControl/web-sample-browser.png"/></a>
-  <a href="https://www.microsoft.com/en-us/p/syncfusion-flutter-gallery/9nhnbwcsf85d?activetab=pivot:overviewtab"><img src="https://cdn.syncfusion.com/content/images/FTControl/windows-store.png"/></a> 
+  <a href="https://www.microsoft.com/en-us/p/syncfusion-flutter-gallery/9nhnbwcsf85d?activetab=pivot:overviewtab"><img src="https://cdn.syncfusion.com/content/images/FTControl/windows-store.png"/></a>
 </p>
 <p align="center">
-  <a href="https://install.appcenter.ms/orgs/syncfusion-demos/apps/syncfusion-flutter-gallery/distribution_groups/release"><img src="https://cdn.syncfusion.com/content/images/FTControl/macos-app-center.png"/></a>
   <a href="https://snapcraft.io/syncfusion-flutter-gallery"><img src="https://cdn.syncfusion.com/content/images/FTControl/snap-store.png"/></a>
   <a href="https://github.com/syncfusion/flutter-examples"><img src="https://cdn.syncfusion.com/content/images/FTControl/github-samples.png"/></a>
 </p>

@@ -237,8 +237,8 @@ class PdfPageViewState extends State<PdfPageView> {
   /// CanvasRenderBox getter for accessing canvas properties.
   CanvasRenderBox? get canvasRenderBox =>
       _canvasKey.currentContext?.findRenderObject() != null
-          ? (_canvasKey.currentContext?.findRenderObject())! as CanvasRenderBox
-          : null;
+      ? (_canvasKey.currentContext?.findRenderObject())! as CanvasRenderBox
+      : null;
 
   /// Height percentage of a page
   double _heightPercentage = 1;
@@ -302,18 +302,18 @@ class PdfPageViewState extends State<PdfPageView> {
   Widget build(BuildContext context) {
     final double pageSpacing =
         widget.pageIndex == widget.pdfViewerController.pageCount - 1
-            ? 0.0
-            : widget.pageSpacing;
+        ? 0.0
+        : widget.pageSpacing;
     final double heightSpacing =
         widget.scrollDirection == PdfScrollDirection.horizontal ||
-                widget.isSinglePageView
-            ? 0.0
-            : pageSpacing;
+            widget.isSinglePageView
+        ? 0.0
+        : pageSpacing;
     final double widthSpacing =
         widget.scrollDirection == PdfScrollDirection.horizontal &&
-                !widget.isSinglePageView
-            ? pageSpacing
-            : 0.0;
+            !widget.isSinglePageView
+        ? pageSpacing
+        : 0.0;
     if (_pdfPage != null) {
       _calculateHeightPercentage();
       if (!kIsDesktop) {
@@ -341,13 +341,17 @@ class PdfPageViewState extends State<PdfPageView> {
                       ),
                       if (_tileImageCache != null && _tileImage != null)
                         Positioned(
-                          top: _tileImageCache!.visibleRect.top /
+                          top:
+                              _tileImageCache!.visibleRect.top /
                               _heightPercentage,
-                          left: _tileImageCache!.visibleRect.left /
+                          left:
+                              _tileImageCache!.visibleRect.left /
                               _heightPercentage,
-                          width: _tileImageCache!.visibleRect.width /
+                          width:
+                              _tileImageCache!.visibleRect.width /
                               _heightPercentage,
-                          height: _tileImageCache!.visibleRect.height /
+                          height:
+                              _tileImageCache!.visibleRect.height /
                               _heightPercentage,
                           child: SizedBox(
                             width: _tileImageCache!.imageSize.width,
@@ -359,7 +363,8 @@ class PdfPageViewState extends State<PdfPageView> {
                   ),
                   Container(
                     height: widget.isSinglePageView ? 0.0 : pageSpacing,
-                    color: _pdfViewerThemeData!.backgroundColor ??
+                    color:
+                        _pdfViewerThemeData!.backgroundColor ??
                         _effectiveThemeData!.backgroundColor ??
                         (Theme.of(context).colorScheme.brightness ==
                                 Brightness.light
@@ -375,17 +380,24 @@ class PdfPageViewState extends State<PdfPageView> {
                       SizedBox(
                         width: widget.width,
                         height: widget.height,
-                        child: _pdfPage,
+                        child: Semantics(
+                          label: widget.semanticLabel,
+                          child: _pdfPage,
+                        ),
                       ),
                       if (_tileImageCache != null && _tileImage != null)
                         Positioned(
-                          top: _tileImageCache!.visibleRect.top /
+                          top:
+                              _tileImageCache!.visibleRect.top /
                               _heightPercentage,
-                          left: _tileImageCache!.visibleRect.left /
+                          left:
+                              _tileImageCache!.visibleRect.left /
                               _heightPercentage,
-                          width: _tileImageCache!.visibleRect.width /
+                          width:
+                              _tileImageCache!.visibleRect.width /
                               _heightPercentage,
-                          height: _tileImageCache!.visibleRect.height /
+                          height:
+                              _tileImageCache!.visibleRect.height /
                               _heightPercentage,
                           child: SizedBox(
                             width: _tileImageCache!.imageSize.width,
@@ -397,7 +409,8 @@ class PdfPageViewState extends State<PdfPageView> {
                   ),
                   Container(
                     width: widget.isSinglePageView ? 0.0 : pageSpacing,
-                    color: _pdfViewerThemeData!.backgroundColor ??
+                    color:
+                        _pdfViewerThemeData!.backgroundColor ??
                         _effectiveThemeData!.backgroundColor ??
                         (Theme.of(context).colorScheme.brightness ==
                                 Brightness.light
@@ -411,7 +424,8 @@ class PdfPageViewState extends State<PdfPageView> {
       final PdfAnnotationMode annotationMode =
           widget.pdfViewerController.annotationMode;
 
-      _interactionMode = (annotationMode == PdfAnnotationMode.highlight ||
+      _interactionMode =
+          (annotationMode == PdfAnnotationMode.highlight ||
               annotationMode == PdfAnnotationMode.strikethrough ||
               annotationMode == PdfAnnotationMode.underline ||
               annotationMode == PdfAnnotationMode.squiggly)
@@ -462,7 +476,8 @@ class PdfPageViewState extends State<PdfPageView> {
                   if (widget.isSinglePageView &&
                       details is PointerScrollEvent) {
                     widget.singlePageViewStateKey.currentState?.jumpTo(
-                      yOffset: widget.pdfViewerController.scrollOffset.dy +
+                      yOffset:
+                          widget.pdfViewerController.scrollOffset.dy +
                           (details.scrollDelta.dy.isNegative
                               ? -_jumpOffset
                               : _jumpOffset),
@@ -517,7 +532,7 @@ class PdfPageViewState extends State<PdfPageView> {
                   }
 
                   widget.onPdfPagePointerUp(details);
-                  _onPageTapped(details.localPosition);
+                  _onPageTapped(details);
                   if (_interactionMode == PdfInteractionMode.pan) {
                     _cursor = SystemMouseCursors.grab;
                   }
@@ -561,7 +576,8 @@ class PdfPageViewState extends State<PdfPageView> {
                         event.logicalKey == LogicalKeyboardKey.keyC) {
                       Clipboard.setData(
                         ClipboardData(
-                          text: canvasRenderBox!
+                          text:
+                              canvasRenderBox!
                                   .getSelectionDetails()
                                   .copiedText ??
                               '',
@@ -642,20 +658,23 @@ class PdfPageViewState extends State<PdfPageView> {
                       setState(() {
                         if (canvasRenderBox != null &&
                             widget.pdfPages.isNotEmpty) {
-                          final Annotation? annotation =
-                              canvasRenderBox!.findAnnotation(
-                            details.localPosition,
-                            widget.pageIndex + 1,
-                          );
+                          final Offset localPosition =
+                              _globalToLocal(details.position) ??
+                              details.localPosition;
+                          final Annotation? annotation = canvasRenderBox!
+                              .findAnnotation(
+                                localPosition,
+                                widget.pageIndex + 1,
+                              );
                           if (_interactionMode ==
                               PdfInteractionMode.selection) {
                             final bool isText =
                                 canvasRenderBox!.findTextWhileHover(
-                                      details.localPosition,
-                                    ) !=
-                                    null;
+                                  localPosition,
+                                ) !=
+                                null;
                             final bool isTOC = canvasRenderBox!.findTOC(
-                              details.localPosition,
+                              localPosition,
                             );
                             if (isTOC) {
                               _cursor = SystemMouseCursors.click;
@@ -670,7 +689,7 @@ class PdfPageViewState extends State<PdfPageView> {
                             }
                           } else {
                             final bool isTOC = canvasRenderBox!.findTOC(
-                              details.localPosition,
+                              localPosition,
                             );
                             if (isTOC) {
                               _cursor = SystemMouseCursors.click;
@@ -712,7 +731,7 @@ class PdfPageViewState extends State<PdfPageView> {
                     });
                   }
                   widget.onPdfPagePointerUp(details);
-                  _onPageTapped(details.localPosition);
+                  _onPageTapped(details);
                 },
                 child: widget.isAndroidTV
                     ? KeyboardListener(
@@ -810,7 +829,8 @@ class PdfPageViewState extends State<PdfPageView> {
     }
     final BorderSide borderSide = BorderSide(
       width: widget.isSinglePageView ? pageSpacing / 2 : pageSpacing,
-      color: _pdfViewerThemeData!.backgroundColor ??
+      color:
+          _pdfViewerThemeData!.backgroundColor ??
           _effectiveThemeData!.backgroundColor ??
           (Theme.of(context).colorScheme.brightness == Brightness.light
               ? const Color(0xFFD6D6D6)
@@ -824,10 +844,10 @@ class PdfPageViewState extends State<PdfPageView> {
         border: widget.isSinglePageView
             ? Border(left: borderSide, right: borderSide)
             : widget.scrollDirection == PdfScrollDirection.horizontal
-                ? widget.textDirection == TextDirection.rtl
-                    ? Border(left: borderSide)
-                    : Border(right: borderSide)
-                : Border(bottom: borderSide),
+            ? widget.textDirection == TextDirection.rtl
+                  ? Border(left: borderSide)
+                  : Border(right: borderSide)
+            : Border(bottom: borderSide),
       ),
       child: Center(
         child: Visibility(
@@ -839,16 +859,11 @@ class PdfPageViewState extends State<PdfPageView> {
                   (Theme.of(context).colorScheme.primary),
             ),
             backgroundColor: _pdfViewerThemeData!.progressBarColor != null
-                ? _pdfViewerThemeData!.progressBarColor!.withValues(
-                    alpha: 0.2,
-                  )
+                ? _pdfViewerThemeData!.progressBarColor!.withValues(alpha: 0.2)
                 : _effectiveThemeData!.progressBarColor != null
-                    ? _effectiveThemeData!.progressBarColor!.withValues(
-                        alpha: 0.2,
-                      )
-                    : (Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.2)),
+                ? _effectiveThemeData!.progressBarColor!.withValues(alpha: 0.2)
+                : (Theme.of(context).colorScheme.primary
+                      .withValues(alpha: 0.2)),
           ),
         ),
       ),
@@ -867,10 +882,12 @@ class PdfPageViewState extends State<PdfPageView> {
     } else if (rotatedAngle == PdfPageRotateAngle.rotateAngle270) {
       _quarterTurns = 3;
     }
-    _isRotatedTo90or270 = rotatedAngle == PdfPageRotateAngle.rotateAngle90 ||
+    _isRotatedTo90or270 =
+        rotatedAngle == PdfPageRotateAngle.rotateAngle90 ||
         rotatedAngle == PdfPageRotateAngle.rotateAngle270;
     _originalPageSize = widget.pdfDocument!.pages[widget.pageIndex].size;
-    _heightPercentage = (_isRotatedTo90or270
+    _heightPercentage =
+        (_isRotatedTo90or270
             ? _originalPageSize.width
             : _originalPageSize.height) /
         widget.pdfPages[widget.pageIndex + 1]!.pageSize.height;
@@ -892,8 +909,19 @@ class PdfPageViewState extends State<PdfPageView> {
         if (_pdfPage != null) {
           return;
         }
-        _imageWidth = originalPageSize.width.toInt();
-        _imageHeight = originalPageSize.height.toInt();
+
+        // This condition checks if the original image size in bytes (width * height * 4) is
+        // less than or equal to 5 MB (5 * 1024 * 1024 bytes). The factor of 4 accounts for
+        // the RGBA channels (4 bytes per pixel). If the image size is within this limit,
+        // we use the original dimensions; otherwise, we adjust to the widget's dimensions.
+        if (originalPageSize.width * originalPageSize.height * 4 <=
+            5 * 1024 * 1024) {
+          _imageWidth = originalPageSize.width.toInt();
+          _imageHeight = originalPageSize.height.toInt();
+        } else {
+          _imageWidth = widget.width.toInt();
+          _imageHeight = widget.height.toInt();
+        }
       } else {
         _tileImageCache = null;
         _isTile = false;
@@ -939,8 +967,8 @@ class PdfPageViewState extends State<PdfPageView> {
   }
 
   void _addTextMarkupAnnotation(String type) {
-    final List<PdfTextLine>? selectedLines =
-        canvasRenderBox!.getSelectedTextLines();
+    final List<PdfTextLine>? selectedLines = canvasRenderBox!
+        .getSelectedTextLines();
     if (selectedLines != null && selectedLines.isNotEmpty) {
       Annotation? annotation;
       if (type == 'highlight') {
@@ -974,12 +1002,29 @@ class PdfPageViewState extends State<PdfPageView> {
     return comp.future;
   }
 
-  void _onPageTapped(Offset position) {
+  void _onPageTapped(PointerEvent event) {
+    final Offset localPosition =
+        _globalToLocal(event.position) ?? event.localPosition;
     // Tranform the page coordinates from calculated page size to original page size.
-    final double x = position.dx * _heightPercentage;
-    final double y = position.dy * _heightPercentage;
+    final double x = localPosition.dx * _heightPercentage;
+    final double y = localPosition.dy * _heightPercentage;
     final Offset pagePosition = Offset(x, y);
     widget.onTap(pagePosition, widget.pageIndex);
+  }
+
+  Offset? _globalToLocal(Offset globalPosition) {
+    if (!mounted || !context.mounted) {
+      return null;
+    }
+    final RenderObject? renderObject = _canvasKey.currentContext
+        ?.findRenderObject();
+    if (renderObject is RenderBox &&
+        renderObject.attached &&
+        renderObject.hasSize) {
+      return renderObject.globalToLocal(globalPosition);
+    } else {
+      return null;
+    }
   }
 
   /// Get the tile image
@@ -1028,7 +1073,7 @@ class PdfPageViewState extends State<PdfPageView> {
     } else {
       pageBounds = Rect.fromLTWH(
         0,
-        y,
+        0,
         widget.width * zoomLevel * _heightPercentage,
         widget.height * zoomLevel * _heightPercentage,
       );

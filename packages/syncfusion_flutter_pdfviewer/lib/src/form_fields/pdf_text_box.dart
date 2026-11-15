@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+
 import '../../pdfviewer.dart';
 import '../change_tracker/change_tracker.dart';
 import 'pdf_form_field.dart';
@@ -99,13 +100,13 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
       onKeyEvent: (FocusNode focusNode, KeyEvent event) {
         final bool isControlOrMeta =
             HardwareKeyboard.instance.isControlPressed ||
-                HardwareKeyboard.instance.isMetaPressed;
+            HardwareKeyboard.instance.isMetaPressed;
         final bool isLogicalOrPhysicalZ =
             event.logicalKey == LogicalKeyboardKey.keyZ ||
-                event.physicalKey == PhysicalKeyboardKey.keyZ;
+            event.physicalKey == PhysicalKeyboardKey.keyZ;
         final bool isLogicalOrPhysicalY =
             event.logicalKey == LogicalKeyboardKey.keyY ||
-                event.physicalKey == PhysicalKeyboardKey.keyY;
+            event.physicalKey == PhysicalKeyboardKey.keyY;
 
         if (isControlOrMeta && isLogicalOrPhysicalZ) {
           if (event is KeyDownEvent) {
@@ -122,10 +123,10 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
         }
       },
     )..addListener(() {
-        if (!focusNode.hasFocus) {
-          invokeFocusChange(focusNode.hasFocus);
-        }
-      });
+      if (!focusNode.hasFocus) {
+        invokeFocusChange(focusNode.hasFocus);
+      }
+    });
   }
 
   /// Updates the text form field.
@@ -133,8 +134,8 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
     if (textFormField._text != newValue) {
       newValue =
           pdfTextField.maxLength > 0 && newValue.length > pdfTextField.maxLength
-              ? newValue.substring(0, pdfTextField.maxLength)
-              : newValue;
+          ? newValue.substring(0, pdfTextField.maxLength)
+          : newValue;
       final String oldValue = textFormField._text;
       setTextBoxValue(newValue);
       if (onValueChanged != null) {
@@ -197,7 +198,9 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
         fontSize: pdfTextField.font.size / heightPercentage,
         isPassword: pdfTextField.isPassword,
         fillColor: pdfTextField.backColor.isEmpty
-            ? const Color.fromARGB(255, 221, 228, 255)
+            ? pdfTextField.readOnly
+                  ? Colors.transparent
+                  : const Color.fromARGB(255, 221, 228, 255)
             : Color.fromRGBO(
                 pdfTextField.backColor.r,
                 pdfTextField.backColor.g,
@@ -218,7 +221,7 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
         maxLength: pdfTextField.maxLength,
         letterSpacing: pdfTextField.insertSpaces && pdfTextField.maxLength > 1
             ? (pdfTextField.bounds.width / pdfTextField.maxLength - 1) /
-                heightPercentage
+                  heightPercentage
             : null,
         onValueChanged: invokeValueChanged,
         onFocusChange: invokeFocusChange,
@@ -328,8 +331,9 @@ class _PdfTextBoxState extends State<PdfTextBox> {
                 LengthLimitingTextInputFormatter(widget.maxLength),
               ]
             : null,
-        keyboardType:
-            widget.multiline ? TextInputType.multiline : TextInputType.text,
+        keyboardType: widget.multiline
+            ? TextInputType.multiline
+            : TextInputType.text,
         scrollPhysics: widget.multiline ? const ClampingScrollPhysics() : null,
         cursorWidth: 0.5,
         expands: widget.multiline,
@@ -351,11 +355,12 @@ class _PdfTextBoxState extends State<PdfTextBox> {
         decoration: InputDecoration(
           filled: true,
           fillColor: widget.fillColor,
+          hoverColor: widget.readOnly ? Colors.transparent : null,
           contentPadding: widget.multiline
               ? const EdgeInsets.all(3)
               : widget.letterSpacing != null
-                  ? EdgeInsets.zero
-                  : const EdgeInsets.symmetric(horizontal: 3),
+              ? EdgeInsets.zero
+              : const EdgeInsets.symmetric(horizontal: 3),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.zero,
             borderSide: BorderSide(

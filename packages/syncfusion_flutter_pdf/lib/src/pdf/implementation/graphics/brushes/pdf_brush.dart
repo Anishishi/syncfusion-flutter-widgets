@@ -3010,8 +3010,9 @@ class PdfBrushes {
 
   static PdfBrush _getBrush(KnownColor kColor) {
     final ColorHelper color = ColorHelper(kColor);
-    final PdfBrush brush =
-        PdfSolidBrush(PdfColor(color.r, color.g, color.b, color.a));
+    final PdfBrush brush = PdfSolidBrush(
+      PdfColor(color.r, color.g, color.b, color.a),
+    );
     _brushes[kColor] = brush;
     return brush;
   }
@@ -3021,8 +3022,8 @@ class PdfBrushes {
   }
 }
 
-// ignore: avoid_classes_with_only_static_members
 /// [PdfBrushes] helper
+// ignore: avoid_classes_with_only_static_members
 class PdfBrushesHelper {
   /// internal method
   static void dispose() {

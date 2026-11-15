@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../theme.dart';
 
@@ -28,8 +28,8 @@ import '../../theme.dart';
 ///
 class SfTreemapTheme extends InheritedTheme {
   ///Initialize the class of SfTreemapTheme
-  const SfTreemapTheme({Key? key, required this.data, required this.child})
-      : super(key: key, child: child);
+  const SfTreemapTheme({required this.data, required this.child, super.key})
+    : super(child: child);
 
   /// Specifies the color and typography values for descendant Treemap widgets.
   ///
@@ -71,8 +71,8 @@ class SfTreemapTheme extends InheritedTheme {
   /// Defaults to [SfTreemapTheme.treemapThemeData]
   /// if there is no [SfTreemapTheme] in the given build context.
   static SfTreemapThemeData of(BuildContext context) {
-    final SfTreemapTheme? sfTreemapTheme =
-        context.dependOnInheritedWidgetOfExactType<SfTreemapTheme>();
+    final SfTreemapTheme? sfTreemapTheme = context
+        .dependOnInheritedWidgetOfExactType<SfTreemapTheme>();
     return sfTreemapTheme?.data ?? SfTheme.of(context).treemapThemeData;
   }
 
@@ -81,8 +81,8 @@ class SfTreemapTheme extends InheritedTheme {
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    final SfTreemapTheme? ancestorTheme =
-        context.findAncestorWidgetOfExactType<SfTreemapTheme>();
+    final SfTreemapTheme? ancestorTheme = context
+        .findAncestorWidgetOfExactType<SfTreemapTheme>();
     return identical(this, ancestorTheme)
         ? child
         : SfTreemapTheme(data: data, child: child);
@@ -121,9 +121,7 @@ class SfTreemapThemeData with Diagnosticable {
   /// This will rarely be used directly. It is used by [lerp] to
   /// create intermediate themes based on two themes created with the
   /// [SfTreemapThemeData] constructor.
-  const SfTreemapThemeData({
-    this.legendTextStyle,
-  });
+  const SfTreemapThemeData({this.legendTextStyle});
 
   ///Initialize the sfTreemap theme data
   factory SfTreemapThemeData.raw({
@@ -163,19 +161,27 @@ class SfTreemapThemeData with Diagnosticable {
     TextStyle? legendTextStyle,
   }) {
     return SfTreemapThemeData.raw(
-        brightness: brightness,
-        legendTextStyle: legendTextStyle ?? this.legendTextStyle);
+      brightness: brightness,
+      legendTextStyle: legendTextStyle ?? this.legendTextStyle,
+    );
   }
 
   /// Returns the treemap theme data
   static SfTreemapThemeData? lerp(
-      SfTreemapThemeData? a, SfTreemapThemeData? b, double t) {
+    SfTreemapThemeData? a,
+    SfTreemapThemeData? b,
+    double t,
+  ) {
     if (a == null && b == null) {
       return null;
     }
     return SfTreemapThemeData(
-        legendTextStyle:
-            TextStyle.lerp(a!.legendTextStyle, b!.legendTextStyle, t));
+      legendTextStyle: TextStyle.lerp(
+        a!.legendTextStyle,
+        b!.legendTextStyle,
+        t,
+      ),
+    );
   }
 
   @override
@@ -201,8 +207,12 @@ class SfTreemapThemeData with Diagnosticable {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     const SfTreemapThemeData defaultData = SfTreemapThemeData();
-    properties.add(DiagnosticsProperty<TextStyle>(
-        'legendTextStyle', legendTextStyle,
-        defaultValue: defaultData.legendTextStyle));
+    properties.add(
+      DiagnosticsProperty<TextStyle>(
+        'legendTextStyle',
+        legendTextStyle,
+        defaultValue: defaultData.legendTextStyle,
+      ),
+    );
   }
 }

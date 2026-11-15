@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Defines the localized resource values used by the Syncfusion Widgets.
 ///
@@ -315,6 +315,10 @@ abstract class SfLocalizations {
   /// The label that is displayed in the filter view in SfDataGrid for
   /// `Select All` option in the popup menu.
   String get selectAllDataGridFilteringLabel;
+
+  /// The label displayed in the filter popup calendar header in SfDataGrid
+  /// for the `Select a date` option.
+  String get selectADateDataGridFilteringLabel;
 
   /// The label that is displayed in the filter view in SfDataGrid for
   /// `Sort and Filter` option in the popup menu.
@@ -735,6 +739,9 @@ class _DefaultLocalizations implements SfLocalizations {
 
   @override
   String get selectAllDataGridFilteringLabel => 'Select All';
+
+  @override
+  String get selectADateDataGridFilteringLabel => 'Select a date';
 
   @override
   String get sortAndFilterDataGridFilteringLabel => 'Sort and Filter';

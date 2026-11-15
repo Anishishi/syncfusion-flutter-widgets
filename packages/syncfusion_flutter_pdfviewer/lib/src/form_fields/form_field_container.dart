@@ -21,7 +21,7 @@ class FormFieldContainer extends StatefulWidget {
 
   final List<PdfFormField> formFields;
 
-  final void Function(Offset)? onTap;
+  final void Function(PointerEvent)? onTap;
 
   final PdfViewerController pdfViewerController;
 
@@ -38,7 +38,7 @@ class _FormFieldContainerState extends State<FormFieldContainer> {
   Widget build(BuildContext context) {
     return Listener(
       onPointerUp: (PointerUpEvent event) {
-        widget.onTap?.call(event.localPosition);
+        widget.onTap?.call(event);
       },
       child: RepaintBoundary(child: Stack(children: _buildFormFields())),
     );
@@ -51,7 +51,9 @@ class _FormFieldContainerState extends State<FormFieldContainer> {
         final PdfFormFieldHelper helper = PdfFormFieldHelper.getHelper(
           formField,
         );
-        _updateGlobalRect(helper);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _updateGlobalRect(helper);
+        });
         helper.onChanged = () {
           if (mounted) {
             setState(() {});
@@ -106,7 +108,10 @@ class _FormFieldContainerState extends State<FormFieldContainer> {
 
   /// Updates the global rect of the form field.
   void _updateGlobalRect(PdfFormFieldHelper helper) {
-    final renderObject = context.findRenderObject();
+    if (!mounted) {
+      return;
+    }
+    final RenderObject? renderObject = context.findRenderObject();
     if (renderObject is RenderBox && renderObject.hasSize) {
       helper.globalRect = Rect.fromPoints(
         renderObject.localToGlobal(

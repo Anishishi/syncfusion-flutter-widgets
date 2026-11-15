@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../../calendar.dart';
 
 /// The resource data for calendar.
@@ -82,11 +83,12 @@ class CalendarResource with Diagnosticable {
   ///
   /// An object that contains properties to hold the detailed information
   /// about the data, which will be rendered in [SfCalendar].
-  CalendarResource(
-      {this.displayName = '',
-      required this.id,
-      this.image,
-      this.color = Colors.lightBlue});
+  CalendarResource({
+    this.displayName = '',
+    required this.id,
+    this.image,
+    this.color = Colors.lightBlue,
+  });
 
   /// The name which displayed on the [CalendarResource] view of [SfCalendar].
   ///

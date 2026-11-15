@@ -1,24 +1,27 @@
 import 'dart:async';
-
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../utils/shape_helper.dart';
 import '../utils/shape_helper.dart' as shape_helper;
+import '../utils/shape_helper.dart';
 
 /// Callback which returns toggled indices and teh current toggled index.
 typedef ToggledIndicesChangedCallback = void Function(
-    List<int> indices, int currentIndex);
+  List<int> indices,
+  int currentIndex,
+);
 
 /// Called with the details of single legend item.
 typedef ItemRenderCallback = void Function(ItemRendererDetails);
 
 /// Signature to return a [Widget] for the given value.
 typedef LegendPointerBuilder = Widget Function(
-    BuildContext context, dynamic value);
+  BuildContext context,
+  dynamic value,
+);
 
 enum _LegendType { vector, solidBar, gradientBar }
 
@@ -62,7 +65,7 @@ enum LegendLabelsPlacement {
 
   /// [LegendLabelsPlacement.betweenItems] places labels
   /// in-between two bars.
-  betweenItems
+  betweenItems,
 }
 
 /// Placement of edge labels in the bar legend.
@@ -72,7 +75,7 @@ enum LegendEdgeLabelsPlacement {
 
   /// Place the edge labels in the center of the starting position of the
   /// legend bars.
-  center
+  center,
 }
 
 /// Behavior of the labels when it overflowed from the shape.
@@ -85,7 +88,7 @@ enum LegendLabelOverflow {
 
   /// It trims the labels based on the available space in their respective
   /// legend item.
-  ellipsis
+  ellipsis,
 }
 
 /// Applies gradient or solid color for the bar segments.
@@ -94,7 +97,7 @@ enum LegendPaintingStyle {
   solid,
 
   /// Applies gradient color for bar segments.
-  gradient
+  gradient,
 }
 
 /// Specifies the alignment of legend.
@@ -139,18 +142,18 @@ class ItemRendererDetails {
 /// Represents the class of items in legends.
 class LegendItem {
   /// Creates a [LegendItem].
-  const LegendItem(
-      {required this.text,
-      this.color,
-      this.shader,
-      this.imageProvider,
-      this.iconType,
-      this.iconStrokeWidth,
-      this.overlayMarkerType,
-      this.degree,
-      this.endAngle,
-      this.startAngle})
-      : assert(color != null || shader != null || imageProvider != null);
+  const LegendItem({
+    required this.text,
+    this.color,
+    this.shader,
+    this.imageProvider,
+    this.iconType,
+    this.iconStrokeWidth,
+    this.overlayMarkerType,
+    this.degree,
+    this.endAngle,
+    this.startAngle,
+  }) : assert(color != null || shader != null || imageProvider != null);
 
   /// Specifies the text of the legend.
   final String text;
@@ -187,8 +190,9 @@ class LegendItem {
 class SfLegend extends StatefulWidget {
   /// Creates a [SfLegend].
   const SfLegend({
-    Key? key,
     required this.items,
+    required this.child,
+    super.key,
     this.shouldAlwaysShowScrollbar = false,
     this.title,
     this.color,
@@ -217,30 +221,29 @@ class SfLegend extends StatefulWidget {
     this.onItemRenderer,
     this.isComplex = false,
     this.toggledIndices,
-    required this.child,
-  })  : _type = _LegendType.vector,
-        segmentSize = null,
-        labelsPlacement = null,
-        edgeLabelsPlacement = null,
-        labelOverflow = null,
-        segmentPaintingStyle = null,
-        itemBuilder = null,
-        itemCount = 0,
-        toggledItemColor = null,
-        pointerBuilder = null,
-        pointerSize = Size.zero,
-        pointerColor = null,
-        pointerController = null,
-        assert(itemSpacing >= 0),
-        assert(spacing >= 0),
-        assert(!isComplex || (isComplex && offset == null)),
-        super(key: key);
+  }) : _type = _LegendType.vector,
+       segmentSize = null,
+       labelsPlacement = null,
+       edgeLabelsPlacement = null,
+       labelOverflow = null,
+       segmentPaintingStyle = null,
+       itemBuilder = null,
+       itemCount = 0,
+       toggledItemColor = null,
+       pointerBuilder = null,
+       pointerSize = Size.zero,
+       pointerColor = null,
+       pointerController = null,
+       assert(itemSpacing >= 0),
+       assert(spacing >= 0),
+       assert(!isComplex || (isComplex && offset == null));
 
   /// Creates a [SfLegend].
   const SfLegend.builder({
-    Key? key,
     required this.itemCount,
     required this.itemBuilder,
+    required this.child,
+    super.key,
     this.title,
     this.shouldAlwaysShowScrollbar = false,
     this.color,
@@ -262,33 +265,32 @@ class SfLegend extends StatefulWidget {
     this.onToggledIndicesChanged,
     this.isComplex = false,
     this.toggledIndices,
-    required this.child,
-  })  : _type = _LegendType.vector,
-        items = null,
-        iconSize = Size.zero,
-        textStyle = null,
-        imageProvider = null,
-        iconType = null,
-        iconBorder = null,
-        segmentSize = null,
-        labelsPlacement = null,
-        edgeLabelsPlacement = null,
-        labelOverflow = null,
-        segmentPaintingStyle = null,
-        toggledIconColor = null,
-        toggledTextOpacity = 0.5,
-        onItemRenderer = null,
-        pointerBuilder = null,
-        pointerSize = Size.zero,
-        pointerColor = null,
-        pointerController = null,
-        assert(!isComplex || (isComplex && offset == null)),
-        super(key: key);
+  }) : _type = _LegendType.vector,
+       items = null,
+       iconSize = Size.zero,
+       textStyle = null,
+       imageProvider = null,
+       iconType = null,
+       iconBorder = null,
+       segmentSize = null,
+       labelsPlacement = null,
+       edgeLabelsPlacement = null,
+       labelOverflow = null,
+       segmentPaintingStyle = null,
+       toggledIconColor = null,
+       toggledTextOpacity = 0.5,
+       onItemRenderer = null,
+       pointerBuilder = null,
+       pointerSize = Size.zero,
+       pointerColor = null,
+       pointerController = null,
+       assert(!isComplex || (isComplex && offset == null));
 
   /// Creates a [SfLegend].
   const SfLegend.bar({
-    Key? key,
     required this.items,
+    required this.child,
+    super.key,
     this.shouldAlwaysShowScrollbar = false,
     this.title,
     this.color,
@@ -313,29 +315,27 @@ class SfLegend extends StatefulWidget {
     this.pointerSize = const Size(16.0, 12.0),
     this.pointerColor,
     this.pointerController,
-    required this.child,
-  })  : _type = segmentPaintingStyle == LegendPaintingStyle.solid
-            ? _LegendType.solidBar
-            : _LegendType.gradientBar,
-        iconType = null,
-        imageProvider = null,
-        iconSize = Size.zero,
-        iconBorder = null,
-        itemRunSpacing = null,
-        spacing = 0.0,
-        itemBuilder = null,
-        itemCount = 0,
-        alignment = null,
-        width = null,
-        height = null,
-        toggledIconColor = null,
-        toggledItemColor = null,
-        toggledTextOpacity = 0.0,
-        onToggledIndicesChanged = null,
-        onItemRenderer = null,
-        assert(itemSpacing >= 0),
-        assert(!isComplex || (isComplex && offset == null)),
-        super(key: key);
+  }) : _type = segmentPaintingStyle == LegendPaintingStyle.solid
+           ? _LegendType.solidBar
+           : _LegendType.gradientBar,
+       iconType = null,
+       imageProvider = null,
+       iconSize = Size.zero,
+       iconBorder = null,
+       itemRunSpacing = null,
+       spacing = 0.0,
+       itemBuilder = null,
+       itemCount = 0,
+       alignment = null,
+       width = null,
+       height = null,
+       toggledIconColor = null,
+       toggledItemColor = null,
+       toggledTextOpacity = 0.0,
+       onToggledIndicesChanged = null,
+       onItemRenderer = null,
+       assert(itemSpacing >= 0),
+       assert(!isComplex || (isComplex && offset == null));
 
   /// Specifies the legend items.
   final List<LegendItem>? items;
@@ -485,8 +485,10 @@ class _SfLegendState extends State<SfLegend> {
   bool _omitLegend = false;
   TextStyle? _textStyle;
   final ScrollController _scrollController = ScrollController();
-  Widget _buildResponsiveLayout(Widget? current,
-      [BoxConstraints? baseConstraints]) {
+  Widget _buildResponsiveLayout(
+    Widget? current, [
+    BoxConstraints? baseConstraints,
+  ]) {
     if (current == null) {
       return widget.child;
     }
@@ -494,43 +496,57 @@ class _SfLegendState extends State<SfLegend> {
     if (widget.offset == null) {
       switch (widget.position) {
         case LegendPosition.top:
-          current = Column(children: <Widget>[
-            Align(
-              alignment: _getEffectiveLegendItemsAlignment(
-                  widget.position, widget.alignment ?? LegendAlignment.center),
-              child: current,
-            ),
-            _buildChild(baseConstraints)
-          ]);
-          break;
+          current = Column(
+            children: <Widget>[
+              Align(
+                alignment: _getEffectiveLegendItemsAlignment(
+                  widget.position,
+                  widget.alignment ?? LegendAlignment.center,
+                ),
+                child: current,
+              ),
+              _buildChild(baseConstraints),
+            ],
+          );
         case LegendPosition.bottom:
-          current = Column(children: <Widget>[
-            _buildChild(baseConstraints),
-            Align(
-              alignment: _getEffectiveLegendItemsAlignment(
-                  widget.position, widget.alignment ?? LegendAlignment.center),
-              child: current,
-            )
-          ]);
-          break;
+          current = Column(
+            children: <Widget>[
+              _buildChild(baseConstraints),
+              Align(
+                alignment: _getEffectiveLegendItemsAlignment(
+                  widget.position,
+                  widget.alignment ?? LegendAlignment.center,
+                ),
+                child: current,
+              ),
+            ],
+          );
         case LegendPosition.left:
-          current = Row(children: <Widget>[
-            Align(
-                alignment: _getEffectiveLegendItemsAlignment(widget.position,
-                    widget.alignment ?? LegendAlignment.center),
-                child: current),
-            _buildChild(baseConstraints)
-          ]);
-          break;
+          current = Row(
+            children: <Widget>[
+              Align(
+                alignment: _getEffectiveLegendItemsAlignment(
+                  widget.position,
+                  widget.alignment ?? LegendAlignment.center,
+                ),
+                child: current,
+              ),
+              _buildChild(baseConstraints),
+            ],
+          );
         case LegendPosition.right:
-          current = Row(children: <Widget>[
-            _buildChild(baseConstraints),
-            Align(
-                alignment: _getEffectiveLegendItemsAlignment(widget.position,
-                    widget.alignment ?? LegendAlignment.center),
-                child: current)
-          ]);
-          break;
+          current = Row(
+            children: <Widget>[
+              _buildChild(baseConstraints),
+              Align(
+                alignment: _getEffectiveLegendItemsAlignment(
+                  widget.position,
+                  widget.alignment ?? LegendAlignment.center,
+                ),
+                child: current,
+              ),
+            ],
+          );
       }
     } else {
       current = Stack(
@@ -558,13 +574,13 @@ class _SfLegendState extends State<SfLegend> {
               childConstraints.biggest) {
             child = widget.child;
           } else {
-            SchedulerBinding.instance.addPostFrameCallback(
-              (Duration timeStamp) {
-                setState(() {
-                  _omitLegend = true;
-                });
-              },
-            );
+            SchedulerBinding.instance.addPostFrameCallback((
+              Duration timeStamp,
+            ) {
+              setState(() {
+                _omitLegend = true;
+              });
+            });
           }
 
           return SizedBox(
@@ -609,7 +625,6 @@ class _SfLegendState extends State<SfLegend> {
           toggledItemColor: widget.toggledItemColor,
           toggledTextOpacity: widget.toggledTextOpacity,
         );
-        break;
       case _LegendType.solidBar:
         current = _SolidBarLegend(
           items: widget.items,
@@ -627,7 +642,6 @@ class _SfLegendState extends State<SfLegend> {
           pointerSize: widget.pointerSize,
           pointerController: widget.pointerController,
         );
-        break;
       case _LegendType.gradientBar:
         current = _GradientBarLegend(
           items: widget.items,
@@ -645,7 +659,6 @@ class _SfLegendState extends State<SfLegend> {
           pointerSize: widget.pointerSize,
           pointerController: widget.pointerController,
         );
-        break;
     }
 
     if (widget.padding != null) {
@@ -654,9 +667,9 @@ class _SfLegendState extends State<SfLegend> {
 
     final double scrollbarThickness =
         defaultTargetPlatform == TargetPlatform.iOS ||
-                defaultTargetPlatform == TargetPlatform.android
-            ? 4
-            : 5;
+            defaultTargetPlatform == TargetPlatform.android
+        ? 4
+        : 5;
 
     if (widget.title == null) {
       if (widget.overflowMode == LegendOverflowMode.scroll) {
@@ -665,11 +678,12 @@ class _SfLegendState extends State<SfLegend> {
           controller: _scrollController,
           thumbVisibility: widget.shouldAlwaysShowScrollbar,
           child: ScrollConfiguration(
-            behavior:
-                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            behavior: ScrollConfiguration.of(context)
+                .copyWith(scrollbars: false),
             child: SingleChildScrollView(
               controller: _scrollController,
-              scrollDirection: widget.scrollDirection ??
+              scrollDirection:
+                  widget.scrollDirection ??
                   (widget.position == LegendPosition.top ||
                           widget.position == LegendPosition.bottom
                       ? Axis.horizontal
@@ -684,8 +698,8 @@ class _SfLegendState extends State<SfLegend> {
           controller: _scrollController,
           thumbVisibility: widget.shouldAlwaysShowScrollbar,
           child: ScrollConfiguration(
-            behavior:
-                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            behavior: ScrollConfiguration.of(context)
+                .copyWith(scrollbars: false),
             child: SingleChildScrollView(
               controller: _scrollController,
               scrollDirection: widget.direction == Axis.horizontal
@@ -699,11 +713,12 @@ class _SfLegendState extends State<SfLegend> {
         current = ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
           child: SingleChildScrollView(
-              scrollDirection: widget.scrollDirection == Axis.horizontal
-                  ? Axis.horizontal
-                  : Axis.vertical,
-              physics: const NeverScrollableScrollPhysics(),
-              child: current),
+            scrollDirection: widget.scrollDirection == Axis.horizontal
+                ? Axis.horizontal
+                : Axis.vertical,
+            physics: const NeverScrollableScrollPhysics(),
+            child: current,
+          ),
         );
       }
     } else {
@@ -716,45 +731,48 @@ class _SfLegendState extends State<SfLegend> {
           children: <Widget>[
             widget.title!,
             if (widget.overflowMode == LegendOverflowMode.scroll)
-              (widget.width != null || widget.height != null)
-                  ? Expanded(
-                      child: Scrollbar(
-                        thickness: scrollbarThickness,
+              if (widget.width != null || widget.height != null)
+                Expanded(
+                  child: Scrollbar(
+                    thickness: scrollbarThickness,
+                    controller: _scrollController,
+                    thumbVisibility: widget.shouldAlwaysShowScrollbar,
+                    child: ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context)
+                          .copyWith(scrollbars: false),
+                      child: SingleChildScrollView(
                         controller: _scrollController,
-                        thumbVisibility: widget.shouldAlwaysShowScrollbar,
-                        child: ScrollConfiguration(
-                          behavior: ScrollConfiguration.of(context)
-                              .copyWith(scrollbars: false),
-                          child: SingleChildScrollView(
-                            controller: _scrollController,
-                            scrollDirection: widget.scrollDirection ??
-                                (widget.position == LegendPosition.top ||
-                                        widget.position == LegendPosition.bottom
-                                    ? Axis.horizontal
-                                    : Axis.vertical),
-                            child: current,
-                          ),
-                        ),
+                        scrollDirection:
+                            widget.scrollDirection ??
+                            (widget.position == LegendPosition.top ||
+                                    widget.position == LegendPosition.bottom
+                                ? Axis.horizontal
+                                : Axis.vertical),
+                        child: current,
                       ),
-                    )
-                  : Scrollbar(
-                      thickness: scrollbarThickness,
+                    ),
+                  ),
+                )
+              else
+                Scrollbar(
+                  thickness: scrollbarThickness,
+                  controller: _scrollController,
+                  thumbVisibility: widget.shouldAlwaysShowScrollbar,
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context)
+                        .copyWith(scrollbars: false),
+                    child: SingleChildScrollView(
                       controller: _scrollController,
-                      thumbVisibility: widget.shouldAlwaysShowScrollbar,
-                      child: ScrollConfiguration(
-                        behavior: ScrollConfiguration.of(context)
-                            .copyWith(scrollbars: false),
-                        child: SingleChildScrollView(
-                          controller: _scrollController,
-                          scrollDirection: widget.scrollDirection ??
-                              (widget.position == LegendPosition.top ||
-                                      widget.position == LegendPosition.bottom
-                                  ? Axis.horizontal
-                                  : Axis.vertical),
-                          child: current,
-                        ),
-                      ),
-                    )
+                      scrollDirection:
+                          widget.scrollDirection ??
+                          (widget.position == LegendPosition.top ||
+                                  widget.position == LegendPosition.bottom
+                              ? Axis.horizontal
+                              : Axis.vertical),
+                      child: current,
+                    ),
+                  ),
+                )
             else if (widget.overflowMode == LegendOverflowMode.wrapScroll)
               Expanded(
                 child: Scrollbar(
@@ -766,7 +784,8 @@ class _SfLegendState extends State<SfLegend> {
                         .copyWith(scrollbars: false),
                     child: SingleChildScrollView(
                       controller: _scrollController,
-                      scrollDirection: widget.scrollDirection ??
+                      scrollDirection:
+                          widget.scrollDirection ??
                           (widget.position == LegendPosition.top ||
                                   widget.position == LegendPosition.bottom
                               ? Axis.horizontal
@@ -778,20 +797,21 @@ class _SfLegendState extends State<SfLegend> {
               )
             else if (widget.overflowMode == LegendOverflowMode.none)
               ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                behavior: ScrollConfiguration.of(context)
+                    .copyWith(scrollbars: false),
                 child: SingleChildScrollView(
-                    controller: _scrollController,
-                    scrollDirection: widget.scrollDirection == Axis.horizontal
-                        ? Axis.horizontal
-                        : Axis.vertical,
-                    physics: const NeverScrollableScrollPhysics(),
-                    child: current),
+                  controller: _scrollController,
+                  scrollDirection: widget.scrollDirection == Axis.horizontal
+                      ? Axis.horizontal
+                      : Axis.vertical,
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: current,
+                ),
               )
+            else if (widget.width != null || widget.height != null)
+              Expanded(child: current)
             else
-              (widget.width != null || widget.height != null)
-                  ? Expanded(child: current)
-                  : current
+              current,
           ],
         );
       } else {
@@ -803,22 +823,24 @@ class _SfLegendState extends State<SfLegend> {
               child: widget.overflowMode == LegendOverflowMode.scroll
                   ? SingleChildScrollView(
                       scrollDirection: widget.scrollDirection ?? Axis.vertical,
-                      child: current)
+                      child: current,
+                    )
                   : widget.overflowMode == LegendOverflowMode.wrapScroll
-                      ? SingleChildScrollView(
-                          scrollDirection: widget.direction == Axis.horizontal
-                              ? Axis.vertical
-                              : Axis.horizontal,
-                          child: current)
-                      : widget.overflowMode == LegendOverflowMode.none
-                          ? SingleChildScrollView(
-                              scrollDirection:
-                                  widget.direction == Axis.horizontal
-                                      ? Axis.vertical
-                                      : Axis.horizontal,
-                              physics: const NeverScrollableScrollPhysics(),
-                              child: current)
-                          : current,
+                  ? SingleChildScrollView(
+                      scrollDirection: widget.direction == Axis.horizontal
+                          ? Axis.vertical
+                          : Axis.horizontal,
+                      child: current,
+                    )
+                  : widget.overflowMode == LegendOverflowMode.none
+                  ? SingleChildScrollView(
+                      scrollDirection: widget.direction == Axis.horizontal
+                          ? Axis.vertical
+                          : Axis.horizontal,
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: current,
+                    )
+                  : current,
             ),
           ],
         );
@@ -831,7 +853,9 @@ class _SfLegendState extends State<SfLegend> {
           color: widget.color,
           border: widget.border != null
               ? Border.all(
-                  color: widget.border!.color, width: widget.border!.width)
+                  color: widget.border!.color,
+                  width: widget.border!.width,
+                )
               : null,
         ),
         child: current,
@@ -867,7 +891,9 @@ class _SfLegendState extends State<SfLegend> {
   }
 
   AlignmentGeometry _getEffectiveLegendItemsAlignment(
-      LegendPosition position, LegendAlignment alignment) {
+    LegendPosition position,
+    LegendAlignment alignment,
+  ) {
     switch (position) {
       case LegendPosition.top:
       case LegendPosition.bottom:
@@ -896,24 +922,28 @@ class _SfLegendState extends State<SfLegend> {
     switch (legendPosition) {
       case LegendPosition.top:
         return EdgeInsets.only(
-            left: offset.dx > 0 ? offset.dx * 2 : 0,
-            right: offset.dx < 0 ? offset.dx.abs() * 2 : 0,
-            top: offset.dy > 0 ? offset.dy : 0);
+          left: offset.dx > 0 ? offset.dx * 2 : 0,
+          right: offset.dx < 0 ? offset.dx.abs() * 2 : 0,
+          top: offset.dy > 0 ? offset.dy : 0,
+        );
       case LegendPosition.left:
         return EdgeInsets.only(
-            top: offset.dy > 0 ? offset.dy * 2 : 0,
-            bottom: offset.dy < 0 ? offset.dy.abs() * 2 : 0,
-            left: offset.dx > 0 ? offset.dx : 0);
+          top: offset.dy > 0 ? offset.dy * 2 : 0,
+          bottom: offset.dy < 0 ? offset.dy.abs() * 2 : 0,
+          left: offset.dx > 0 ? offset.dx : 0,
+        );
       case LegendPosition.right:
         return EdgeInsets.only(
-            top: offset.dy > 0 ? offset.dy * 2 : 0,
-            bottom: offset.dy < 0 ? offset.dy.abs() * 2 : 0,
-            right: offset.dx < 0 ? offset.dx.abs() : 0);
+          top: offset.dy > 0 ? offset.dy * 2 : 0,
+          bottom: offset.dy < 0 ? offset.dy.abs() * 2 : 0,
+          right: offset.dx < 0 ? offset.dx.abs() : 0,
+        );
       case LegendPosition.bottom:
         return EdgeInsets.only(
-            left: offset.dx > 0 ? offset.dx * 2 : 0,
-            right: offset.dx < 0 ? offset.dx.abs() * 2 : 0,
-            bottom: offset.dy < 0 ? offset.dy.abs() : 0);
+          left: offset.dx > 0 ? offset.dx * 2 : 0,
+          right: offset.dx < 0 ? offset.dx.abs() * 2 : 0,
+          bottom: offset.dy < 0 ? offset.dy.abs() : 0,
+        );
     }
   }
 
@@ -923,8 +953,10 @@ class _SfLegendState extends State<SfLegend> {
     if (widget.itemBuilder == null) {
       _textStyle = themeData.textTheme.bodySmall!
           .copyWith(
-              color:
-                  themeData.textTheme.bodySmall!.color!.withValues(alpha: 0.87))
+            color: themeData.textTheme.bodySmall!.color!.withValues(
+              alpha: 0.87,
+            ),
+          )
           .merge(widget.textStyle);
     }
     if (!widget.isComplex) {
@@ -1034,40 +1066,44 @@ class _VectorLegendState extends State<_VectorLegend>
       final int length = widget.items!.length;
       for (int index = 0; index < length; index++) {
         final LegendItem item = widget.items![index];
-        items.add(_LegendItem(
-          index: index,
-          text: item.text,
-          textStyle: widget.textStyle,
-          iconType: item.iconType ?? widget.iconType,
-          iconStrokeWidth: item.iconStrokeWidth,
-          imageProvider: item.imageProvider ?? widget.imageProvider,
-          shader: item.shader,
-          iconSize: widget.iconSize,
-          iconColor: item.color,
-          iconBorder: widget.iconBorder,
-          spacing: widget.spacing,
-          toggledIndices: widget.toggledIndices,
-          toggledColor: _getEffectiveToggledColor(themeData),
-          toggledTextOpacity: widget.toggledTextOpacity,
-          onToggledIndicesChanged: widget.onToggledIndicesChanged,
-          onItemRenderer: widget.onItemRenderer,
-          overlayMarkerType: item.overlayMarkerType,
-          degree: item.degree,
-          startAngle: item.startAngle,
-          endAngle: item.endAngle,
-        ));
+        items.add(
+          _LegendItem(
+            index: index,
+            text: item.text,
+            textStyle: widget.textStyle,
+            iconType: item.iconType ?? widget.iconType,
+            iconStrokeWidth: item.iconStrokeWidth,
+            imageProvider: item.imageProvider ?? widget.imageProvider,
+            shader: item.shader,
+            iconSize: widget.iconSize,
+            iconColor: item.color,
+            iconBorder: widget.iconBorder,
+            spacing: widget.spacing,
+            toggledIndices: widget.toggledIndices,
+            toggledColor: _getEffectiveToggledColor(themeData),
+            toggledTextOpacity: widget.toggledTextOpacity,
+            onToggledIndicesChanged: widget.onToggledIndicesChanged,
+            onItemRenderer: widget.onItemRenderer,
+            overlayMarkerType: item.overlayMarkerType,
+            degree: item.degree,
+            startAngle: item.startAngle,
+            endAngle: item.endAngle,
+          ),
+        );
       }
     } else if (widget.itemCount != null &&
         widget.itemCount! > 0 &&
         widget.itemBuilder != null) {
       for (int index = 0; index < widget.itemCount!; index++) {
-        items.add(_LegendItem(
-          index: index,
-          itemBuilder: widget.itemBuilder,
-          toggledColor: _getEffectiveToggledColor(themeData),
-          toggledIndices: widget.toggledIndices,
-          onToggledIndicesChanged: widget.onToggledIndicesChanged,
-        ));
+        items.add(
+          _LegendItem(
+            index: index,
+            itemBuilder: widget.itemBuilder,
+            toggledColor: _getEffectiveToggledColor(themeData),
+            toggledIndices: widget.toggledIndices,
+            onToggledIndicesChanged: widget.onToggledIndicesChanged,
+          ),
+        );
       }
     }
     return items;
@@ -1092,7 +1128,8 @@ class _VectorLegendState extends State<_VectorLegend>
     final ThemeData themeData = Theme.of(context);
 
     final Widget current = Wrap(
-      direction: widget.direction ??
+      direction:
+          widget.direction ??
           (widget.position == LegendPosition.top ||
                   widget.position == LegendPosition.bottom
               ? Axis.horizontal
@@ -1112,6 +1149,8 @@ class _LegendItem extends StatefulWidget {
   /// Creates a [LegendItem].
   const _LegendItem({
     required this.index,
+    required this.toggledIndices,
+    required this.onToggledIndicesChanged,
     this.itemBuilder,
     this.text,
     this.textStyle,
@@ -1125,8 +1164,6 @@ class _LegendItem extends StatefulWidget {
     this.toggledColor,
     this.spacing,
     this.toggledTextOpacity,
-    required this.toggledIndices,
-    required this.onToggledIndicesChanged,
     this.onItemRenderer,
     this.overlayMarkerType,
     this.degree,
@@ -1214,20 +1251,23 @@ class _LegendItemState extends State<_LegendItem>
   Future<ui.Image?>? _obtainImage;
 
   Widget _buildCustomPaint(
-      ItemRendererDetails details, AsyncSnapshot<ui.Image?> snapshot) {
+    ItemRendererDetails details,
+    AsyncSnapshot<ui.Image?> snapshot,
+  ) {
     Widget current = CustomPaint(
       size: widget.iconSize,
       painter: _LegendIconShape(
-          color: details.color,
-          iconType: details.iconType,
-          iconBorder: details.iconBorder,
-          iconStrokeWidth: widget.iconStrokeWidth,
-          image: snapshot.data,
-          shader: widget.shader,
-          overlayMarkerType: widget.overlayMarkerType,
-          degree: widget.degree,
-          startAngle: widget.startAngle,
-          endAngle: widget.endAngle),
+        color: details.color,
+        iconType: details.iconType,
+        iconBorder: details.iconBorder,
+        iconStrokeWidth: widget.iconStrokeWidth,
+        image: snapshot.data,
+        shader: widget.shader,
+        overlayMarkerType: widget.overlayMarkerType,
+        degree: widget.degree,
+        startAngle: widget.startAngle,
+        endAngle: widget.endAngle,
+      ),
     );
 
     if (widget.shader != null &&
@@ -1252,8 +1292,9 @@ class _LegendItemState extends State<_LegendItem>
 
   void _handleTapUp(TapUpDetails details) {
     if (widget.toggledIndices != null) {
-      final List<int> newToggledIndices =
-          List<int>.from(widget.toggledIndices!);
+      final List<int> newToggledIndices = List<int>.from(
+        widget.toggledIndices!,
+      );
       if (!newToggledIndices.contains(widget.index)) {
         newToggledIndices.add(widget.index);
       } else {
@@ -1293,9 +1334,13 @@ class _LegendItemState extends State<_LegendItem>
   @override
   void initState() {
     _toggleAnimationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 250));
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
     _toggleAnimation = CurvedAnimation(
-        parent: _toggleAnimationController, curve: Curves.easeInOut);
+      parent: _toggleAnimationController,
+      curve: Curves.easeInOut,
+    );
     _toggleAnimation.addListener(rebuild);
 
     final Color? begin = widget.shader == null && widget.imageProvider == null
@@ -1372,8 +1417,9 @@ class _LegendItemState extends State<_LegendItem>
             }
           }
         } else {
-          final Color? referenceIconColor =
-              _iconColorTween.evaluate(_toggleAnimation);
+          final Color? referenceIconColor = _iconColorTween.evaluate(
+            _toggleAnimation,
+          );
           final ItemRendererDetails details = ItemRendererDetails(
             index: widget.index,
             text: widget.text!,
@@ -1397,10 +1443,11 @@ class _LegendItemState extends State<_LegendItem>
                 style: widget.textStyle!.copyWith(
                   color: widget.textStyle!.foreground == null
                       ? widget.textStyle!.color!.withValues(
-                          alpha: _opacityTween.evaluate(_toggleAnimation))
+                          alpha: _opacityTween.evaluate(_toggleAnimation),
+                        )
                       : widget.textStyle!.foreground!.color,
                 ),
-              )
+              ),
             ],
           );
         }
@@ -1425,17 +1472,18 @@ class _LegendItemState extends State<_LegendItem>
 /// Represents the class for rendering icon shape.
 class _LegendIconShape extends CustomPainter {
   /// Represents [LegendIconShape]
-  _LegendIconShape(
-      {required this.color,
-      required this.iconType,
-      this.iconBorder,
-      this.iconStrokeWidth,
-      this.image,
-      this.shader,
-      this.overlayMarkerType,
-      this.degree,
-      this.startAngle,
-      this.endAngle});
+  _LegendIconShape({
+    required this.color,
+    required this.iconType,
+    this.iconBorder,
+    this.iconStrokeWidth,
+    this.image,
+    this.shader,
+    this.overlayMarkerType,
+    this.degree,
+    this.startAngle,
+    this.endAngle,
+  });
 
   /// Specifies the color of the icon.
   final Color? color;
@@ -1495,15 +1543,16 @@ class _LegendIconShape extends CustomPainter {
       paintImage(canvas: canvas, rect: Offset.zero & size, image: image!);
     } else {
       shape_helper.paint(
-          canvas: canvas,
-          rect: Offset.zero & size,
-          shapeType: iconType!,
-          paint: _getFillPaint(),
-          borderPaint: _getStrokePaint(),
-          overlayMarkerType: overlayMarkerType,
-          degree: degree,
-          startAngle: startAngle,
-          endAngle: endAngle);
+        canvas: canvas,
+        rect: Offset.zero & size,
+        shapeType: iconType!,
+        paint: _getFillPaint(),
+        borderPaint: _getStrokePaint(),
+        overlayMarkerType: overlayMarkerType,
+        degree: degree,
+        startAngle: startAngle,
+        endAngle: endAngle,
+      );
     }
   }
 
@@ -1600,7 +1649,8 @@ class _SolidBarLegendState extends State<_SolidBarLegend> {
   Widget build(BuildContext context) {
     _segmentSize = widget.segmentSize ?? const Size(80.0, 12.0);
     final TextDirection textDirection = Directionality.of(context);
-    _direction = widget.direction ??
+    _direction =
+        widget.direction ??
         (widget.position == LegendPosition.top ||
                 widget.position == LegendPosition.bottom
             ? Axis.horizontal
@@ -1640,8 +1690,9 @@ class _SolidBarLegendState extends State<_SolidBarLegend> {
             currentText = _getTrimmedText(item.text, currentText, i, length);
           } else {
             if (i == 0) {
-              final List<String> firstSegmentLabels =
-                  _getStartSegmentLabel(item.text);
+              final List<String> firstSegmentLabels = _getStartSegmentLabel(
+                item.text,
+              );
               if (firstSegmentLabels.length > 1) {
                 startText = firstSegmentLabels[0];
                 currentText = firstSegmentLabels[1];
@@ -1654,7 +1705,11 @@ class _SolidBarLegendState extends State<_SolidBarLegend> {
             }
 
             currentText = _getTrimmedText(
-                currentText, widget.items![i + 1].text, i, length);
+              currentText,
+              widget.items![i + 1].text,
+              i,
+              length,
+            );
           }
         } else {
           currentText = item.text;
@@ -1669,24 +1724,26 @@ class _SolidBarLegendState extends State<_SolidBarLegend> {
             }
           }
         }
-        legendItems.add(_SolidBarLegendItem(
-          labelsPlacement: widget.labelsPlacement,
-          labelOverflow: widget.labelOverflow,
-          segmentSize: _segmentSize,
-          iconColor: item.color,
-          direction: _direction,
-          textStyle: widget.textStyle,
-          index: i,
-          length: length,
-          startText: startText,
-          text: currentText,
-          itemSpacing: widget.itemSpacing,
-          edgeLabelsPlacement: widget.edgeLabelsPlacement,
-          pointerSize: widget.pointerSize,
-          pointerColor: widget.pointerColor,
-          pointerBuilder: widget.pointerBuilder,
-          pointerController: widget.pointerController,
-        ));
+        legendItems.add(
+          _SolidBarLegendItem(
+            labelsPlacement: widget.labelsPlacement,
+            labelOverflow: widget.labelOverflow,
+            segmentSize: _segmentSize,
+            iconColor: item.color,
+            direction: _direction,
+            textStyle: widget.textStyle,
+            index: i,
+            length: length,
+            startText: startText,
+            text: currentText,
+            itemSpacing: widget.itemSpacing,
+            edgeLabelsPlacement: widget.edgeLabelsPlacement,
+            pointerSize: widget.pointerSize,
+            pointerColor: widget.pointerColor,
+            pointerBuilder: widget.pointerBuilder,
+            pointerController: widget.pointerController,
+          ),
+        );
       }
     }
 
@@ -1708,7 +1765,11 @@ class _SolidBarLegendState extends State<_SolidBarLegend> {
   }
 
   String _getTrimmedText(
-      String currentText, String? nextText, int index, int length) {
+    String currentText,
+    String? nextText,
+    int index,
+    int length,
+  ) {
     if (widget.labelOverflow == LegendLabelOverflow.visible ||
         currentText.isEmpty ||
         (nextText != null && nextText.isEmpty) ||
@@ -1731,12 +1792,14 @@ class _SolidBarLegendState extends State<_SolidBarLegend> {
             : _getTextWidth(currentText) / 2;
       } else {
         refCurrentTextWidth = _getTextWidth(currentText) / 2;
-        refNextTextWidth = index + 1 == length - 1 &&
+        refNextTextWidth =
+            index + 1 == length - 1 &&
                 widget.edgeLabelsPlacement == LegendEdgeLabelsPlacement.inside
             ? _getTextWidth(nextText)
             : _getTextWidth(nextText) / 2;
       }
-      _isOverlapSegmentText = refCurrentTextWidth + refNextTextWidth >
+      _isOverlapSegmentText =
+          refCurrentTextWidth + refNextTextWidth >
           barSize.width + widget.itemSpacing!;
 
       // Returning empty string in case of text overlapping the segment size
@@ -1747,13 +1810,14 @@ class _SolidBarLegendState extends State<_SolidBarLegend> {
       } else if (widget.labelOverflow == LegendLabelOverflow.ellipsis) {
         final double textWidth = refCurrentTextWidth + refNextTextWidth;
         return _getTrimText(
-            currentText,
-            widget.textStyle!,
-            _segmentSize.width + widget.itemSpacing! / 2,
-            _textPainter,
-            textWidth,
-            refNextTextWidth,
-            isLastInsideItem);
+          currentText,
+          widget.textStyle!,
+          _segmentSize.width + widget.itemSpacing! / 2,
+          _textPainter,
+          textWidth,
+          refNextTextWidth,
+          isLastInsideItem,
+        );
       }
     }
 
@@ -1767,9 +1831,15 @@ class _SolidBarLegendState extends State<_SolidBarLegend> {
   }
 }
 
-String _getTrimText(String text, TextStyle style, double maxWidth,
-    TextPainter painter, double width,
-    [double? nextTextHalfWidth, bool isInsideLastItem = false]) {
+String _getTrimText(
+  String text,
+  TextStyle style,
+  double maxWidth,
+  TextPainter painter,
+  double width, [
+  double? nextTextHalfWidth,
+  bool isInsideLastItem = false,
+]) {
   final int actualTextLength = text.length;
   String trimmedText = text;
   int trimLength = 3; // 3 dots
@@ -1781,7 +1851,10 @@ String _getTrimText(String text, TextStyle style, double maxWidth,
       break;
     } else {
       trimmedText = text.replaceRange(
-          actualTextLength - trimLength, actualTextLength, '...');
+        actualTextLength - trimLength,
+        actualTextLength,
+        '...',
+      );
       painter.text = TextSpan(style: style, text: trimmedText);
       painter.layout();
       trimLength++;
@@ -1801,7 +1874,6 @@ String _getTrimText(String text, TextStyle style, double maxWidth,
 
 class _SolidBarLegendItem extends StatefulWidget {
   const _SolidBarLegendItem({
-    Key? key,
     this.labelsPlacement,
     this.labelOverflow,
     this.segmentSize,
@@ -1818,7 +1890,7 @@ class _SolidBarLegendItem extends StatefulWidget {
     this.pointerColor,
     this.pointerBuilder,
     this.pointerController,
-  }) : super(key: key);
+  });
 
   final LegendLabelsPlacement? labelsPlacement;
   final LegendLabelOverflow? labelOverflow;
@@ -1878,7 +1950,11 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
   }
 
   Offset _getTextOffset(
-      int index, String text, int dataSourceLength, bool isStartText) {
+    int index,
+    String text,
+    int dataSourceLength,
+    bool isStartText,
+  ) {
     _textPainter.text = TextSpan(text: text, style: widget.textStyle);
     _textPainter.layout();
 
@@ -1907,11 +1983,15 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
   }
 
   Offset _getHorizontalTextOffset(
-      int index, String text, int dataSourceLength) {
+    int index,
+    String text,
+    int dataSourceLength,
+  ) {
     _textPainter.text = TextSpan(text: text, style: widget.textStyle);
     _textPainter.layout();
     if (widget.labelsPlacement == LegendLabelsPlacement.betweenItems) {
-      final double width = _textDirection == TextDirection.rtl &&
+      final double width =
+          _textDirection == TextDirection.rtl &&
               widget.segmentSize!.width < _textPainter.width
           ? _textPainter.width
           : widget.segmentSize!.width;
@@ -1923,9 +2003,12 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
       }
 
       return Offset(
-          width - _textPainter.width / 2 + widget.itemSpacing! / 2, 0.0);
+        width - _textPainter.width / 2 + widget.itemSpacing! / 2,
+        0.0,
+      );
     } else {
-      final double xPosition = _textDirection == TextDirection.rtl &&
+      final double xPosition =
+          _textDirection == TextDirection.rtl &&
               widget.segmentSize!.width < _textPainter.width
           ? _textPainter.width / 2 - widget.segmentSize!.width / 2
           : widget.segmentSize!.width / 2 - _textPainter.width / 2;
@@ -1945,20 +2028,23 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
       }
 
       return Offset(
-          0.0,
-          widget.segmentSize!.width -
-              _textPainter.height / 2 +
-              widget.itemSpacing! / 2);
+        0.0,
+        widget.segmentSize!.width -
+            _textPainter.height / 2 +
+            widget.itemSpacing! / 2,
+      );
     } else {
       return Offset(
-          0.0, widget.segmentSize!.width / 2 - _textPainter.height / 2);
+        0.0,
+        widget.segmentSize!.width / 2 - _textPainter.height / 2,
+      );
     }
   }
 
   Widget _getAlignedTextWidget(Offset offset, String text, bool isOverlapping) {
     if ((widget.labelOverflow == LegendLabelOverflow.hide && isOverlapping) ||
         text.isEmpty) {
-      return const SizedBox(width: 0.0, height: 0.0);
+      return const SizedBox.shrink();
     }
 
     return Directionality(
@@ -1977,7 +2063,8 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
               text,
               textAlign: TextAlign.center,
               softWrap: false,
-              overflow: widget.labelOverflow == LegendLabelOverflow.ellipsis &&
+              overflow:
+                  widget.labelOverflow == LegendLabelOverflow.ellipsis &&
                       widget.labelsPlacement == LegendLabelsPlacement.onItem
                   ? TextOverflow.ellipsis
                   : TextOverflow.visible,
@@ -1989,15 +2076,24 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
   Widget _getTextWidget(String? startText, String text) {
     Offset? startTextOffset;
     if (widget.index == 0 && startText != null) {
+      startTextOffset = _getTextOffset(
+        widget.index!,
+        startText,
+        widget.length!,
+        true,
+      );
       startTextOffset =
-          _getTextOffset(widget.index!, startText, widget.length!, true);
-      startTextOffset = _textDirection == TextDirection.rtl &&
+          _textDirection == TextDirection.rtl &&
               widget.direction == Axis.horizontal
           ? -startTextOffset
           : startTextOffset;
     }
-    Offset textOffset =
-        _getTextOffset(widget.index!, text, widget.length!, false);
+    Offset textOffset = _getTextOffset(
+      widget.index!,
+      text,
+      widget.length!,
+      false,
+    );
     textOffset = _textDirection == TextDirection.rtl ? -textOffset : textOffset;
 
     if (widget.index == 0 &&
@@ -2025,14 +2121,17 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
         current = SizedBox(
           width: widget.pointerSize!.width,
           height: widget.pointerSize!.height,
-          child: widget.pointerBuilder!
-              .call(context, widget.pointerController!.colorValue),
+          child: widget.pointerBuilder!.call(
+            context,
+            widget.pointerController!.colorValue,
+          ),
         );
       } else {
         current = CustomPaint(
           size: widget.pointerSize!,
           painter: _LegendIconShape(
-            color: widget.pointerColor ??
+            color:
+                widget.pointerColor ??
                 (Theme.of(context).brightness == Brightness.light
                     ? const Color.fromRGBO(0, 0, 0, 0.54)
                     : const Color.fromRGBO(255, 255, 255, 0.7)),
@@ -2043,9 +2142,13 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
 
       if (widget.direction == Axis.horizontal) {
         matrix4 = Matrix4.identity()
-          ..translate(widget.pointerController!.position!.dx *
-                  widget.segmentSize!.width -
-              (widget.pointerSize!.width / 2));
+          ..translateByDouble(
+            widget.pointerController!.position!.dx * widget.segmentSize!.width -
+                (widget.pointerSize!.width / 2),
+            0.0,
+            0.0,
+            1.0,
+          );
         if (_textDirection == TextDirection.rtl) {
           matrix4.invert();
         }
@@ -2053,21 +2156,25 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
       } else {
         current = RotatedBox(quarterTurns: 3, child: current);
         matrix4 = Matrix4.identity()
-          ..translate(
-              0.0,
-              widget.pointerController!.position!.dy *
-                      widget.segmentSize!.width -
-                  (widget.pointerSize!.width / 2));
+          ..translateByDouble(
+            0.0,
+            widget.pointerController!.position!.dy * widget.segmentSize!.width -
+                (widget.pointerSize!.width / 2),
+            0.0,
+            1.0,
+          );
         current = Transform(transform: matrix4, child: current);
       }
     } else {
       current = widget.direction == Axis.horizontal
           ? SizedBox(
               height: widget.pointerSize!.height,
-              width: widget.pointerSize!.width)
+              width: widget.pointerSize!.width,
+            )
           : SizedBox(
               height: widget.pointerSize!.width,
-              width: widget.pointerSize!.height);
+              width: widget.pointerSize!.height,
+            );
     }
 
     return current;
@@ -2083,10 +2190,11 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
           crossAxisAlignment: _getCrossAxisAlignment(),
           children: <Widget>[
             Align(
-                alignment: _textDirection == TextDirection.ltr
-                    ? Alignment.centerLeft
-                    : Alignment.centerRight,
-                child: _buildPointer()),
+              alignment: _textDirection == TextDirection.ltr
+                  ? Alignment.centerLeft
+                  : Alignment.centerRight,
+              child: _buildPointer(),
+            ),
             Padding(
               // Gap between segment text and icon.
               padding: const EdgeInsets.only(bottom: 7.0),
@@ -2095,7 +2203,7 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
                 color: widget.iconColor,
               ),
             ),
-            _getTextWidget(widget.startText, widget.text!)
+            _getTextWidget(widget.startText, widget.text!),
           ],
         ),
       );
@@ -2114,7 +2222,7 @@ class __SolidBarLegendItemState extends State<_SolidBarLegendItem> {
                 color: widget.iconColor,
               ),
             ),
-            _getTextWidget(widget.startText, widget.text!)
+            _getTextWidget(widget.startText, widget.text!),
           ],
         ),
       );
@@ -2213,7 +2321,8 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
               widget.segmentSize!.width > availableWidth
                   ? availableWidth
                   : widget.segmentSize!.width,
-              widget.segmentSize!.height);
+              widget.segmentSize!.height,
+            );
       return;
     }
 
@@ -2226,7 +2335,8 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
             widget.segmentSize!.width,
             widget.segmentSize!.height > availableHeight
                 ? availableHeight
-                : widget.segmentSize!.height);
+                : widget.segmentSize!.height,
+          );
   }
 
   void _collectLabelsAndColors() {
@@ -2242,7 +2352,8 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
     if (widget.items != null) {
       final int length = widget.items!.length;
 
-      final double slab = _referenceArea /
+      final double slab =
+          _referenceArea /
           (widget.labelsPlacement == LegendLabelsPlacement.betweenItems &&
                   widget.items![0].text[0] != '{'
               ? length - 1
@@ -2267,19 +2378,27 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
         } else {
           final int positionIndex =
               widget.labelsPlacement == LegendLabelsPlacement.onItem
-                  ? i + 1
-                  : i;
+              ? i + 1
+              : i;
           if (widget.labelsPlacement == LegendLabelsPlacement.onItem) {
             text = _getTrimmedText(text, i, length, slab);
           } else if (i < length - 1) {
             text = _getTrimmedText(
-                text, i, length, slab, widget.items![i + 1].text);
+              text,
+              i,
+              length,
+              slab,
+              widget.items![i + 1].text,
+            );
           }
 
-          _labels.add(_GradientBarLabel(
+          _labels.add(
+            _GradientBarLabel(
               text,
               _getTextOffset(text, positionIndex, length - 1, slab),
-              _isOverlapSegmentText));
+              _isOverlapSegmentText,
+            ),
+          );
         }
         _colors.add(item.color!);
       }
@@ -2287,7 +2406,12 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
   }
 
   void _collectRageColorMapperLabels(
-      int i, LegendItem item, String text, double slab, int length) {
+    int i,
+    LegendItem item,
+    String text,
+    double slab,
+    int length,
+  ) {
     if (i == 0 &&
         widget.labelsPlacement == LegendLabelsPlacement.betweenItems) {
       String startText;
@@ -2300,33 +2424,54 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
           text.isNotEmpty) {
         final double refCurrentTextWidth =
             widget.edgeLabelsPlacement == LegendEdgeLabelsPlacement.inside
-                ? _getTextWidth(startText)
-                : _getTextWidth(startText) / 2;
+            ? _getTextWidth(startText)
+            : _getTextWidth(startText) / 2;
         final double refNextTextWidth = _getTextWidth(text) / 2;
         _isOverlapSegmentText = refCurrentTextWidth + refNextTextWidth > slab;
         if (widget.labelOverflow == LegendLabelOverflow.ellipsis) {
           if (widget.labelsPlacement == LegendLabelsPlacement.betweenItems) {
             final double textWidth = refCurrentTextWidth + refNextTextWidth;
-            startText = _getTrimText(startText, widget.textStyle!, slab,
-                _textPainter, textWidth, refNextTextWidth);
+            startText = _getTrimText(
+              startText,
+              widget.textStyle!,
+              slab,
+              _textPainter,
+              textWidth,
+              refNextTextWidth,
+            );
           }
         }
       }
 
-      _labels.add(_GradientBarLabel(startText,
-          _getTextOffset(startText, i, length, slab), _isOverlapSegmentText));
+      _labels.add(
+        _GradientBarLabel(
+          startText,
+          _getTextOffset(startText, i, length, slab),
+          _isOverlapSegmentText,
+        ),
+      );
     } else if (i < length - 1) {
       text = _getTrimmedText(text, i, length, slab, widget.items![i + 1].text);
     }
 
     // For range color mapper, slab is equals to the color mapper
     // length. So adding +1 to point out its position index.
-    _labels.add(_GradientBarLabel(text,
-        _getTextOffset(text, i + 1, length, slab), _isOverlapSegmentText));
+    _labels.add(
+      _GradientBarLabel(
+        text,
+        _getTextOffset(text, i + 1, length, slab),
+        _isOverlapSegmentText,
+      ),
+    );
   }
 
-  String _getTrimmedText(String currentText, int index, int length, double slab,
-      [String? nextText]) {
+  String _getTrimmedText(
+    String currentText,
+    int index,
+    int length,
+    double slab, [
+    String? nextText,
+  ]) {
     if (widget.labelOverflow == LegendLabelOverflow.visible ||
         currentText.isEmpty ||
         (nextText != null && nextText.isEmpty) ||
@@ -2351,7 +2496,8 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
         }
       } else {
         refCurrentTextWidth = _getTextWidth(currentText) / 2;
-        refNextTextWidth = index + 1 == length - 1 &&
+        refNextTextWidth =
+            index + 1 == length - 1 &&
                 widget.edgeLabelsPlacement == LegendEdgeLabelsPlacement.inside
             ? _getTextWidth(nextText)
             : _getTextWidth(nextText) / 2;
@@ -2361,8 +2507,15 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
           _isOverlapSegmentText) {
         if (widget.labelsPlacement == LegendLabelsPlacement.betweenItems) {
           final double textWidth = refCurrentTextWidth + refNextTextWidth;
-          return _getTrimText(currentText, widget.textStyle!, slab,
-              _textPainter, textWidth, refNextTextWidth, isLastInsideItem);
+          return _getTrimText(
+            currentText,
+            widget.textStyle!,
+            slab,
+            _textPainter,
+            textWidth,
+            refNextTextWidth,
+            isLastInsideItem,
+          );
         }
       }
     } else if (_direction == Axis.horizontal &&
@@ -2371,7 +2524,12 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
       _isOverlapSegmentText = textWidth > slab;
       if (_isOverlapSegmentText) {
         return _getTrimText(
-            currentText, widget.textStyle!, slab, _textPainter, textWidth);
+          currentText,
+          widget.textStyle!,
+          slab,
+          _textPainter,
+          textWidth,
+        );
       }
     }
 
@@ -2400,17 +2558,25 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
   }
 
   Offset _getTextOffset(
-      String? text, int positionIndex, int length, double slab) {
+    String? text,
+    int positionIndex,
+    int length,
+    double slab,
+  ) {
     _textPainter.text = TextSpan(text: text, style: widget.textStyle);
     _textPainter.layout();
     final bool canAdjustLabelToCenter =
         widget.edgeLabelsPlacement == LegendEdgeLabelsPlacement.center &&
-                (positionIndex == 0 || positionIndex == length) ||
-            (positionIndex > 0 && positionIndex < length) ||
-            widget.labelsPlacement == LegendLabelsPlacement.onItem;
+            (positionIndex == 0 || positionIndex == length) ||
+        (positionIndex > 0 && positionIndex < length) ||
+        widget.labelsPlacement == LegendLabelsPlacement.onItem;
     if (_direction == Axis.horizontal) {
       return _getHorizontalOffset(
-          canAdjustLabelToCenter, positionIndex, slab, length);
+        canAdjustLabelToCenter,
+        positionIndex,
+        slab,
+        length,
+      );
     } else {
       final double referenceTextWidth = canAdjustLabelToCenter
           ? _textPainter.height / 2
@@ -2420,12 +2586,18 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
       }
 
       return Offset(
-          0.0, (slab * positionIndex) - referenceTextWidth - slab / 2);
+        0.0,
+        (slab * positionIndex) - referenceTextWidth - slab / 2,
+      );
     }
   }
 
   Offset _getHorizontalOffset(
-      bool canAdjustLabelToCenter, int positionIndex, double slab, int length) {
+    bool canAdjustLabelToCenter,
+    int positionIndex,
+    double slab,
+    int length,
+  ) {
     if (_isRTL) {
       final double referenceTextWidth = canAdjustLabelToCenter
           ? -_textPainter.width / 2
@@ -2450,17 +2622,21 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
     }
 
     return Offset(
-        slab * positionIndex - _textPainter.width / 2 - slab / 2, 0.0);
+      slab * positionIndex - _textPainter.width / 2 - slab / 2,
+      0.0,
+    );
   }
 
   Widget _buildGradientBar() {
     return _direction == Axis.horizontal
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: _getChildren())
+            children: _getChildren(),
+          )
         : Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: _getChildren());
+            children: _getChildren(),
+          );
   }
 
   List<Widget> _getChildren() {
@@ -2495,14 +2671,21 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
         height: _segmentSize.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              begin: startAlignment, end: endAlignment, colors: _colors),
+            begin: startAlignment,
+            end: endAlignment,
+            colors: _colors,
+          ),
         ),
       ),
       SizedBox(
-          width: _direction == Axis.vertical ? 7.0 : 0.0,
-          height: _direction == Axis.horizontal ? 7.0 : 0.0),
+        width: _direction == Axis.vertical ? 7.0 : 0.0,
+        height: _direction == Axis.horizontal ? 7.0 : 0.0,
+      ),
       SizedBox(
-          width: labelBoxWidth, height: labelBoxHeight, child: _getLabels()),
+        width: labelBoxWidth,
+        height: labelBoxHeight,
+        child: _getLabels(),
+      ),
     ];
   }
 
@@ -2516,14 +2699,17 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
         current = SizedBox(
           width: widget.pointerSize!.width,
           height: widget.pointerSize!.height,
-          child: widget.pointerBuilder!
-              .call(context, widget.pointerController!.colorValue),
+          child: widget.pointerBuilder!.call(
+            context,
+            widget.pointerController!.colorValue,
+          ),
         );
       } else {
         current = CustomPaint(
           size: widget.pointerSize!,
           painter: _LegendIconShape(
-            color: widget.pointerColor ??
+            color:
+                widget.pointerColor ??
                 (themeData.brightness == Brightness.light
                     ? const Color.fromRGBO(0, 0, 0, 0.54)
                     : const Color.fromRGBO(255, 255, 255, 0.7)),
@@ -2534,9 +2720,13 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
 
       if (_direction == Axis.horizontal) {
         matrix4 = Matrix4.identity()
-          ..translate(
-              widget.pointerController!.position!.dx * _segmentSize.width -
-                  (widget.pointerSize!.width / 2));
+          ..translateByDouble(
+            widget.pointerController!.position!.dx * _segmentSize.width -
+                (widget.pointerSize!.width / 2),
+            0.0,
+            0.0,
+            1.0,
+          );
         if (_isRTL) {
           matrix4.invert();
         }
@@ -2544,20 +2734,25 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
       } else {
         current = RotatedBox(quarterTurns: 3, child: current);
         matrix4 = Matrix4.identity()
-          ..translate(
-              0.0,
-              widget.pointerController!.position!.dy * _segmentSize.height -
-                  (widget.pointerSize!.width / 2));
+          ..translateByDouble(
+            0.0,
+            widget.pointerController!.position!.dy * _segmentSize.height -
+                (widget.pointerSize!.width / 2),
+            0.0,
+            1.0,
+          );
         current = Transform(transform: matrix4, child: current);
       }
     } else {
       current = _direction == Axis.horizontal
           ? SizedBox(
               height: widget.pointerSize!.height,
-              width: widget.pointerSize!.width)
+              width: widget.pointerSize!.width,
+            )
           : SizedBox(
               height: widget.pointerSize!.width,
-              width: widget.pointerSize!.height);
+              width: widget.pointerSize!.height,
+            );
     }
 
     return current;
@@ -2570,7 +2765,7 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
         if ((widget.labelOverflow == LegendLabelOverflow.hide &&
                 _labels[index].isOverlapping) ||
             _labels[index].label.isEmpty) {
-          return const SizedBox(height: 0.0, width: 0.0);
+          return const SizedBox.shrink();
         }
 
         return Directionality(
@@ -2615,9 +2810,11 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
     TextDirection textDirection = Directionality.of(context);
     _isRTL = textDirection == TextDirection.rtl;
     _textPainter = TextPainter(
-        textDirection: TextDirection.ltr,
-        textScaler: MediaQuery.of(context).textScaler);
-    _direction = widget.direction ??
+      textDirection: TextDirection.ltr,
+      textScaler: MediaQuery.of(context).textScaler,
+    );
+    _direction =
+        widget.direction ??
         (widget.position == LegendPosition.top ||
                 widget.position == LegendPosition.bottom
             ? Axis.horizontal
@@ -2629,15 +2826,18 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
     final Widget child = Directionality(
       textDirection: textDirection,
       child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-        final double width =
-            constraints.hasBoundedWidth ? constraints.maxWidth : 300;
-        final double height =
-            constraints.hasBoundedHeight ? constraints.maxHeight : 300;
-        _updateSegmentSize(Size(width, height).shortestSide);
-        _collectLabelsAndColors();
-        return _buildGradientBar();
-      }),
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final double width = constraints.hasBoundedWidth
+              ? constraints.maxWidth
+              : 300;
+          final double height = constraints.hasBoundedHeight
+              ? constraints.maxHeight
+              : 300;
+          _updateSegmentSize(Size(width, height).shortestSide);
+          _collectLabelsAndColors();
+          return _buildGradientBar();
+        },
+      ),
     );
 
     return child;
@@ -2645,8 +2845,11 @@ class _GradientBarLegendState extends State<_GradientBarLegend> {
 }
 
 class _GradientBarLabel {
-  _GradientBarLabel(this.label,
-      [this.offset = Offset.zero, this.isOverlapping = false]);
+  _GradientBarLabel(
+    this.label, [
+    this.offset = Offset.zero,
+    this.isOverlapping = false,
+  ]);
 
   String label;
   Offset offset;
