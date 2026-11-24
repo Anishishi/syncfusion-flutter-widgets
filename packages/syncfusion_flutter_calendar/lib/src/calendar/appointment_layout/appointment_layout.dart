@@ -302,11 +302,11 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
             moreAppointments.add(appointment);
           }
 
-          /// If no hidden appointments start at this index (all are span
-          /// continuations from an earlier day, e.g. Apr 20 and Apr 21 are
-          /// continuations of a span starting Apr 19), skip the builder call
-          /// entirely so those continuation days produce no extra widgets.
+          /// The render object consumes one child per more-region index.
+          /// Keep that slot for span continuations without invoking the builder
+          /// again, so later regions are laid out on their own dates.
           if (moreAppointments.isEmpty) {
+            _children.add(const SizedBox());
             continue;
           }
 
